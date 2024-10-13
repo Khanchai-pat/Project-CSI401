@@ -1,25 +1,59 @@
-import express, { Request, Response } from "express"
+import express, { Request, Response } from 'express'
 
 export const auth = express();
 
-
-// const headerVerify: any = req.headers; //s
-// const xAppkey: string | undefined = headerVerify['x-application-key']
-
-
 interface responseData {
     code: string,
-    ststus: string,
+    status: string,
     data: object
 }
 
-auth.get("/login", (req: Request, res: Response) => {
+auth.post("/signin", (req: Request, res: Response) => {
 
-    const errorRes: responseData = {
-        code: "Error-01-xAppkey",
-        ststus: "error",
-        data: {}
+    const reqHeader: any = req.headers
+    const xAppkey: string = reqHeader.x_application_key
+    //                      reqHeader["x-application-key"]
+    const reqBody: any = req.body
+    const username: string = reqBody.username
+    const password: string = reqBody.password
+
+    if (xAppkey && xAppkey === "ssp") {
+        if (username && password) {
+            const succsessSignin: responseData = {
+                code: "Succsess",
+                status: "ok",
+                data: {
+                    username: reqBody.username
+                }
+            }
+            res.status(200).send(succsessSignin)
+        } else {
+            const errorSignin: responseData = {
+                code: "Error",
+                status: "Error",
+                data: {
+                    message: `username = ${reqBody.username} password = ${reqBody.password}`
+                }
+            }
+            res.status(400).send(errorSignin)
+        }
+    } else {
+        const errorXAppkey: responseData = {
+            code: "Error",
+            status: "Error",
+            data: {
+                message: "Eror Don't Have XAppkey"
+            }
+        }
+        res.status(400).send(errorXAppkey)
     }
-    res.send(errorRes);
 
-});
+})
+
+
+auth.post("/signout", (req: Request, res: Response) => {
+    res.send({
+        date: "signout",
+        method: "post"
+    })
+})
