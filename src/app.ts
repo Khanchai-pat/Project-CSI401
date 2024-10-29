@@ -2,7 +2,8 @@ import express, { Request, Response } from "express";
 import * as dotenv from "dotenv";
 import cors from "cors";
 import helmet from "helmet";
-import { auth } from "./API/v1/auth/route";
+import { auth } from "./api/v1/HR/auth/route";
+import { checkData } from "./api/v1/HR/checkdata/route";
 
 dotenv.config();
 
@@ -14,6 +15,7 @@ app.use(cors());
 app.use(helmet());
 
 app.use("/auth", auth)
+app.use("/checkData", checkData)
 
 const PORT = process.env.PORT
 app.listen(PORT, () => {
