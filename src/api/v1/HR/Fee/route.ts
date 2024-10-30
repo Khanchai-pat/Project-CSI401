@@ -8,8 +8,7 @@ interface responseData {
     data: object
 }
 
-//1.2.11 API : HR - Courses Fee Reimbursement System (FR5: ระบบเบิกค่าอบรม) Show 
-
+//1.2.11 API : HR - Courses Fee Reimbursement System (FR5: ระบบเบิกค่าอบรม) Show  List 
 auth.post("/signout", (req: Request, res: Response) => {
     res.send({
         date: "signout",
@@ -18,7 +17,7 @@ auth.post("/signout", (req: Request, res: Response) => {
 })
 
 
-////1.2.12 API : HR - Courses Fee Reimbursement System (FR5: ระบบเบิกค่าอบรม) Show // byID
+////1.2.12 API : HR - Courses Fee Reimbursement System (FR5: ระบบเบิกค่าอบรม) Show List byID
 
 auth.post("/signout", (req: Request, res: Response) => {
     res.send({

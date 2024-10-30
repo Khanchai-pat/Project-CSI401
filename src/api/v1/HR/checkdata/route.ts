@@ -4,7 +4,7 @@ export const checkData = express();
 
 interface responseData {
     code: number,
-    status: string,
+    message: string,
     data: object
 }
 
@@ -20,7 +20,7 @@ checkData.get("/checkEmp", (req: Request, res: Response) => {
         console.log('this is if')
         const reqCheckData: responseData = {
             code: 200,
-            status: "success",
+            message: "success",
             data: [{
                 "EmpID": "Emp001",
                 "EmpName": "John Doe",
@@ -69,7 +69,7 @@ checkData.get("/checkEmpID", (req: Request, res: Response) => {
         console.log('this is if')
         const reqCheckEmpID: responseData = {
             code: 200,
-            status: "success",
+            message: "success",
             data: {
                 "EmpID": "Emp001",
                 "EmpName": "John Doe",

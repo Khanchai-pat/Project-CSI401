@@ -42,9 +42,6 @@ auth.post("/signout", (req: Request, res: Response) => {
     })
 })
 
-
-
-
 //1.2.14 API : HR - Show Courses Results 
 
 auth.post("/signout", (req: Request, res: Response) => {
