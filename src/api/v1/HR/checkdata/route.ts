@@ -1,15 +1,19 @@
 import express, { Request, Response } from 'express'
-
+import { responseData, responseError } from '../Model/model'
 export const checkData = express();
 
-interface responseData {
-    code: number,
-    message: string,
-    data: object
-}
+// interface responseData {
+//     code: number,
+//     message: string,
+//     data: object
+// }
+
+// interface responseError {
+//     mesage: string
+// }
 
 //Check Data EMP
-checkData.get("/checkEmp", (req: Request, res: Response) => {
+checkData.get("/checkEmp", async     (req: Request, res: Response) => {
     const reqHeader: any = req.headers
     //                                         key in postman
     const contentType: any = reqHeader["content-type"]
@@ -19,15 +23,16 @@ checkData.get("/checkEmp", (req: Request, res: Response) => {
     if (tokenkey && contentType) {
         console.log('this is if')
         const reqCheckData: responseData = {
-            code: 200,
-            message: "success",
+            code: "200",
+            status: "success",
             data: [{
                 "EmpID": "Emp001",
                 "EmpName": "John Doe",
                 "department": "Sales",
                 "email": "johndoe@example.com",
                 "tel": 123445112,
-                "EmpStatus": "Active"
+                "EmpStatus": "Active",
+                "role": "Accoutting"
             },
             {
                 "EmpID": "Emp002",
@@ -35,7 +40,8 @@ checkData.get("/checkEmp", (req: Request, res: Response) => {
                 "department": "Sales",
                 "email": "johndoe@example.com",
                 "tel": 123445112,
-                "EmpStatus": "Active"
+                "EmpStatus": "Active",
+                "role": "Accoutting"
             },
             {
                 "EmpID": "Emp003",
@@ -43,7 +49,8 @@ checkData.get("/checkEmp", (req: Request, res: Response) => {
                 "department": "Sales",
                 "email": "johndoe@example.com",
                 "tel": 123445112,
-                "EmpStatus": "Active"
+                "EmpStatus": "Active",
+                "role": "Accoutting"
             }
             ]
         }
@@ -51,7 +58,7 @@ checkData.get("/checkEmp", (req: Request, res: Response) => {
     } else {
         console.log('this is else')
         res.status(500).send({
-            message: "Don't Have Header and Tokenkey   "
+            message: "Missing required headers: content-type and authorization token End-Point checkEmp"
         })
     }
 })
@@ -68,8 +75,8 @@ checkData.get("/checkEmpID", (req: Request, res: Response) => {
     if (tokenkey && contentType) {
         console.log('this is if')
         const reqCheckEmpID: responseData = {
-            code: 200,
-            message: "success",
+            code: "200",
+            status: "success",
             data: {
                 "EmpID": "Emp001",
                 "EmpName": "John Doe",
@@ -97,8 +104,8 @@ checkData.get("/checkEmpID", (req: Request, res: Response) => {
     }
     else {
         console.log('this is else')
-        res.status(500).send({
-            message: "Don't Have Header and Tokenkey   "
+        res.status(400).send({
+            message: "Missing required headers: content-type and authorization token End-Point checkEmpID"
         })
     }
 })

@@ -1,12 +1,16 @@
 import express, { Request, Response } from 'express'
-
+import { responseData, responseError } from '../Model/model';
 export const auth = express();
 
-interface responseData {
-    code: string,
-    status: string,
-    data: object
-}
+// interface responseData {
+//     code: string,
+//     status: string,
+//     data: object
+// }
+
+// interface responseError {
+//     mesage: string
+// }
 
 //Show list requests 
 auth.post("/signout", (req: Request, res: Response) => {
@@ -15,7 +19,6 @@ auth.post("/signout", (req: Request, res: Response) => {
         method: "post"
     })
 })
-
 
 ////Show list requests By ID
 auth.post("/signout", (req: Request, res: Response) => {
@@ -67,4 +70,7 @@ auth.post("/signout", (req: Request, res: Response) => {
         method: "post"
     })
 })
+
+
+
 

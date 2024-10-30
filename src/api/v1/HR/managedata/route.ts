@@ -1,34 +1,37 @@
 import express, { Request, Response } from 'express'
+import { responseData, responseError } from '../Model/model'
 
 export const manageData = express();
 
-interface responseData {
-    code: string,
-    status: string,
-    data: object
-}
+//  interface responseData {
+//     code: string,
+//     status: string,
+//     data: object
+// }
 
-interface responseError {
-    mesage: string
-}
+//  interface responseError {
+//     mesage: string
+// }
 
 //create-Emp
 manageData.post("/createEmp", (req: Request, res: Response) => {
     // res headers
     const reqHeader: any = req.headers
-    //                                         key in postman
+    //                                  key in postman
     const contentType: any = reqHeader["content-type"]
     const tokenkey: any = reqHeader["authorization"]
     // res body
     const bodys: any = req.body
-    const empID: any = bodys.empID
-    const empName: any = bodys.empName
-    const departMent: any = bodys.departMent
-    const cardID: number = bodys.cardID
-    const email: string = bodys.email
-    const tel: number = bodys.tel
-    const role: string = bodys.role
-    const empStatus: string = bodys.empStatus
+
+    const { empID,
+        empName,
+        departMent,
+        cardID,
+        email,
+        tel,
+        role,
+        empStatus
+    } = req.body
 
     if (contentType && tokenkey) {
         const succsessData: responseData = {
@@ -68,26 +71,11 @@ manageData.post("/editEmp", (req: Request, res: Response) => {
     console.log(tokenkey)
 
     // res body
-    const bodys: any = req.body
-    const empID: any = bodys.empID
-    const empName: any = bodys.empName
-    const departMent: any = bodys.departMent
-    const cardID: number = bodys.cardID
-    const email: string = bodys.email
-    const tel: number = bodys.tel
-    const role: string = bodys.role
-    const empStatus: string = bodys.empStatus
-
-    const firstTrainingDate: any = bodys.firstTrainingDate
-    const trainingDate: any = bodys.trainingDate
-    const courseID: string = bodys.courseID
-    const courseName: string = bodys.courseName
-    const trainingLocation: string = bodys.trainingLocation
-    const trainingHours: number = bodys.trainingHours
-    const nextExpiryDate: string = bodys.nextExpiryDate
+    const { empID, empName, departMent, cardID, email, tel, role, empStatus,
+        firstTrainingDate, trainingDate, courseID, courseName, trainingLocation, trainingHours, nextExpiryDate
+    } = req.body
 
     if (contentType && tokenkey) {
-
         const cerrentData = {
             empID: empID,
             empName: empName,
@@ -138,15 +126,17 @@ manageData.post("/deleteEmp", (req: Request, res: Response) => {
     console.log(tokenkey)
 
     // res body
-    const bodys: any = req.body
-    const empID: any = bodys.empID
-    const empName: any = bodys.empName
-    const departMent: any = bodys.departMent
-    const cardID: number = bodys.cardID
-    const email: string = bodys.email
-    const tel: number = bodys.tel
-    const role: string = bodys.role
-    const empStatus: string = bodys.empStatus
+    const {
+        empID,
+        empName,
+        departMent,
+        cardID,
+        email,
+        tel,
+        role,
+        empStatus
+    } = req.body
+
     console.log(empID)
 
     if (contentType && tokenkey) {
