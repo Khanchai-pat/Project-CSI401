@@ -1,6 +1,6 @@
 import express, { Request, Response } from 'express'
 import { responseData, responseError } from '../Model/model';
-export const auth = express();
+export const Register = express();
 
 // interface responseData {
 //     code: string,
@@ -12,8 +12,9 @@ export const auth = express();
 //     mesage: string
 // }
 
+
 //Show list requests 
-auth.post("/signout", (req: Request, res: Response) => {
+Register.post("/signout", (req: Request, res: Response) => {
     res.send({
         date: "signout",
         method: "post"
@@ -21,16 +22,15 @@ auth.post("/signout", (req: Request, res: Response) => {
 })
 
 ////Show list requests By ID
-auth.post("/signout", (req: Request, res: Response) => {
+Register.post("/signout", (req: Request, res: Response) => {
     res.send({
         date: "signout",
         method: "post"
     })
 })
 
-
 //Show list request ByID appove
-auth.post("/signout", (req: Request, res: Response) => {
+Register.post("/signout", (req: Request, res: Response) => {
     res.send({
         date: "signout",
         method: "post"
@@ -38,16 +38,15 @@ auth.post("/signout", (req: Request, res: Response) => {
 })
 
 //Show list request ByID reject
-auth.post("/signout", (req: Request, res: Response) => {
+Register.post("/signout", (req: Request, res: Response) => {
     res.send({
         date: "signout",
         method: "post"
     })
 })
 
-//1.2.14 API : HR - Show Courses Results 
-
-auth.post("/signout", (req: Request, res: Response) => {
+//1.2.14 API : HR - Show Courses Results
+Register.post("/signout", (req: Request, res: Response) => {
     res.send({
         date: "signout",
         method: "post"
@@ -55,22 +54,18 @@ auth.post("/signout", (req: Request, res: Response) => {
 })
 
 //1.2.15 API : HR - Show Courses Results ByID
-auth.post("/signout", (req: Request, res: Response) => {
+Register.post("/signout", (req: Request, res: Response) => {
     res.send({
         date: "signout",
         method: "post"
     })
 })
-
 
 //1.2.16 API : HR - Show Courses Results ByID Update
-auth.post("/signout", (req: Request, res: Response) => {
+Register.post("/signout", (req: Request, res: Response) => {
     res.send({
         date: "signout",
         method: "post"
     })
 })
-
-
-
 

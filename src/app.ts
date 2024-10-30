@@ -9,6 +9,7 @@ import morgan from "morgan"
 import { auth } from "./api/v1/HR/auth/route";
 import { checkData } from "./api/v1/HR/checkdata/route";
 import { manageData } from "./api/v1/HR/managedata/route";
+import { Register } from "./api/v1/HR/course/route";
 
 dotenv.config();
 
@@ -23,6 +24,7 @@ app.use(morgan('dev'))
 app.use("/auth", auth)
 app.use("/checkData", checkData)
 app.use("/manageData", manageData)
+app.use("/course", Register)
 
 const PORT = process.env.PORT
 app.listen(PORT, () => {
