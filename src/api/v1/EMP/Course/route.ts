@@ -14,7 +14,9 @@ Register.post("/register", (req: Request, res: Response) => {
             trainingDate: "19/07/2024",
             courseName: "คอมพิวเตอร์",
             TrainingLocation: "มหาวิทายาลัยศรีปทุม",
-            periods: "09:00-11:00"
+            periods: "09:00-11:12"
         },
     });
 });
+
+
