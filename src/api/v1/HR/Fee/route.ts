@@ -20,7 +20,7 @@ reimbursements.get("/requests", (req: Request, res: Response) => {
     const contentType: any = reqHeader["content-type"]
     const tokenkey: any = reqHeader["authorization"]
     if (tokenkey && contentType) {
-        const reqCheckData: responseData = {
+        const reqReimbursement: responseData = {
             code: "200",
             status: "success",
             data: {
@@ -34,6 +34,11 @@ reimbursements.get("/requests", (req: Request, res: Response) => {
                 "courseName" : "CSI"
             }
     }
+    res.status(200).send(reqReimbursement)
+} else {
+    res.status(500).send({
+        message: "Missing required headers: content-type and authorization token and limit-offset Endpoint Coursereimbursement"
+    })
 }
 })
 
