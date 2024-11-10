@@ -1,17 +1,7 @@
 import express, { Request, Response } from 'express'
-import { responseData, responseError } from '../Model/model'
+import { responseData, responseError } from '../model/model'
 
 export const manageData = express();
-
-//  interface responseData {
-//     code: string,
-//     status: string,
-//     data: object
-// }
-
-//  interface responseError {
-//     mesage: string
-// }
 
 //create-Emp
 manageData.post("/createEmp", (req: Request, res: Response) => {
@@ -36,7 +26,7 @@ manageData.post("/createEmp", (req: Request, res: Response) => {
     if (contentType && tokenkey) {
         const succsessData: responseData = {
             code: "success-001-0010",
-            status: 'OK',
+            status: 'OK createEmp : id',
             data: {
                 empID: empID,
                 empName: empName,
@@ -52,7 +42,7 @@ manageData.post("/createEmp", (req: Request, res: Response) => {
 
     } else {
         const errData: responseError = {
-            mesage: "Missing required headers: content-type and authorization token"
+            message: "Missing required headers: content-type and authorization token"
         }
         res.status(400).send(errData)
     }
@@ -71,8 +61,22 @@ manageData.post("/editEmp", (req: Request, res: Response) => {
     console.log(tokenkey)
 
     // res body
-    const { empID, empName, departMent, cardID, email, tel, role, empStatus,
-        firstTrainingDate, trainingDate, courseID, courseName, trainingLocation, trainingHours, nextExpiryDate
+    const {
+        empID,
+        empName,
+        departMent,
+        cardID,
+        email,
+        tel, role,
+        empStatus,
+
+        firstTrainingDate,
+        trainingDate,
+        courseID,
+        courseName,
+        trainingLocation,
+        trainingHours,
+        nextExpiryDate
     } = req.body
 
     if (contentType && tokenkey) {
@@ -101,19 +105,18 @@ manageData.post("/editEmp", (req: Request, res: Response) => {
         }
         const succsessData: responseData = {
             code: "success-001-0010",
-            status: 'OK',
+            status: 'OK editEmp',
             data: updateData
         }
         res.status(200).json(succsessData)
 
     } else {
         const errData: responseError = {
-            mesage: "Missing required headers: content-type and authorization token"
+            message: "Missing required headers: content-type and authorization token"
         }
         res.status(400).send(errData)
     }
 })
-
 
 //delete-Emp
 manageData.post("/deleteEmp", (req: Request, res: Response) => {
@@ -143,7 +146,7 @@ manageData.post("/deleteEmp", (req: Request, res: Response) => {
         if (empID) {
             const succsessData: responseData = {
                 code: "delete-001-0010",
-                status: 'OK',
+                status: 'OK deleteEmp',
                 data: {
                     empID: empID,
                     empStatus: empStatus
@@ -151,14 +154,14 @@ manageData.post("/deleteEmp", (req: Request, res: Response) => {
             }
             res.status(200).json(succsessData)
         } else {
-            res.status(400).json({
+            res.status(400).send({
                 message: "empID is required to update employee status End-Point deleteEmp"
             });
         }
     } else {
         const errData: responseError = {
-            mesage: "Missing required headers: content-type and authorization token End-Point deleteEmp"
+            message: "Missing required headers: content-type and authorization token End-Point deleteEmp"
         }
-        res.status(400).json(errData)
+        res.status(400).send(errData)
     }
 })

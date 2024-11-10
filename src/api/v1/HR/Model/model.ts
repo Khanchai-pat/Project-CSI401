@@ -4,6 +4,7 @@ export interface responseData {
     data: object
 }
 
+
 export interface responseError {
-    mesage: string
+    message: string
 }
