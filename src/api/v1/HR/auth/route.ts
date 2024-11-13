@@ -13,9 +13,7 @@ auth.post("/signin", (req: Request, res: Response) => {
     const reqHeader: any = req.headers
     const xAppkey: string = reqHeader.x_application_key
     //                      reqHeader["x-application-key"]
-    const reqBody: any = req.body
-    const username: string = reqBody.username
-    const password: string = reqBody.password
+    const { reqBody, username, password }: any = req.body
 
     if (xAppkey && xAppkey === "ssp") {
         if (username && password) {

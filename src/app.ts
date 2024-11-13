@@ -3,8 +3,13 @@ import * as dotenv from "dotenv";
 import cors from "cors";
 import helmet from "helmet";
 import morgan from "morgan"
+import mongoose from "mongoose";
 // const morgan = require('morgan');
 
+// Connect to MongoDB when server starts
+mongoose.connect("mongodb://Admin:1234@localhost:27017/mydb?authSource=mydb")
+    .then(() => console.log("MongoDB connected successfully"))
+    .catch((error) => console.error("MongoDB connection error:", error));
 
 import { auth } from "./api/v1/HR/auth/route";
 import { checkData } from "./api/v1/HR/checkdata/route";

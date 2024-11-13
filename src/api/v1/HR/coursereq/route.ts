@@ -1,196 +1,125 @@
 import express, { Request, Response } from 'express'
 import { responseData, responseError } from '../model/model';
+import mongoose from 'mongoose';
 export const course = express();
 
+const userSchemas = new mongoose.Schema({
+    // coed: { type: String, required: true }
+    code: String,
+    firstName: String,
+    lastName: String,
+});
 
-//Show list requests 
-// course.get("/requests", (req: Request, res: Response) => {
-//     const reqHeader: any = req.headers
-//     //                                         key in postman
-//     const contentType: any = reqHeader["content-type"]
-//     //                                         key in postman
-//     const tokenkey: any = reqHeader["authorization"]
+const Request = mongoose.model("sections", userSchemas);
 
-//     if (tokenkey && contentType) {
-//         console.log('this is if')
-//         const reqCourse: responseData = {
-//             code: "200",
-//             status: "OK",
-//             data: [
-//                 {
-//                     reqId: "req001",
-//                     EmpID: "Emp001",
-//                     EmpName: "John Doe",
-//                     department: "Sales",
-//                     email: "Somchaitest@example.com",
-//                     tel: "090-0000-000",
-//                     courseID: "ABC101",
-//                     courseName: "เตรียมความพร้อมสู่การทำงานเป็นทีม",
-//                     statusPending: "Pending"
-//                 },
-//                 {
-//                     reqId: "req001",
-//                     EmpID: "Emp001",
-//                     EmpName: "John Doe",
-//                     department: "Sales",
-//                     email: "Somchaitest@example.com",
-//                     tel: "090-0000-000",
-//                     courseID: "ABC101",
-//                     courseName: "เตรียมความพร้อมสู่การทำงานเป็นทีม",
-//                     statusPending: "Pending"
-//                 },
-//                 {
-//                     reqId: "req001",
-//                     EmpID: "Emp001",
-//                     EmpName: "John Doe",
-//                     department: "Sales",
-//                     email: "Somchaitest@example.com",
-//                     tel: "090-0000-000",
-//                     courseID: "ABC101",
-//                     courseName: "เตรียมความพร้อมสู่การทำงานเป็นทีม",
-//                     statusPending: "Pending"
-//                 }
-//             ]
-//         }
-//         res.status(200).json(reqCourse)
-//     } else {
-//         console.log('this is else')
-//         const errData: responseError = {
-//             message: "Missing required headers: content-type and authorization token End-Point requests"
-//         }
-//         res.status(500).send(errData)
-//     }
-// })
-course.get("/requests", async    (req: Request, res: Response) => {
+course.get("/requests", async (req: Request, res: Response) => {
+
+    const reqHeader: any = req.headers;
+    const contentType: string = reqHeader["content-type"];
+    const tokenkey: string = reqHeader["authorization"];
+
+    if (!tokenkey || !contentType) {
+        const errData: responseError = {
+            message: "Missing required headers: content-type and authorization token End-Point /requests"
+        };
+        res.status(400).json(errData);
+    }
 
     try {
-        const reqHeader: any = req.headers;
-        const contentType: string = reqHeader["content-type"];
-        const tokenkey: string = reqHeader["authorization"];
-
-        // ตรวจสอบ headers ที่ต้องการ
-        if (!tokenkey || !contentType) {
-            const errData: responseError = {
-                message: "Missing required headers: content-type and authorization token End-Point /requests"
-            };
-            res.status(400).json(errData);
-        }
-
-        // เมื่อ headers ถูกต้อง จะสร้างข้อมูลตัวอย่าง response
+        const dbRequests = await Request.find({})
         const reqCourse: responseData = {
             code: "200",
             status: "OK",
-            data: [
-                {
-                    reqId: "req001",
-                    EmpID: "Emp001",
-                    EmpName: "John Doe",
-                    department: "Sales",
-                    email: "Somchaitest@example.com",
-                    tel: "090-0000-000",
-                    courseID: "ABC101",
-                    courseName: "เตรียมความพร้อมสู่การทำงานเป็นทีม",
-                    statusPending: "Pending"
-                },
-                {
-                    reqId: "req002",
-                    EmpID: "Emp002",
-                    EmpName: "Jane Smith",
-                    department: "Marketing",
-                    email: "janesmith@example.com",
-                    tel: "090-1111-111",
-                    courseID: "ABC102",
-                    courseName: "พัฒนาทักษะการสื่อสาร",
-                    statusPending: "Pending"
-                }
-            ]
+            data: dbRequests
         };
-
-        // ส่ง response กลับไปที่ client
         res.status(200).json(reqCourse);
     } catch (error) {
-        console.error("Error handling /requests endpoint:", error);
-        const errData: responseError = {
+        const errorDb: responseError = {
             message: "Internal server error at /requests endpoint."
         };
-        res.status(500).json(errData);
+        res.status(500).json(errorDb);
     }
 });
 
 
 ////Show list requests By ID
-course.get("/requests/:id", (req: Request, res: Response) => {
+course.get("/requestsID/:id?", async (req: Request, res: Response) => {
     const reqHeader: any = req.headers
-    //                                         key in postman
     const contentType: any = reqHeader["content-type"]
-    //                                         key in postman
     const tokenkey: any = reqHeader["authorization"]
+    const { id }: any = req.params
 
-    if (tokenkey && contentType) {
-        console.log('this is if')
-        const reqCourse: responseData = {
-            code: "200",
-            status: "OK /requests/:id",
-            data: [
-                {
-                    reqId: req.params.id,
-                    empID: "Emp001",
-                    EmpName: "John Doe",
-                    department: "Sales",
-                    email: "Somchaitest@example.com",
-                    tel: "090-0000-000",
-                    courseID: "ABC101",
-                    courseName: "เตรียมความพร้อมสู่การทำงานเป็นทีม",
-                    statusPending: "Pending"
-                },
-            ]
-        }
-        res.status(200).json(reqCourse)
-    } else {
-        console.log('this is else')
+    if (!tokenkey || !contentType) {
         const errData: responseError = {
             message: "Missing required headers: content-type and authorization token End-Point /requests/:id"
         }
         res.status(500).send(errData)
     }
+
+    if (!id) {
+        const errData: responseError = {
+            message: "Missing Params"
+        }
+        res.status(500).send(errData)
+    }
+
+    try {
+        const dbRequestsID = await Request.find({ _id: id })
+        const reqCourse: responseData = {
+            code: "200",
+            status: "OK /requests/:id",
+            data: dbRequestsID
+        }
+        res.status(200).json(reqCourse)
+
+    } catch (error) {
+        const errorDb: responseError = {
+            message: 'Can not sent Data by id'
+        }
+        res.status(400).json(errorDb)
+    }
+
+    res.status(200).json()
 })
 
 //Show list request ByID appove
-course.post("/appove", (req: Request, res: Response) => {
+course.post("/appove:id?", async (req: Request, res: Response) => {
     const reqHeader: any = req.headers
-    //                                         key in postman
     const contentType: any = reqHeader["content-type"]
-    //                                         key in postman
     const tokenkey: any = reqHeader["authorization"]
+    const { id, sectionCode }: any = req.body
 
-    if (tokenkey && contentType) {
-        console.log('this is if')
-
-        const reqCourse: responseData = {
-            code: "200",
-            status: "OK appove",
-            data: [
-                {
-                    req001: "req001",
-                    empId: "Emp001",
-                    status: "Approve",
-                    approvalDate: "2024-10-18"
-
-                },
-            ]
+    if (!contentType || !tokenkey) {
+        const errorHeaderToken: responseError = {
+            message: `Missing required headers: content-type and authorization token End-Point appove:id?`
         }
-        res.status(200).json(reqCourse)
-    } else {
-        console.log('this is else')
-        const errData: responseError = {
-            message: "Missing required headers: content-type and authorization token End-Point /appove course"
+        res.status(400).send(errorHeaderToken)
+    }
+
+    if (!id) {
+        const errorBodyid: responseError = {
+            message: `Missing required body id`
         }
-        res.status(500).send(errData)
+        res.status(400).send(errorBodyid)
+    }
+
+    try {
+        const cerrenData = await Request.find({ _id: id })
+        const updateData = { ...cerrenData, ...sectionCode }
+        const dbappove = await Request.updateOne({ _id: id },
+            { $set: updateData }
+        )
+        res.status(200).json(dbappove)
+    } catch {
+        const errorDb: responseError = {
+            message: `Can not Appove Data by id`
+        }
+        res.status(400).send(errorDb)
     }
 })
 
 // Show list request ByID reject
-course.post("/reject", (req: Request, res: Response) => {
+course.post("/rejectID:id", (req: Request, res: Response) => {
     const reqHeader: any = req.headers
     //                                         key in postman
     const contentType: any = reqHeader["content-type"]
