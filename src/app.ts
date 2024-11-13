@@ -6,16 +6,16 @@ import morgan from "morgan"
 import mongoose from "mongoose";
 // const morgan = require('morgan');
 
+import { auth } from "./api/v1/HR/auth/route";
+import { checkData } from "./api/v1/HR/checkdata/route";
+import { manageData } from "./api/v1/HR/managedata/route";
+import { course } from "./api/v1/HR/courseRequest/route";
+import { courseUpdate } from "./api/v1/HR/courseResults/route";
+
 // Connect to MongoDB when server starts
 mongoose.connect("mongodb://Admin:1234@localhost:27017/mydb?authSource=mydb")
     .then(() => console.log("MongoDB connected successfully"))
     .catch((error) => console.error("MongoDB connection error:", error));
-
-import { auth } from "./api/v1/HR/auth/route";
-import { checkData } from "./api/v1/HR/checkdata/route";
-import { manageData } from "./api/v1/HR/managedata/route";
-import { course } from "./api/v1/HR/coursereq/route";
-import { courseUpdate } from "./api/v1/HR/courseupdate/route";
 
 dotenv.config();
 

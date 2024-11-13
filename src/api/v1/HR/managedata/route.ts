@@ -7,11 +7,9 @@ export const manageData = express();
 manageData.post("/createEmp", (req: Request, res: Response) => {
     // res headers
     const reqHeader: any = req.headers
-    //                                  key in postman
     const contentType: any = reqHeader["content-type"]
     const tokenkey: any = reqHeader["authorization"]
-    // res body
-    const bodys: any = req.body
+    const {bodys}: any = req.body
 
     const { empID,
         empName,

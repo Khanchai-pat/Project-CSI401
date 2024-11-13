@@ -1,8 +1,8 @@
 import express, { Request, Response } from 'express'
 import { responseData, responseError } from '../model/model';
-import mongoose from 'mongoose';
+import mongoose, { ObjectId } from 'mongoose';
 export const course = express();
-
+const ObjectId = require('mongoose').Types.ObjectId;
 const userSchemas = new mongoose.Schema({
     // coed: { type: String, required: true }
     code: String,
@@ -10,7 +10,7 @@ const userSchemas = new mongoose.Schema({
     lastName: String,
 });
 
-const Requests = mongoose.model("sections", userSchemas);
+const Requests = mongoose.model("subjects", userSchemas);
 
 course.get("/requests", async (req: Request, res: Response) => {
 
@@ -84,11 +84,12 @@ course.get("/requestsID/:id?", async (req: Request, res: Response) => {
 })
 
 //Show list request ByID appove
-course.post("/appove:id?", async (req: Request, res: Response) => {
+course.post("/appove", async (req: Request, res: Response) => {
     const reqHeader: any = req.headers
     const contentType: any = reqHeader["content-type"]
     const tokenkey: any = reqHeader["authorization"]
-    const { id, sectioneType }: any = req.body
+    const { id }: any = req.body
+    const subjectHours = req.body
 
     if (!contentType || !tokenkey) {
         const errorHeaderToken: responseError = {
@@ -106,17 +107,18 @@ course.post("/appove:id?", async (req: Request, res: Response) => {
 
     try {
         const cerrenData = await Requests.findById({ _id: id })
-        console.log(cerrenData)
+
+        
+        const newdata = { ...cerrenData, ...subjectHours }
+        console.log(newdata)
 
         const dbappove = await Requests.updateOne({ _id: id },
             {
-                $set: {
-                    sectioneType: sectioneType
-                }
+                $set: newdata
+
             }
         );
         res.status(200).json(dbappove)
-        console.log(dbappove)
     } catch (errer) {
         console.log(errer)
         const errorDb: responseError = {
@@ -127,7 +129,7 @@ course.post("/appove:id?", async (req: Request, res: Response) => {
 })
 
 // Show list request ByID reject
-course.post("/rejectID:id", (req: Request, res: Response) => {
+course.post("/rejectID", (req: Request, res: Response) => {
     const reqHeader: any = req.headers
     const contentType: any = reqHeader["content-type"]
     const tokenkey: any = reqHeader["authorization"]
@@ -156,29 +158,4 @@ course.post("/rejectID:id", (req: Request, res: Response) => {
     }
 })
 
-
-
-//1.2.14 API : HR - Show Courses Results
-course.post("/signout", (req: Request, res: Response) => {
-    res.send({
-        date: "signout",
-        method: "post"
-    })
-})
-
-//1.2.15 API : HR - Show Courses Results ByID
-course.post("/signout", (req: Request, res: Response) => {
-    res.send({
-        date: "signout",
-        method: "post"
-    })
-})
-
-//1.2.16 API : HR - Show Courses Results ByID Update
-course.post("/signout", (req: Request, res: Response) => {
-    res.send({
-        date: "signout",
-        method: "post"
-    })
-})
 
