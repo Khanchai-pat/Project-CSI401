@@ -1,5 +1,5 @@
 import express, { Request, Response } from "express";
-import { responseData, responseError } from "../model/model";
+import { responseData, responseError } from '../../model/model';
 import mongoose from "mongoose";
 export const courseUpdate = express();
 
