@@ -6,7 +6,7 @@ import morgan from "morgan"
 import mongoose from "mongoose";
 // const morgan = require('morgan');
 
-import { auth } from "./api/v1/HR/auth/route";
+import { auth } from "./api/v1/auth/auth";
 import { checkData } from "./api/v1/HR/checkdata/route";
 import { manageData } from "./api/v1/HR/managedata/route";
 import { course } from "./api/v1/HR/courseRequest/route";
