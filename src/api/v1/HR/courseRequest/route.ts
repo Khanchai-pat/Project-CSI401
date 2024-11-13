@@ -91,8 +91,7 @@ course.post("/appove", async (req: Request, res: Response) => {
     const reqHeader: any = req.headers
     const contentType: any = reqHeader["content-type"]
     const tokenkey: any = reqHeader["authorization"]
-    const { id }: any = req.body
-    const subjectHours = req.body
+    const { id, status }: any = req.body
 
     if (!contentType || !tokenkey) {
         const errorHeaderToken: responseError = {
@@ -103,7 +102,7 @@ course.post("/appove", async (req: Request, res: Response) => {
 
     if (!id) {
         const errorBodyid: responseError = {
-            message: `Missing required body id`
+            message: `Missing requirDed body id`
         }
         res.status(400).send(errorBodyid)
     }
@@ -111,13 +110,14 @@ course.post("/appove", async (req: Request, res: Response) => {
     try {
         const cerrenData = await Requests.findById({ _id: id })
 
-        const newdata = { ...cerrenData, ...subjectHours }
+        const newdata = { ...cerrenData, ...status }
         console.log(newdata)
 
         const dbappove = await Requests.updateOne({ _id: id },
             {
-                $set: newdata
-
+                $set: {
+                    subjectHours: status
+                }
             }
         );
         res.status(200).json(dbappove)
