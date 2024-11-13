@@ -10,7 +10,7 @@ const courses = [
         courseLimit: 50,
         courseLeft: 15
     },
-   
+
 ];
 
 
@@ -20,27 +20,27 @@ const verifyToken = (token: string | undefined): boolean => {
 };
 
 
-browse.get('/course/list', (req: Request, res: Response) => {
-    
+browse.get('/course/list', async (req: Request, res: Response) => {
+
     const token = req.headers['token-key'] as string;
 
-  
+
     if (!verifyToken(token)) {
-        return res.status(401).json({
+        res.status(401).json({
             code: "401",
             status: "error",
             message: "Unauthorized"
         });
     }
 
-   
+
     const limit = parseInt(req.query.limit as string) || 10;  // Default: 10
     const offset = parseInt(req.query.offset as string) || 0;  // Default: 0
 
 
     const pagedCourses = courses.slice(offset, offset + limit);
 
-    
+
     return res.status(200).json({
         code: "200",
         status: "success",

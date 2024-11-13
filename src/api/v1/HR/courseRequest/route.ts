@@ -5,9 +5,12 @@ export const course = express();
 const ObjectId = require('mongoose').Types.ObjectId;
 const userSchemas = new mongoose.Schema({
     // coed: { type: String, required: true }
-    code: String,
-    firstName: String,
-    lastName: String,
+    subjectCode: String,
+    subjectName: String,
+    subjectDetail: String,
+    subjectCredit: String,
+    subjectHours: String,
+    section: Array
 });
 
 const Requests = mongoose.model("subjects", userSchemas);
@@ -108,7 +111,6 @@ course.post("/appove", async (req: Request, res: Response) => {
     try {
         const cerrenData = await Requests.findById({ _id: id })
 
-        
         const newdata = { ...cerrenData, ...subjectHours }
         console.log(newdata)
 
