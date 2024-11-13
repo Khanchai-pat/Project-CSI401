@@ -10,7 +10,7 @@ const userSchemas = new mongoose.Schema({
     lastName: String,
 });
 
-const Request = mongoose.model("sections", userSchemas);
+const Requests = mongoose.model("sections", userSchemas);
 
 course.get("/requests", async (req: Request, res: Response) => {
 
@@ -26,7 +26,7 @@ course.get("/requests", async (req: Request, res: Response) => {
     }
 
     try {
-        const dbRequests = await Request.find({})
+        const dbRequests = await Requests.find({})
         const reqCourse: responseData = {
             code: "200",
             status: "OK",
@@ -64,7 +64,8 @@ course.get("/requestsID/:id?", async (req: Request, res: Response) => {
     }
 
     try {
-        const dbRequestsID = await Request.find({ _id: id })
+        // const dbRequestsID = await Request.find({ _id: id })
+        const dbRequestsID = await Requests.find({ _id: id })
         const reqCourse: responseData = {
             code: "200",
             status: "OK /requests/:id",
@@ -87,7 +88,7 @@ course.post("/appove:id?", async (req: Request, res: Response) => {
     const reqHeader: any = req.headers
     const contentType: any = reqHeader["content-type"]
     const tokenkey: any = reqHeader["authorization"]
-    const { id, sectionCode }: any = req.body
+    const { id, sectioneType }: any = req.body
 
     if (!contentType || !tokenkey) {
         const errorHeaderToken: responseError = {
@@ -104,13 +105,20 @@ course.post("/appove:id?", async (req: Request, res: Response) => {
     }
 
     try {
-        const cerrenData = await Request.find({ _id: id })
-        const updateData = { ...cerrenData, ...sectionCode }
-        const dbappove = await Request.updateOne({ _id: id },
-            { $set: updateData }
-        )
+        const cerrenData = await Requests.findById({ _id: id })
+        console.log(cerrenData)
+
+        const dbappove = await Requests.updateOne({ _id: id },
+            {
+                $set: {
+                    sectioneType: sectioneType
+                }
+            }
+        );
         res.status(200).json(dbappove)
-    } catch {
+        console.log(dbappove)
+    } catch (errer) {
+        console.log(errer)
         const errorDb: responseError = {
             message: `Can not Appove Data by id`
         }
@@ -121,9 +129,7 @@ course.post("/appove:id?", async (req: Request, res: Response) => {
 // Show list request ByID reject
 course.post("/rejectID:id", (req: Request, res: Response) => {
     const reqHeader: any = req.headers
-    //                                         key in postman
     const contentType: any = reqHeader["content-type"]
-    //                                         key in postman
     const tokenkey: any = reqHeader["authorization"]
 
     if (tokenkey && contentType) {
