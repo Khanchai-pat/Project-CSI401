@@ -132,7 +132,7 @@ course.post("/reject", async (req: Request, res: Response) => {
     const reqHeader: any = req.headers
     const contentType: any = reqHeader["content-type"]
     const tokenkey: any = reqHeader["authorization"]
-    const { reqId, status }: any = req.body
+    const { reqId, status,body }: any = req.body
 
     if (!contentType || !tokenkey) {
         const errorHeaderToken: responseError = {
@@ -151,14 +151,12 @@ course.post("/reject", async (req: Request, res: Response) => {
     try {
         const cerrenData = await Requests.findById({ _id: reqId })
 
-        // const newdata = { ...cerrenData, ...status }
-        // console.log(newdata)
+        const newdata = { ...cerrenData, ...body }
+        console.log(newdata)
 
         const dbappove = await Requests.updateOne({ _id: reqId },
             {
-                $set: {
-                    subjectHours: status
-                }
+                $set: newdata
             }
         );
         res.status(200).json(dbappove)
