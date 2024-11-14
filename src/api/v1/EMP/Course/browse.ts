@@ -41,7 +41,7 @@ browse.get('/course/list', async (req: Request, res: Response) => {
     const pagedCourses = courses.slice(offset, offset + limit);
 
 
-    return res.status(200).json({
+        res.status(200).json({
         code: "200",
         status: "success",
         message: "Data Received Successfully",

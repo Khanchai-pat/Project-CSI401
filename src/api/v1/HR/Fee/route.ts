@@ -82,7 +82,6 @@ reimbursements.post("/signout", (req: Request, res: Response) => {
     res.send({
         date: "signout",
         method: "post",
-        test : "test"
     })
 })
 >>>>>>> 4a27db3bd74257adc7337a687618c4d16724b427

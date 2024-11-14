@@ -1,7 +1,18 @@
 import express, { Request, Response } from 'express';
 import { responseData, responseError } from '../Model/model';
+import mongoose from 'mongoose';
 
 export const checkdata = express();
+const userSchemas = new mongoose.Schema({
+    // coed: { type: String, required: true }
+    empID: String,
+    empName: String,
+    courses: Array,
+    courseID : String,
+    courseName : String,
+    completionDate : Number,
+    status : String,
+  });
 
 // ข้อมูลตัวอย่างพนักงาน
 const results = {
@@ -26,49 +37,53 @@ const results = {
 };
 
 
-checkdata.get('/checkdata', (req: Request, res: Response) => {
+checkdata.post('/checkdata', async(req: Request, res: Response) => {
     const reqHeader: any = req.headers;
     const contentType: any = reqHeader["content-type"];
     const tokenkey: any = reqHeader["authorization"];
     const empID = req.query.Empid as string;
 
-    // ตรวจสอบการมี empID ในคำขอ
-    if (!empID) {
-        return res.status(400).json({
+    // ตรวจสอบการมี empID ในคำขอและเช็ค contentType
+    if (!empID || !contentType || contentType != "json") {
+            res.status(400).json({
             code: "400",
             status: "Bad Request",
             message: "Cannot Show"
         });
     }
-
     // ดึงข้อมูลพนักงานจาก results
     const employeeData = results.Empdata;
 
     // หาก empID ไม่ตรงกับข้อมูลพนักงาน
     if (employeeData.empID !== empID) {
-        return res.status(400).json({
+            res.status(400).json({
             code: "400",
             status: "Bad Request",
             message: "Cannot Show"
         });
     }
-
+    const Check = mongoose.model("EMP",userSchemas);
     // สร้างข้อมูล response
-    const responseData = {
-        code: "200",
-        status: "success",
-        message: "Successfully retrieved training results",
-        EmpID: employeeData.empID,
-        EmpName: employeeData.empName,
-        courses: employeeData.courses.map(course => ({
-            courseID: course.courseID,
-            courseName: course.courseName,
-            completionDate: course.completionDate,
-            status: course.status
-        }))
-    };
+    const CheckdataresponseData = await Check.find({});
+        // code: "200",
+        // status: "success",
+        // message: "Successfully retrieved training results",
 
-    
-    res.json(responseData);
+        // EmpID: employeeData.empID,
+        // EmpName: employeeData.empName,
+        // courses: employeeData.courses.map(course => ({
+        //     courseID: course.courseID,
+        //     courseName: course.courseName,
+        //     completionDate: course.completionDate,
+        //     status: course.status
+        // }))
+    // };
+        res.status(200).json({
+        code: "200",
+        status : "success",
+        data : {
+            CheckdataresponseData,
+        }
+    })
 });
 
