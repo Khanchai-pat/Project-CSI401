@@ -1,8 +1,7 @@
 import express, { Request, Response } from 'express'
-import { responseData, responseError } from '../../model/model';
-import mongoose, { ObjectId } from 'mongoose';
+import { responseData, responseError } from '../model/model';
+import mongoose from 'mongoose';
 export const course = express();
-const ObjectId = require('mongoose').Types.ObjectId;
 const userSchemas = new mongoose.Schema({
     // coed: { type: String, required: true }
     subjectCode: String,
@@ -45,41 +44,42 @@ course.get("/requests", async (req: Request, res: Response) => {
 
 
 ////Show list requests By ID
-course.get("/requestsID/:id?", async (req: Request, res: Response) => {
+course.get("/requestsId/:id?", async (req: Request, res: Response) => {
     const reqHeader: any = req.headers
     const contentType: any = reqHeader["content-type"]
     const tokenkey: any = reqHeader["authorization"]
-    const  id : any = req.params
+    const id: any = req.params
+    console.log(id)
 
     if (!tokenkey || !contentType) {
         const errData: responseError = {
             message: "Missing required headers: content-type and authorization token End-Point /requests/:id"
         }
         res.status(500).send(errData)
-    }
+    } else {
+        if (!id) {
+            const errData: responseError = {
+                message: "Missing Params"
+            }
+            res.status(500).send(errData)
+        } else {
+            try {
+                // const dbRequestsID = await Request.find({ _id: id })
+                const dbRequestsID = await Requests.find({ _id: id })
+                const reqCourse: responseData = {
+                    code: "200",
+                    status: "OK /requests/:id",
+                    data: dbRequestsID
+                }
+                res.status(200).json(reqCourse)
 
-    if (!id) {
-        const errData: responseError = {
-            message: "Missing Params"
+            } catch (error) {
+                const errorDb: responseError = {
+                    message: `Can not sent Data by id${error}`
+                }
+                res.status(400).send(errorDb)
+            }
         }
-        res.status(500).send(errData)
-    }
-
-    try {
-        // const dbRequestsID = await Request.find({ _id: id })
-        const dbRequestsID = await Requests.find({ _id: id })
-        const reqCourse: responseData = {
-            code: "200",
-            status: "OK /requests/:id",
-            data: dbRequestsID
-        }
-        res.status(200).json(reqCourse)
-
-    } catch (error) {
-        const errorDb: responseError = {
-            message: `Can not sent Data by id${error}`
-        }
-        res.status(400).send(errorDb)
     }
 })
 
@@ -88,7 +88,7 @@ course.post("/appove", async (req: Request, res: Response) => {
     const reqHeader: any = req.headers
     const contentType: any = reqHeader["content-type"]
     const tokenkey: any = reqHeader["authorization"]
-    const { reqId, status }: any = req.body
+    const { reqId, status, body }: any = req.body
 
     if (!contentType || !tokenkey) {
         const errorHeaderToken: responseError = {
@@ -107,13 +107,13 @@ course.post("/appove", async (req: Request, res: Response) => {
     try {
         const cerrenData = await Requests.findById({ _id: reqId })
 
-        // const newdata = { ...cerrenData, ...status }
+        const newdata = { ...cerrenData, ...body }
         // console.log(newdata)
 
         const dbappove = await Requests.updateOne({ _id: reqId },
             {
                 $set: {
-                    subjectHours: status
+                    subjectHours: newdata
                 }
             }
         );
