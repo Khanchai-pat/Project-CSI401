@@ -1,5 +1,5 @@
 import express, { Request, Response } from 'express'
-import { responseData, responseError } from "../Model/model"
+import { responseData, responseError } from '../../model/model';
 export const browse = express();
 
 const courses = [
@@ -20,7 +20,7 @@ const verifyToken = (token: string | undefined): boolean => {
 };
 
 
-browse.get('/course/list', async (req: Request, res: Response) => {
+browse.get('/course/list', async(req: Request, res: Response) => {
 
     const token = req.headers['token-key'] as string;
 

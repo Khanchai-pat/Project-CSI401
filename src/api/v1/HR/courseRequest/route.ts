@@ -1,5 +1,5 @@
 import express, { Request, Response } from 'express'
-import { responseData, responseError } from '../model/model';
+import { responseData, responseError } from '../../model/model';
 import mongoose, { ObjectId } from 'mongoose';
 export const course = express();
 const ObjectId = require('mongoose').Types.ObjectId;
@@ -27,7 +27,6 @@ course.get("/requests", async (req: Request, res: Response) => {
         };
         res.status(400).json(errData);
     }
-
     try {
         const dbRequests = await Requests.find({})
         const reqCourse: responseData = {
@@ -50,7 +49,7 @@ course.get("/requestsID/:id?", async (req: Request, res: Response) => {
     const reqHeader: any = req.headers
     const contentType: any = reqHeader["content-type"]
     const tokenkey: any = reqHeader["authorization"]
-    const { id }: any = req.params
+    const  id : any = req.params
 
     if (!tokenkey || !contentType) {
         const errData: responseError = {
@@ -78,12 +77,10 @@ course.get("/requestsID/:id?", async (req: Request, res: Response) => {
 
     } catch (error) {
         const errorDb: responseError = {
-            message: 'Can not sent Data by id'
+            message: `Can not sent Data by id${error}`
         }
-        res.status(400).json(errorDb)
+        res.status(400).send(errorDb)
     }
-
-    res.status(200).json()
 })
 
 //Show list request ByID appove
@@ -91,7 +88,7 @@ course.post("/appove", async (req: Request, res: Response) => {
     const reqHeader: any = req.headers
     const contentType: any = reqHeader["content-type"]
     const tokenkey: any = reqHeader["authorization"]
-    const { id, status }: any = req.body
+    const { reqId, status }: any = req.body
 
     if (!contentType || !tokenkey) {
         const errorHeaderToken: responseError = {
@@ -100,7 +97,7 @@ course.post("/appove", async (req: Request, res: Response) => {
         res.status(400).send(errorHeaderToken)
     }
 
-    if (!id) {
+    if (!reqId) {
         const errorBodyid: responseError = {
             message: `Missing requirDed body id`
         }
@@ -108,12 +105,12 @@ course.post("/appove", async (req: Request, res: Response) => {
     }
 
     try {
-        const cerrenData = await Requests.findById({ _id: id })
+        const cerrenData = await Requests.findById({ _id: reqId })
 
-        const newdata = { ...cerrenData, ...status }
-        console.log(newdata)
+        // const newdata = { ...cerrenData, ...status }
+        // console.log(newdata)
 
-        const dbappove = await Requests.updateOne({ _id: id },
+        const dbappove = await Requests.updateOne({ _id: reqId },
             {
                 $set: {
                     subjectHours: status
@@ -131,32 +128,46 @@ course.post("/appove", async (req: Request, res: Response) => {
 })
 
 // Show list request ByID reject
-course.post("/rejectID", (req: Request, res: Response) => {
+course.post("/reject", async (req: Request, res: Response) => {
     const reqHeader: any = req.headers
     const contentType: any = reqHeader["content-type"]
     const tokenkey: any = reqHeader["authorization"]
+    const { reqId, status }: any = req.body
 
-    if (tokenkey && contentType) {
-        console.log('this is if')
+    if (!contentType || !tokenkey) {
+        const errorHeaderToken: responseError = {
+            message: `Missing required headers: content-type and authorization token End-Point appove:id?`
+        }
+        res.status(400).send(errorHeaderToken)
+    }
 
-        const reqCourse: responseData = {
-            code: "200",
-            status: "OK reject",
-            data: [
-                {
-                    status: "Reject",
-                    remark: "ลงทะเบียนเยอะเกินไป",
-                    approvalDate: "2024-10-18"
-                },
-            ]
+    if (!reqId) {
+        const errorBodyid: responseError = {
+            message: `Missing requirDed body id`
         }
-        res.status(200).json(reqCourse)
-    } else {
-        console.log('this is else')
-        const errData: responseError = {
-            message: "Missing required headers: content-type and authorization token End-Point /reject course"
+        res.status(400).send(errorBodyid)
+    }
+
+    try {
+        const cerrenData = await Requests.findById({ _id: reqId })
+
+        // const newdata = { ...cerrenData, ...status }
+        // console.log(newdata)
+
+        const dbappove = await Requests.updateOne({ _id: reqId },
+            {
+                $set: {
+                    subjectHours: status
+                }
+            }
+        );
+        res.status(200).json(dbappove)
+    } catch (errer) {
+        console.log(errer)
+        const errorDb: responseError = {
+            message: `Can not Appove Data by id`
         }
-        res.status(500).send(errData)
+        res.status(400).send(errorDb)
     }
 })
 

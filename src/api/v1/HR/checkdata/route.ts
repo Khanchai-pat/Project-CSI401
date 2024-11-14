@@ -1,5 +1,5 @@
 import express, { Request, Response } from "express";
-import { responseData, responseError } from "../model/model";
+import { responseData, responseError } from '../../model/model';
 import mongoose from "mongoose";
 export const checkData = express();
 
@@ -47,7 +47,7 @@ checkData.get("/checkEmp", async (req: Request, res: Response) => {
 });
 
 //Check Data byEmp ID
-checkData.get("/checkEmpID/:id", async (req: Request, res: Response) => {
+checkData.get("/checkEmpId/:id?", async (req: Request, res: Response) => {
   const reqHeader: any = req.headers;
   const contentType: any = reqHeader["content-type"];
   const tokenkey: any = reqHeader["authorization"];
