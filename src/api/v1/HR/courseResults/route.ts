@@ -97,7 +97,7 @@ courseUpdate.post("/update", async (req: Request, res: Response) => {
   const reqHeader: any = req.headers;
   const contentType: string = reqHeader["content-type"];
   const tokenkey: string = reqHeader["authorization"];
-  const { id, status } = req.body
+  const { Id, status } = req.body
 
   if (!tokenkey || !contentType) {
     const errData: responseError = {
@@ -106,16 +106,16 @@ courseUpdate.post("/update", async (req: Request, res: Response) => {
     };
     res.status(400).json(errData);
   } else {
-    if (!id) {
+    if (!Id) {
       const missingId: responseError = {
         message: `Missing reqId  No ID sent in`
       }
       res.status(400).send(missingId)
     }
     try {
-      const cerrenData = await results.find({ _id: id })
+      const cerrenData = await results.find({ _id: Id })
       console.log(cerrenData)
-      const updateData = await results.updateOne({ _id: id },
+      const updateData = await results.updateOne({ _id: Id },
         {
           $set: {
             code: status
@@ -123,9 +123,11 @@ courseUpdate.post("/update", async (req: Request, res: Response) => {
         })
       res.status(200).json(updateData)
     } catch (error) {
-
+      console.log(error)
+      const errorServer : responseError = {
+        message : `This Id not found in database`
+      }
+      res.status(500).send(errorServer)
     }
-
   }
-
 });

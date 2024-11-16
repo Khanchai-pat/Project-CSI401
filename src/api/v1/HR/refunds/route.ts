@@ -124,6 +124,7 @@ refunds.post("/appove", async (req: Request, res: Response) => {
                 }
                 res.status(500).send(errorServer)
             }
+            mongoose.connection.close();
         }
     }
 });

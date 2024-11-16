@@ -12,6 +12,7 @@ import { manageData } from "./api/v1/HR/managedata/route";
 import { course } from "./api/v1/HR/courseRequest/route";
 import { courseUpdate } from "./api/v1/HR/courseResults/route";
 import { refunds } from "./api/v1/HR/refunds/route";
+import { history } from "./api/v1/HR/history/route";
 
 // Connect to MongoDB when server starts
 mongoose.connect("mongodb://Admin:1234@localhost:27017/mydb?authSource=mydb")
@@ -34,6 +35,7 @@ app.use("/manageData", manageData)
 app.use("/course", course)
 app.use("/courseupdate", courseUpdate)
 app.use("/refunds", refunds)
+app.use("/history", history)
 
 const PORT = process.env.PORT
 app.listen(PORT, () => {

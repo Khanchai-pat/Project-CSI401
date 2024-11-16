@@ -42,13 +42,12 @@ course.get("/requests", async (req: Request, res: Response) => {
     }
 });
 
-
 ////Show list requests By ID
 course.get("/requestsId/:id?", async (req: Request, res: Response) => {
     const reqHeader: any = req.headers
     const contentType: any = reqHeader["content-type"]
     const tokenkey: any = reqHeader["authorization"]
-    const id: any = req.params
+    const { id }: any = req.params
     console.log(id)
 
     if (!tokenkey || !contentType) {
@@ -64,7 +63,6 @@ course.get("/requestsId/:id?", async (req: Request, res: Response) => {
             res.status(500).send(errData)
         } else {
             try {
-                // const dbRequestsID = await Request.find({ _id: id })
                 const dbRequestsID = await Requests.find({ _id: id })
                 const reqCourse: responseData = {
                     code: "200",
@@ -88,42 +86,42 @@ course.post("/appove", async (req: Request, res: Response) => {
     const reqHeader: any = req.headers
     const contentType: any = reqHeader["content-type"]
     const tokenkey: any = reqHeader["authorization"]
-    const { reqId, status, body }: any = req.body
+    const { reqId, status }: any = req.body
 
     if (!contentType || !tokenkey) {
         const errorHeaderToken: responseError = {
             message: `Missing required headers: content-type and authorization token End-Point appove:id?`
         }
         res.status(400).send(errorHeaderToken)
-    }
-
-    if (!reqId) {
-        const errorBodyid: responseError = {
-            message: `Missing requirDed body id`
-        }
-        res.status(400).send(errorBodyid)
-    }
-
-    try {
-        const cerrenData = await Requests.findById({ _id: reqId })
-
-        const newdata = { ...cerrenData, ...body }
-        // console.log(newdata)
-
-        const dbappove = await Requests.updateOne({ _id: reqId },
-            {
-                $set: {
-                    subjectHours: newdata
-                }
+    } else {
+        if (!reqId) {
+            const errorBodyid: responseError = {
+                message: `Missing requirDed body id`
             }
-        );
-        res.status(200).json(dbappove)
-    } catch (errer) {
-        console.log(errer)
-        const errorDb: responseError = {
-            message: `Can not Appove Data by id`
+            res.status(400).send(errorBodyid)
+        } else {
+            try {
+                const cerrenData = await Requests.findById({ _id: reqId })
+
+                // const newdata = { ...cerrenData, ...body }
+                // console.log(newdata)
+
+                const dbappove = await Requests.updateOne({ _id: reqId },
+                    {
+                        $set: {
+                            subjectHours: status
+                        }
+                    }
+                );
+                res.status(200).json(dbappove)
+            } catch (errer) {
+                console.log(errer)
+                const errorDb: responseError = {
+                    message: `Can not Appove Data by id`
+                }
+                res.status(400).send(errorDb)
+            }
         }
-        res.status(400).send(errorDb)
     }
 })
 
@@ -139,35 +137,35 @@ course.post("/reject", async (req: Request, res: Response) => {
             message: `Missing required headers: content-type and authorization token End-Point appove:id?`
         }
         res.status(400).send(errorHeaderToken)
-    }
-
-    if (!reqId) {
-        const errorBodyid: responseError = {
-            message: `Missing requirDed body id`
-        }
-        res.status(400).send(errorBodyid)
-    }
-
-    try {
-        const cerrenData = await Requests.findById({ _id: reqId })
-
-        // const newdata = { ...cerrenData, ...status }
-        // console.log(newdata)
-
-        const dbappove = await Requests.updateOne({ _id: reqId },
-            {
-                $set: {
-                    subjectHours: status
-                }
+    } else {
+        if (!reqId) {
+            const errorBodyid: responseError = {
+                message: `Missing requirDed body id`
             }
-        );
-        res.status(200).json(dbappove)
-    } catch (errer) {
-        console.log(errer)
-        const errorDb: responseError = {
-            message: `Can not Appove Data by id`
+            res.status(400).send(errorBodyid)
+        } else {
+            try {
+                const cerrenData = await Requests.findById({ _id: reqId })
+
+                // const newdata = { ...cerrenData, ...body }
+                // console.log(newdata)
+
+                const dbappove = await Requests.updateOne({ _id: reqId },
+                    {
+                        $set: {
+                            subjectHours: status
+                        }
+                    }
+                );
+                res.status(200).json(dbappove)
+            } catch (errer) {
+                console.log(errer)
+                const errorDb: responseError = {
+                    message: `Can not Appove Data by id`
+                }
+                res.status(400).send(errorDb)
+            }
         }
-        res.status(400).send(errorDb)
     }
 })
 
