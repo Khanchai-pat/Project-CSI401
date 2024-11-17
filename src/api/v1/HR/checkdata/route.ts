@@ -1,5 +1,5 @@
 import express, { Request, Response } from "express";
-import { responseData, responseError } from '../model/model';
+import { responseData, responseError } from '../../model/model';
 import mongoose from "mongoose";
 export const checkData = express();
 
@@ -12,7 +12,7 @@ const userSchemas = new mongoose.Schema({
 });
 
 // define model
-const Users = mongoose.model("users", userSchemas);
+const Users = mongoose.model("users", userSchemas, "users");
 
 //Check Data EMP
 checkData.get("/checkEmp", async (req: Request, res: Response) => {

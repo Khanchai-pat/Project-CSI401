@@ -4,6 +4,7 @@ import cors from "cors";
 import helmet from "helmet";
 import morgan from "morgan"
 import mongoose from "mongoose";
+import { useSwagger } from "../miidleware/swagger";
 // const morgan = require('morgan');
 
 import { auth } from "./api/v1/auth/auth";
@@ -13,6 +14,10 @@ import { course } from "./api/v1/HR/courseRequest/route";
 import { courseUpdate } from "./api/v1/HR/courseResults/route";
 import { refunds } from "./api/v1/HR/refunds/route";
 import { history } from "./api/v1/HR/history/route";
+
+// MEP
+import { checkdata } from "./api/v1/EMP/Checkdata/results";
+
 
 // Connect to MongoDB when server starts
 mongoose.connect("mongodb://Admin:1234@localhost:27017/mydb?authSource=mydb")
@@ -37,7 +42,15 @@ app.use("/courseupdate", courseUpdate)
 app.use("/refunds", refunds)
 app.use("/history", history)
 
+//EMP
+app.use("/checkdata", checkdata)
+
+// swagger
+useSwagger(app)
+
 const PORT = process.env.PORT
 app.listen(PORT, () => {
     console.log(`Server is listening on port ${PORT}`);
 });
+
+

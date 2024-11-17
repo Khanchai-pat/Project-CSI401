@@ -1,5 +1,5 @@
 import express, { Request, Response } from "express";
-import { responseData, responseError } from '../model/model';
+import { responseData, responseError } from '../../model/model';
 import mongoose from "mongoose";
 export const courseUpdate = express();
 
@@ -124,8 +124,8 @@ courseUpdate.post("/update", async (req: Request, res: Response) => {
       res.status(200).json(updateData)
     } catch (error) {
       console.log(error)
-      const errorServer : responseError = {
-        message : `This Id not found in database`
+      const errorServer: responseError = {
+        message: `This Id not found in database`
       }
       res.status(500).send(errorServer)
     }
