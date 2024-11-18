@@ -1,5 +1,5 @@
 import express, { Request, Response } from 'express'
-import { responseData, responseError } from '../../model/model';
+import { responseData, responseError } from '../../interfaceRes/response'
 import { employees } from "../Schema/emp"
 export const manageData = express();
 

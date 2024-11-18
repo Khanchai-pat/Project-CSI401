@@ -1,5 +1,5 @@
 import express, { Request, Response } from "express";
-import { responseData, responseError } from '../../model/model';
+import { responseData, responseError } from '../../interfaceRes/response';
 import mongoose from "mongoose";
 export const checkData = express();
 import { employees } from "../Schema/emp"
