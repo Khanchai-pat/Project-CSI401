@@ -2,17 +2,7 @@ import express, { Request, Response } from "express";
 import { responseData, responseError } from '../../model/model';
 import mongoose from "mongoose";
 export const checkData = express();
-
-//creat model
-const userSchemas = new mongoose.Schema({
-  // coed: { type: String, required: true }
-  code: String,
-  firstName: String,
-  lastName: String,
-});
-
-// define model
-const Users = mongoose.model("users", userSchemas, "users");
+import { employees } from "../Schema/emp"
 
 //Check Data EMP
 checkData.get("/checkEmp", async (req: Request, res: Response) => {
@@ -23,7 +13,7 @@ checkData.get("/checkEmp", async (req: Request, res: Response) => {
   if (tokenkey && contentType) {
     try {
       //Process
-      const dbResponse = await Users.find({});
+      const dbResponse = await employees.find({});
       const reqCheckData: responseData = {
         code: "200",
         status: "success checkEmp",
@@ -60,7 +50,7 @@ checkData.get("/checkEmpId/:id?", async (req: Request, res: Response) => {
       });
     }
     try {
-      const dbResponse = await Users.find({ _id: id });
+      const dbResponse = await employees.find({ _id: id });
       const checkEmpID: responseData = {
         code: "200",
         status: "success checkEmp",

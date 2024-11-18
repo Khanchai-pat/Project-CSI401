@@ -2,20 +2,10 @@
 import express, { Request, Response } from "express";
 import { responseData, responseError } from "../../model/model";
 import mongoose from "mongoose";
+import { refund } from "../Schema/refund"
 
 export const refunds = express();
 
-//creat Schema
-const refundSchema = new mongoose.Schema({
-    code: String,
-    firstName: String,
-    lastName: String
-})
-
-//defiled Model
-const Refunds = mongoose.model('fees', refundSchema)
-
-//1.2.11 API : HR - Courses Fee Reimbursement System (FR5: ระบบเบิกค่าอบรม) Show  List 
 refunds.get("/requests", async (req: Request, res: Response) => {
 
     const reqHeader: any = req.headers
@@ -29,7 +19,7 @@ refunds.get("/requests", async (req: Request, res: Response) => {
         res.status(400).send(verifyError)
     } else {
         try {
-            const dbrequests = await Refunds.find({});
+            const dbrequests = await refund.find({});
             console.log(dbrequests)
             const successData: responseData = {
                 code: "200",
@@ -53,7 +43,6 @@ refunds.get("/requestsId/:id?", async (req: Request, res: Response) => {
     const contentType: any = reqHeader["content-type"]
     const tokenkey: any = reqHeader["authorization"]
     const { id }: any = req.params
-    console.log(` This is id ${id}`)
 
     if (!contentType || !tokenkey) {
         const verifyError: responseError = {
@@ -69,7 +58,7 @@ refunds.get("/requestsId/:id?", async (req: Request, res: Response) => {
         }
         else {
             try {
-                const dbrequestsId = await Refunds.find({ _id: id })
+                const dbrequestsId = await refund.find({ _id: id })
                 console.log(dbrequestsId)
                 const suuccessData: responseData = {
                     code: "200",
@@ -109,10 +98,10 @@ refunds.post("/appove", async (req: Request, res: Response) => {
         } else {
             try {
                 // const cerrenData = await Refunds.findById({ _id: reqId })
-                const dbappove = await Refunds.updateOne({ _id: reqId },
+                const dbappove = await refund.updateOne({ _id: reqId },
                     {
                         $set: {
-                            lastName: status
+                            status: status
                         }
                     }
                 );
@@ -150,10 +139,10 @@ refunds.post("/reject", async (req: Request, res: Response) => {
         } else {
             try {
                 // const cerrenData = await Refunds.findById({ _id: reqId })
-                const dbappove = await Refunds.updateOne({ _id: reqId },
+                const dbappove = await refund.updateOne({ _id: reqId },
                     {
                         $set: {
-                            lastName: status
+                            status: status
                         }
                     }
                 );

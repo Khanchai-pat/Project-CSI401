@@ -1,2 +1,2 @@
-import express from 'express'
-export const auth = express()
+import express from 'express';
+export const auth = express();

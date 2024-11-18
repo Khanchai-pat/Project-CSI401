@@ -1,20 +1,7 @@
 import express, { Request, Response } from 'express'
 import { responseData, responseError } from '../../model/model';
-import mongoose from 'mongoose';
+import { employees } from "../Schema/emp"
 export const manageData = express();
-
-const empSchema = new mongoose.Schema({
-    empId: String,
-    empName: String,
-    departMent: String,
-    cardId: String,
-    email: String,
-    tel: String,
-    role: String,
-    empStatus: String
-})
-
-const employees = mongoose.model('emp', empSchema)
 
 //create-Emp
 manageData.post("/createEmp", async (req: Request, res: Response) => {
@@ -55,7 +42,6 @@ manageData.post("/createEmp", async (req: Request, res: Response) => {
             }
             res.status(400).send(errorClient)
         } else {
-
             try {
                 const cerrentData = await employees.findOne({
                     $or: [
@@ -208,7 +194,7 @@ manageData.post("/deleteEmp", async (req: Request, res: Response) => {
                 try {
                     const updateData = await employees.updateOne({ empId: empId }, req.body)
                     // console.log(` this is update data = ${updateData}`)
-                    
+
                     const dbDeleteEmp: responseData = {
                         code: '200',
                         status: 'OK',

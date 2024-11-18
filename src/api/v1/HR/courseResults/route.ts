@@ -1,16 +1,7 @@
 import express, { Request, Response } from "express";
 import { responseData, responseError } from '../../model/model';
-import mongoose from "mongoose";
 export const courseUpdate = express();
-
-const userSchemas = new mongoose.Schema({
-  // coed: { type: String, required: true }
-  code: String,
-  firstName: String,
-  lastName: String
-}, { timestamps: true });
-
-const results = mongoose.model("results", userSchemas);
+import { courseResults } from "../Schema/courseResults"
 
 //1.2.14 API : HR - Show Courses Results
 courseUpdate.get("/results", async (req: Request, res: Response) => {
@@ -28,7 +19,7 @@ courseUpdate.get("/results", async (req: Request, res: Response) => {
   }
   else {
     try {
-      const dbResults = await results.find({})
+      const dbResults = await courseResults.find({})
       const resultsData: responseData = {
         code: "200",
         status: "OK",
@@ -47,12 +38,12 @@ courseUpdate.get("/results", async (req: Request, res: Response) => {
 });
 
 //1.2.15 API : HR - Show Courses Results ByID
-courseUpdate.get("/resultsId/:id?", async (req: Request, res: Response) => {
+courseUpdate.get("/resultsId/:reqid?", async (req: Request, res: Response) => {
 
   const reqHeader: any = req.headers;
   const contentType: any = reqHeader["content-type"];
   const tokenkey: any = reqHeader["authorization"];
-  const { id } = req.params
+  const { reqid } = req.params
 
   if (!tokenkey || !contentType) {
     const verify: responseError = {
@@ -62,7 +53,7 @@ courseUpdate.get("/resultsId/:id?", async (req: Request, res: Response) => {
     res.status(500).send(verify);
   }
   else {
-    if (!id) {
+    if (!reqid) {
       const missingId: responseError = {
         message:
           "Missing reqId  No ID sent in",
@@ -70,8 +61,7 @@ courseUpdate.get("/resultsId/:id?", async (req: Request, res: Response) => {
       res.status(400).send(missingId);
     }
     try {
-      const dbResults = await results.find({ _id: id })
-      // const dbResponse = await Users.find({ _id: id });
+      const dbResults = await courseResults.find({ reqid: reqid })
       console.log(dbResults)
       const resData: responseData = {
         code: "200",
@@ -97,7 +87,7 @@ courseUpdate.post("/update", async (req: Request, res: Response) => {
   const reqHeader: any = req.headers;
   const contentType: string = reqHeader["content-type"];
   const tokenkey: string = reqHeader["authorization"];
-  const { Id, status } = req.body
+  const { reqid, status } = req.body
 
   if (!tokenkey || !contentType) {
     const errData: responseError = {
@@ -106,28 +96,30 @@ courseUpdate.post("/update", async (req: Request, res: Response) => {
     };
     res.status(400).json(errData);
   } else {
-    if (!Id) {
+    if (!reqid) {
       const missingId: responseError = {
         message: `Missing reqId  No ID sent in`
       }
       res.status(400).send(missingId)
-    }
-    try {
-      const cerrenData = await results.find({ _id: Id })
-      console.log(cerrenData)
-      const updateData = await results.updateOne({ _id: Id },
-        {
-          $set: {
-            code: status
+    } else {
+      try {
+        const cerrenData = await courseResults.findOne({ reqid: reqid })
+        if (!cerrenData) {
+          const missingId: responseError = {
+            message: `ไม่พบไอดีนี้`
           }
-        })
-      res.status(200).json(updateData)
-    } catch (error) {
-      console.log(error)
-      const errorServer: responseError = {
-        message: `This Id not found in database`
+          res.status(404).send(missingId)
+        } else {
+          const updateData = await courseResults.updateOne({ reqid: reqid }, req.body)
+          res.status(200).json(updateData)
+        }
+      } catch (error) {
+        console.log(error)
+        const errorServer: responseError = {
+          message: `This Id not found in database`
+        }
+        res.status(500).send(errorServer)
       }
-      res.status(500).send(errorServer)
     }
   }
 });
