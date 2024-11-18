@@ -38,11 +38,11 @@ refunds.get("/requests", async (req: Request, res: Response) => {
 })
 
 ////1.2.12 API : HR - Courses Fee Reimbursement System (FR5: ระบบเบิกค่าอบรม) Show List byID
-refunds.get("/requestsId/:id?", async (req: Request, res: Response) => {
+refunds.get("/requestsId/:refId?", async (req: Request, res: Response) => {
     const reqHeader: any = req.headers
     const contentType: any = reqHeader["content-type"]
     const tokenkey: any = reqHeader["authorization"]
-    const { id }: any = req.params
+    const { refId }: any = req.params
 
     if (!contentType || !tokenkey) {
         const verifyError: responseError = {
@@ -50,7 +50,7 @@ refunds.get("/requestsId/:id?", async (req: Request, res: Response) => {
         }
         res.status(400).send(verifyError)
     } else {
-        if (!id) {
+        if (!refId) {
             const reqIdError: responseError = {
                 message: `Missing ID Param`
             }
@@ -58,7 +58,7 @@ refunds.get("/requestsId/:id?", async (req: Request, res: Response) => {
         }
         else {
             try {
-                const dbrequestsId = await refund.find({ _id: id })
+                const dbrequestsId = await refund.find({ refId: refId })
                 console.log(dbrequestsId)
                 const suuccessData: responseData = {
                     code: "200",
@@ -82,7 +82,7 @@ refunds.post("/appove", async (req: Request, res: Response) => {
     const reqHeader: any = req.headers
     const contentType: any = reqHeader["content-type"]
     const tokenkey: any = reqHeader["authorization"]
-    const { reqId, status }: any = req.body
+    const { refId, status }: any = req.body
 
     if (!contentType || !tokenkey) {
         const errorHeaderToken: responseError = {
@@ -90,7 +90,7 @@ refunds.post("/appove", async (req: Request, res: Response) => {
         }
         res.status(400).send(errorHeaderToken)
     } else {
-        if (!reqId) {
+        if (!refId) {
             const errorBodyid: responseError = {
                 message: `Missing requirDed body id`
             }
@@ -98,13 +98,7 @@ refunds.post("/appove", async (req: Request, res: Response) => {
         } else {
             try {
                 // const cerrenData = await Refunds.findById({ _id: reqId })
-                const dbappove = await refund.updateOne({ _id: reqId },
-                    {
-                        $set: {
-                            status: status
-                        }
-                    }
-                );
+                const dbappove = await refund.updateOne({ refId: refId }, req.body);
                 res.status(200).json(dbappove)
             } catch (errer) {
                 console.log(errer)
@@ -123,7 +117,7 @@ refunds.post("/reject", async (req: Request, res: Response) => {
     const reqHeader: any = req.headers
     const contentType: any = reqHeader["content-type"]
     const tokenkey: any = reqHeader["authorization"]
-    const { reqId, status }: any = req.body
+    const { refId, status }: any = req.body
 
     if (!contentType || !tokenkey) {
         const errorHeaderToken: responseError = {
@@ -131,7 +125,7 @@ refunds.post("/reject", async (req: Request, res: Response) => {
         }
         res.status(400).send(errorHeaderToken)
     } else {
-        if (!reqId) {
+        if (!refId) {
             const errorBodyid: responseError = {
                 message: `Missing requirDed body id`
             }
@@ -139,13 +133,7 @@ refunds.post("/reject", async (req: Request, res: Response) => {
         } else {
             try {
                 // const cerrenData = await Refunds.findById({ _id: reqId })
-                const dbappove = await refund.updateOne({ _id: reqId },
-                    {
-                        $set: {
-                            status: status
-                        }
-                    }
-                );
+                const dbappove = await refund.updateOne({ refId: refId }, req.body);
                 res.status(200).json(dbappove)
             } catch (errer) {
                 console.log(errer)

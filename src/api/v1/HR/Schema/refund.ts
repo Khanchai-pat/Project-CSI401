@@ -5,7 +5,7 @@ const refundSchema = new mongoose.Schema({
     reqId: String,
     EmpID: String,
     courseID: String,
-    pending: String
+    status: String
 });
 
 export const refund = mongoose.model("refund", refundSchema, "refund");
