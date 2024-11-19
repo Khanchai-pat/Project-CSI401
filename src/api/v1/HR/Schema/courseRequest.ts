@@ -6,6 +6,6 @@ const reqSchema = new mongoose.Schema({
     EmpID: String,
     courseID: String,
     pending: String
-});
+}, { timestamps: true });
 
 export const courseRequests = mongoose.model("courseRequest", reqSchema, "courseRequest");

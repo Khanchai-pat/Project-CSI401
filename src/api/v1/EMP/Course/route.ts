@@ -1,6 +1,6 @@
 
 import express, { Request, Response } from 'express'
-import { responseData, responseError } from '../../model/model';
+import { responseData, responseError } from '../../interfaceRes/response'
 export const Register = express();
 
 Register.post("/register", (req: Request, res: Response) => {

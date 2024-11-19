@@ -1,43 +1,24 @@
 import express, { Request, Response } from "express"
 import { responseData, responseError } from '../../interfaceRes/response';
 import mongoose, { Schema } from "mongoose"
-
+import { courseRequests } from "../Schema/courseRequest"
 export const history = express();
 
-const historySchema = new mongoose.Schema({
-    // requestId
-    requestId: String,
-    // empId
-    firstName: String,
-    // status
-    lastName: String,
-    // reqDate
-    updatedAt: Date
-
-    // requestType: { type: String, required: true },
-    // requestDate: { type: Date, required: true },
-    // status: { type: String, enum: ["pending", "approved", "rejected"], default: "pending" },
-    // approvalDate: { type: Date },
-    // approverId: { type: String },
-    // comments: { type: String },
-    // attachmentUrl: { type: String },
-    // createdAt: { type: Date, default: Date.now },
-    // updatedAt: { type: Date, default: Date.now }
-}, { timestamps: true });
-const historys = mongoose.model("history", historySchema)
-
-history.use("/course", async (req: Request, res: Response) => {
+history.use("/approved", async (req: Request, res: Response) => {
     const reqHeader: any = req.headers
     const contentType: any = reqHeader["content-type"]
     const tokenkey: any = reqHeader["authorization"]
+    const { status }: any = req.body
     if (!contentType || !tokenkey) {
         const errorHeaderToken: responseError = {
             message: `Missing required headers: content-type and authorization token End-Point historyCourse`
         }
         res.status(400).send(errorHeaderToken)
     } else {
+
         try {
-            const dbHistorys = await historys.find({})
+            const dbHistorys = await courseRequests
+                .find({ Status: status })
             const successData: responseData = {
                 code: '200',
                 status: 'OK',
@@ -55,7 +36,7 @@ history.use("/course", async (req: Request, res: Response) => {
 })
 
 
-history.use("/approved", async (req: Request, res: Response) => {
+history.use("/approveds", async (req: Request, res: Response) => {
     const reqHeader: any = req.headers
     const contentType: any = reqHeader["content-type"]
     const tokenkey: any = reqHeader["authorization"]
@@ -66,7 +47,7 @@ history.use("/approved", async (req: Request, res: Response) => {
         res.status(400).send(errorHeaderToken)
     } else {
         try {
-            const dbHistorys = await historys.find({})
+            const dbHistorys = await courseRequests.find({ status: "A" })
             const successData: responseData = {
                 code: '200',
                 status: 'OK',

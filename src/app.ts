@@ -17,14 +17,15 @@ import { history } from "./api/v1/HR/history/route";
 
 // MEP
 import { checkdata } from "./api/v1/EMP/Checkdata/results";
+import { dashBoard } from "./api/v1/HR/dashboard/route";
 
+dotenv.config();
 
 // Connect to MongoDB when server starts
-mongoose.connect("mongodb://Admin:1234@localhost:27017/mydb?authSource=mydb")
+mongoose.connect(process.env.MONGOBD_URL!)
     .then(() => console.log("MongoDB connected successfully"))
     .catch((error) => console.error("MongoDB connection error:", error));
 
-dotenv.config();
 
 const app = express();
 
@@ -41,6 +42,7 @@ app.use("/course", course)
 app.use("/courseupdate", courseUpdate)
 app.use("/refunds", refunds)
 app.use("/history", history)
+app.use("/dashBoard", dashBoard)
 
 //EMP
 app.use("/checkdata", checkdata)

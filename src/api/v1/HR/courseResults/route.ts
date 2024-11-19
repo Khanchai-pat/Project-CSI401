@@ -80,7 +80,6 @@ courseUpdate.get("/resultsId/:reqid?", async (req: Request, res: Response) => {
       res.status(400).send(reqId);
     }
   }
-
 });
 
 //1.2.16 API : HR - Show Courses Results ByID Update

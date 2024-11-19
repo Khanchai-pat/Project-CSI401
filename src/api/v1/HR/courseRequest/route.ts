@@ -30,6 +30,7 @@ course.get("/requests", async (req: Request, res: Response) => {
         };
         res.status(500).json(errorDb);
     }
+    mongoose.connection.close();
 });
 
 ////Show list requests By ID

@@ -6,6 +6,6 @@ const refundSchema = new mongoose.Schema({
     EmpID: String,
     courseID: String,
     status: String
-});
+}, { timestamps: true });
 
 export const refund = mongoose.model("refund", refundSchema, "refund");
