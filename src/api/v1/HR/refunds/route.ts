@@ -1,7 +1,6 @@
 
 import express, { Request, Response } from "express";
 import { responseData, responseError } from "../../interfaceRes/response";
-import mongoose from "mongoose";
 import { refund } from "../Schema/refund"
 
 export const refunds = express();
@@ -78,7 +77,7 @@ refunds.get("/requestsId/:refId?", async (req: Request, res: Response) => {
 });
 
 //1.2.13 API : HR - Courses Fee Reimbursement System (FR5: ระบบเบิกค่าอบรม) Appove
-refunds.post("/appove", async (req: Request, res: Response) => {
+refunds.post("/appovede", async (req: Request, res: Response) => {
     const reqHeader: any = req.headers
     const contentType: any = reqHeader["content-type"]
     const tokenkey: any = reqHeader["authorization"]
@@ -96,24 +95,31 @@ refunds.post("/appove", async (req: Request, res: Response) => {
             }
             res.status(400).send(errorBodyid)
         } else {
-            try {
-                // const cerrenData = await Refunds.findById({ _id: reqId })
-                const dbappove = await refund.updateOne({ refId: refId }, req.body);
-                res.status(200).json(dbappove)
-            } catch (errer) {
-                console.log(errer)
-                const errorServer: responseError = {
-                    message: `Can not Appove Data by id`
+            const checkData = await refund.findOne({ refId: refId })
+            if (!checkData) {
+                const errorBodyid: responseError = {
+                    message: `ไม่พบไอดีนี้`
                 }
-                res.status(500).send(errorServer)
+                res.status(400).send(errorBodyid)
+            } else {
+                try {
+                    // const cerrenData = await Refunds.findById({ _id: reqId })
+                    const dbappove = await refund.updateOne({ refId: refId }, req.body);
+                    res.status(200).json(dbappove)
+                } catch (errer) {
+                    console.log(errer)
+                    const errorServer: responseError = {
+                        message: `Can not Appove Data by id`
+                    }
+                    res.status(500).send(errorServer)
+                }
             }
-            mongoose.connection.close();
         }
     }
 });
 
 //1.2.14 API : HR - Courses Fee Reimbursement System (FR5: ระบบเบิกค่าอบรม) Reject
-refunds.post("/reject", async (req: Request, res: Response) => {
+refunds.post("/denied", async (req: Request, res: Response) => {
     const reqHeader: any = req.headers
     const contentType: any = reqHeader["content-type"]
     const tokenkey: any = reqHeader["authorization"]

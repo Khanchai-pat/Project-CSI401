@@ -54,17 +54,25 @@ course.get("/requestsId/:reqId?", async (req: Request, res: Response) => {
             res.status(500).send(errData)
         } else {
             try {
-                const dbRequestsID = await courseRequests.find({ reqId: reqId })
-                const reqCourse: responseData = {
-                    code: "200",
-                    status: "OK /requests/:id",
-                    data: dbRequestsID
+                const checkData = await courseRequests.findOne({ reqId: reqId })
+                if (!checkData) {
+                    const dbnotFound: responseError = {
+                        message: "ไม่พบไอดีนี้"
+                    }
+                    res.status(500).send(dbnotFound)
+                } else {
+                    const dbRequestsID = await courseRequests.find({ reqId: reqId })
+                    const reqCourse: responseData = {
+                        code: "200",
+                        status: "OK /requests/:id",
+                        data: dbRequestsID
+                    }
+                    res.status(200).json(reqCourse)
                 }
-                res.status(200).json(reqCourse)
-
             } catch (error) {
+                console.log(error)
                 const errorDb: responseError = {
-                    message: `Can not sent Data by id${error}`
+                    message: `Can not sent Data by id`
                 }
                 res.status(400).send(errorDb)
             }
@@ -92,13 +100,13 @@ course.post("/appove", async (req: Request, res: Response) => {
             res.status(400).send(errorBodyid)
         } else {
             try {
-                // const cerrenData = await courseRequests.findById({ _id: reqId })
-
-                // const newdata = { ...cerrenData, ...body }
-                // console.log(newdata)
-
-                const dbappove = await courseRequests.updateOne({ reqId: reqId }, req.body);
+                const dbappove = await courseRequests.updateOne({ reqId: reqId }, {
+                    $set: {
+                        status: status
+                    }
+                });
                 res.status(200).json(dbappove)
+                console.log(dbappove)
             } catch (errer) {
                 console.log(errer)
                 const errorDb: responseError = {

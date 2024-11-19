@@ -5,7 +5,7 @@ const reqSchema = new mongoose.Schema({
     reqId: String,
     EmpID: String,
     courseID: String,
-    pending: String
+    status: String
 }, { timestamps: true });
 
 export const courseRequests = mongoose.model("courseRequest", reqSchema, "courseRequest");

@@ -1,14 +1,15 @@
 import express, { Request, Response } from "express"
 import { responseData, responseError } from '../../interfaceRes/response';
-import mongoose, { Schema } from "mongoose"
 import { courseRequests } from "../Schema/courseRequest"
+import { courseResults } from "../Schema/courseResults"
 export const history = express();
 
-history.use("/approved", async (req: Request, res: Response) => {
+
+//course request approved
+history.get("/course", async (req: Request, res: Response) => {
     const reqHeader: any = req.headers
     const contentType: any = reqHeader["content-type"]
     const tokenkey: any = reqHeader["authorization"]
-    const { status }: any = req.body
     if (!contentType || !tokenkey) {
         const errorHeaderToken: responseError = {
             message: `Missing required headers: content-type and authorization token End-Point historyCourse`
@@ -18,7 +19,7 @@ history.use("/approved", async (req: Request, res: Response) => {
 
         try {
             const dbHistorys = await courseRequests
-                .find({ Status: status })
+                .find({})
             const successData: responseData = {
                 code: '200',
                 status: 'OK',
@@ -35,11 +36,12 @@ history.use("/approved", async (req: Request, res: Response) => {
     }
 })
 
-
-history.use("/approveds", async (req: Request, res: Response) => {
+//course request denied
+history.use("/refund", async (req: Request, res: Response) => {
     const reqHeader: any = req.headers
     const contentType: any = reqHeader["content-type"]
     const tokenkey: any = reqHeader["authorization"]
+    const { status }: any = req.body
     if (!contentType || !tokenkey) {
         const errorHeaderToken: responseError = {
             message: `Missing required headers: content-type and authorization token End-Point historyCou?`
@@ -47,7 +49,8 @@ history.use("/approveds", async (req: Request, res: Response) => {
         res.status(400).send(errorHeaderToken)
     } else {
         try {
-            const dbHistorys = await courseRequests.find({ status: "A" })
+            const dbHistorys = await courseResults
+                .find({})
             const successData: responseData = {
                 code: '200',
                 status: 'OK',
