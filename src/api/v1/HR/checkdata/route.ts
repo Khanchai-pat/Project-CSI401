@@ -1,6 +1,5 @@
 import express, { Request, Response } from "express";
 import { responseData, responseError } from '../../interfaceRes/response';
-import mongoose from "mongoose";
 export const checkData = express();
 import { employees } from "../Schema/emp"
 
@@ -37,20 +36,20 @@ checkData.get("/checkEmp", async (req: Request, res: Response) => {
 });
 
 //Check Data byEmp ID
-checkData.get("/checkEmpId/:id?", async (req: Request, res: Response) => {
+checkData.get("/checkEmpId/:empId?", async (req: Request, res: Response) => {
   const reqHeader: any = req.headers;
   const contentType: any = reqHeader["content-type"];
   const tokenkey: any = reqHeader["authorization"];
-  const { id } = req.params
+  const { empId } = req.params
 
   if (tokenkey && contentType) {
-    if (!id) {
+    if (!empId) {
       res.status(400).json({
         message: `Missing id parameter`,
       });
     }
     try {
-      const dbResponse = await employees.find({ _id: id });
+      const dbResponse = await employees.find({ empId: empId });
       const checkEmpID: responseData = {
         code: "200",
         status: "success checkEmp",

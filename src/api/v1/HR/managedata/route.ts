@@ -138,7 +138,7 @@ manageData.post("/editEmp", async (req: Request, res: Response) => {
                 res.status(404).json(errorClient)
             } else {
                 try {
-                    const updateData = await employees.findOneAndUpdate({ empId: empId }, req.body)
+                    const updateData = await employees.updateOne({ empId: empId }, req.body)
                     console.log(` this is update data = ${updateData}`)
                     const dbEditData: responseData = {
                         code: '200',
@@ -187,13 +187,18 @@ manageData.post("/deleteEmp", async (req: Request, res: Response) => {
             const checkDataEmp = await employees.findOne({ empId: empId })
             if (!checkDataEmp) {
                 const errorClient: responseError = {
-                    message: "ไม่พบ empId ที่ต้องการ Route:mangedata Methode:editEmp"
+                    message: "ไม่พบ empId ที่ต้องการ Route:mangedata Methode:deleteEmp"
                 };
                 res.status(404).json(errorClient)
             } else {
                 try {
-                    const updateData = await employees.updateOne({ empId: empId }, req.body)
-                    // console.log(` this is update data = ${updateData}`)
+                    const updateData = await employees
+                        .updateOne({ empId: empId },
+                            {
+                                $set: {
+                                    empStatus: empStatus
+                                }
+                            })
 
                     const dbDeleteEmp: responseData = {
                         code: '200',
