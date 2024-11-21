@@ -16,7 +16,7 @@ reimbursements.post("/reimbursements/request", async (req: Request, res: Respons
         });
 
         if (existingRequest) {
-            return res.status(400).json({
+                res.status(400).json({
                 code: 400,
                 status: "error",
                 message: "Request already submitted for this year"
