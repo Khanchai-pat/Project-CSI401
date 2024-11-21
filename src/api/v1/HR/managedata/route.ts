@@ -88,7 +88,6 @@ manageData.post("/createEmp", async (req: Request, res: Response) => {
 }
 )
 
-
 //edit-Emp
 manageData.post("/editEmp", async (req: Request, res: Response) => {
     const reqHeader: any = req.headers
@@ -104,15 +103,14 @@ manageData.post("/editEmp", async (req: Request, res: Response) => {
         email,
         tel,
         role,
-        empStatus,
-
-        firstTrainingDate,
-        trainingDate,
-        courseID,
-        courseName,
-        trainingLocation,
-        trainingHours,
-        nextExpiryDate
+        empStatus
+        // firstTrainingDate,
+        // trainingDate,
+        // courseID,
+        // courseName,
+        // trainingLocation,
+        // trainingHours,
+        // nextExpiryDate
     }: any = req.body
 
     console.log(req.body)
@@ -137,7 +135,8 @@ manageData.post("/editEmp", async (req: Request, res: Response) => {
                 res.status(404).json(errorClient)
             } else {
                 try {
-                    const updateData = await employees.updateOne({ empId: empId }, req.body)
+                    const updateData = await employees
+                        .updateOne({ empId: empId }, req.body)
                     console.log(` this is update data = ${updateData}`)
                     const dbEditData: responseData = {
                         code: '200',
