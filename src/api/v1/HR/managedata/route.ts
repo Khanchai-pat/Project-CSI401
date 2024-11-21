@@ -129,7 +129,6 @@ manageData.post("/editEmp", async (req: Request, res: Response) => {
             }
             res.status(400).json(reqError)
         } else {
-
             const checkData = await employees.findOne({ empId: empId });
             if (!checkData) {
                 const errorClient: responseError = {
