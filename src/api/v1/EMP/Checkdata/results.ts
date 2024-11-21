@@ -14,27 +14,7 @@ const userSchemas = new mongoose.Schema({
     status: String,
 });
 
-// ข้อมูลตัวอย่างพนักงาน
-// const results = {
-//     Empdata: {code .
-//         empID: "Emp001",
-//         empName: "John Doe",
-//         courses: [
-//             {
-//                 courseID: "ABC100",
-//                 courseName: "เตรียมความพร้อมสู่การทำงาน",
-//                 completionDate: "2024-10-01",
-//                 status: "Passed"
-//             },
-//             {
-//                 courseID: "ABC101",
-//                 courseName: "ความปลอดภัยในการทำงาน",
-//                 completionDate: "2024-09-15",
-//                 status: "Passed"
-//             }
-//         ]
-//     }
-// };
+
 
 
 checkdata.post('/checkdata', async (req: Request, res: Response) => {
@@ -53,35 +33,13 @@ checkdata.post('/checkdata', async (req: Request, res: Response) => {
             message: "Cannot Show "
         });
     }
-    // ดึงข้อมูลพนักงานจาก results
-    // const employeeData = results.Empdata;
-
-    // หาก empID ไม่ตรงกับข้อมูลพนักงาน
-    // if (empID !== empID) {
-    //     res.status(400).json({
-    //         code: "400",
-    //         status: "Bad Request",
-    //         message: "Cannot Show"
-    //     });
-    // }
+ 
     const Check = mongoose.model("emps", userSchemas);
     // สร้างข้อมูล response
     const CheckdataresponseData = await Check.findOne({
         empId: body.empId
     });
-    // code: "200",
-    // status: "success",
-    // message: "Successfully retrieved training results",
-
-    // EmpID: employeeData.empID,
-    // EmpName: employeeData.empName,
-    // courses: employeeData.courses.map(course => ({
-    //     courseID: course.courseID,
-    //     courseName: course.courseName,
-    //     completionDate: course.completionDate,
-    //     status: course.status
-    // }))
-    // };
+  
     res.status(200).json({
         code: "200",
         status: "success",
