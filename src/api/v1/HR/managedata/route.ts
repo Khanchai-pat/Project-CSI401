@@ -104,6 +104,7 @@ manageData.post("/editEmp", async (req: Request, res: Response) => {
         tel,
         role,
         empStatus
+
         // firstTrainingDate,
         // trainingDate,
         // courseID,
@@ -111,6 +112,7 @@ manageData.post("/editEmp", async (req: Request, res: Response) => {
         // trainingLocation,
         // trainingHours,
         // nextExpiryDate
+        
     }: any = req.body
 
     console.log(req.body)

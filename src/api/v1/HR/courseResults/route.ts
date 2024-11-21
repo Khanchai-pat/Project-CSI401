@@ -57,27 +57,36 @@ courseUpdate.get("/resultsId/:reqid?", async (req: Request, res: Response) => {
     if (!reqid) {
       const missingId: responseError = {
         message:
-          "Missing reqId  No ID sent in",
+          "ไม่เจอพารามิเตอร์",
       };
       res.status(400).send(missingId);
-    }
-    try {
-      const dbResults = await courseResults.find({ reqid: reqid })
-      console.log(dbResults)
-      const resData: responseData = {
-        code: "200",
-        status: "OK",
-        data: dbResults
+    } else {
+      try {
+        const checkData = await courseResults.findOne({ reqid: reqid })
+        if (!checkData) {
+          const missingId: responseError = {
+            message:
+              "ไม่พบไอดีนี้",
+          };
+          res.status(404).send(missingId);
+        } else {
+          const dbResults = await courseResults.find({ reqid: reqid })
+          const resData: responseData = {
+            code: "200",
+            status: "OK",
+            data: dbResults
+          }
+          res.status(200).json(resData)
+        }
+      } catch (error) {
+        console.log(error)
+        console.log(error)
+        const reqId: responseError = {
+          message:
+            `This ID cannot be found in the database `
+        };
+        res.status(400).send(reqId);
       }
-      res.status(200).json(resData)
-
-    } catch (error) {
-      console.log(error)
-      const reqId: responseError = {
-        message:
-          `This ID cannot be found in the database ${error}`
-      };
-      res.status(400).send(reqId);
     }
   }
 });
