@@ -5,7 +5,7 @@ import { ReimbursementRequest, UpdateRequest } from "./reimbursement";
 const reimbursements = express.Router();
 
 
-reimbursements.post("/request", async (req: Request, res: Response) => {
+reimbursements.post("/reimbursements/request", async (req: Request, res: Response) => {
     const { EmpID, courseID, DateReim, MoneyAmount }: ReimbursementRequest = req.body;
 
     try {

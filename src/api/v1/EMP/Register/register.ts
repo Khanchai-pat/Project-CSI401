@@ -12,7 +12,7 @@ const verifyToken = (token: string | undefined): boolean => {
 };
 
 // POST: สมัครคอร์สอบรม
-register.post("/register", async (req: Request, res: Response) => {
+register.post("/course/register", async (req: Request, res: Response) => {
     const token = req.headers["token-key"] as string;
 
     if (!verifyToken(token)) {
