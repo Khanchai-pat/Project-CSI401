@@ -12,13 +12,13 @@ courseUpdate.get("/results", async (req: Request, res: Response) => {
   const tokenkey: string = reqHeader["authorization"];
 
   if (!tokenkey || !contentType) {
-    const errData: responseError = {
-      message:
-        "Missing required headers: content-type and authorization token End-Point courseUpdate HR - Show Courses results",
+    const missingHeaders: responseError = {
+      code: "400",
+      status: "Failed",
+      message: "Missing required headers: content-type and authorization token End-Point courseUpdate HR - Show Courses results"
     };
-    res.status(400).send(errData);
-  }
-  else {
+    res.status(400).json(missingHeaders);
+  } else {
     try {
       const dbResults = await courseResults.find({})
       const resultsData: responseData = {
@@ -30,10 +30,12 @@ courseUpdate.get("/results", async (req: Request, res: Response) => {
 
     } catch (error) {
       console.log(error)
-      const resultsError: responseError = {
-        message: "Missing required Show results"
-      }
-      res.status(400).send(resultsError)
+      const serverError: responseError = {
+        code: "500",
+        status: "Failed",
+        message: "An error occurred while processing your request. Please try again later"
+      };
+      res.status(500).json(serverError);
     }
   }
 });
@@ -47,28 +49,33 @@ courseUpdate.get("/resultsId/:reqid?", async (req: Request, res: Response) => {
   const { reqid } = req.params
 
   if (!tokenkey || !contentType) {
-    const verify: responseError = {
+    const missingHeaders: responseError = {
+      code: "500",
+      status: "Failed",
       message:
         "Missing required headers: content-type and authorization token End-Point /requests ByID HR - Show Courses Results ByID ",
     };
-    res.status(500).send(verify);
+    res.status(400).json(missingHeaders)
   }
   else {
     if (!reqid) {
       const missingId: responseError = {
+        code: "400",
+        status: "Failed",
         message:
-          "ไม่เจอพารามิเตอร์",
+          "Parameter 'reqid' is missing",
       };
-      res.status(400).send(missingId);
+      res.status(400).json(missingId);
     } else {
       try {
         const checkData = await courseResults.findOne({ reqid: reqid })
         if (!checkData) {
           const missingId: responseError = {
-            message:
-              "ไม่พบไอดีนี้",
+            code: "404",
+            status: "Failed",
+            message: `Employee with ID '${reqid}' not found.`,
           };
-          res.status(404).send(missingId);
+          res.status(404).json(missingId);
         } else {
           const dbResults = await courseResults.find({ reqid: reqid })
           const resData: responseData = {
@@ -80,12 +87,12 @@ courseUpdate.get("/resultsId/:reqid?", async (req: Request, res: Response) => {
         }
       } catch (error) {
         console.log(error)
-        console.log(error)
-        const reqId: responseError = {
-          message:
-            `This ID cannot be found in the database `
+        const serverError: responseError = {
+          code: "500",
+          status: "Failed",
+          message: "An error occurred while processing your request. Please try again later"
         };
-        res.status(400).send(reqId);
+        res.status(500).json(serverError);
       }
     }
   }
@@ -99,35 +106,43 @@ courseUpdate.post("/update", async (req: Request, res: Response) => {
   const { reqid, status } = req.body
 
   if (!tokenkey || !contentType) {
-    const errData: responseError = {
+    const missingHeaders: responseError = {
+      code: "400",
+      status: "Failed",
       message:
         "Missing required headers: content-type and authorization token End-Point /requests ByID HR - Show Courses update",
     };
-    res.status(400).json(errData);
+    res.status(400).json(missingHeaders);
   } else {
     if (!reqid) {
       const missingId: responseError = {
-        message: `Missing reqId  No ID sent in`
-      }
-      res.status(400).send(missingId)
+        code: "400",
+        status: "Failed",
+        message: `Missing 'reqId' : req.body. No ID sent in request.`,
+      };
+      res.status(400).json(missingId)
     } else {
       try {
-        const cerrenData = await courseResults.findOne({ reqid: reqid })
-        if (!cerrenData) {
-          const missingId: responseError = {
-            message: `ไม่พบไอดีนี้`
-          }
-          res.status(404).send(missingId)
+        const cerrenId = await courseResults.findOne({ reqid: reqid })
+        if (!cerrenId) {
+          const notFoundError: responseError = {
+            code: "404",
+            status: "Failed",
+            message: `ID  ${reqid} : not found in the database.`,
+          };
+          res.status(404).json(notFoundError);
         } else {
           const updateData = await courseResults.updateOne({ reqid: reqid }, req.body)
           res.status(200).json(updateData)
         }
       } catch (error) {
         console.log(error)
-        const errorServer: responseError = {
-          message: `This Id not found in database`
-        }
-        res.status(500).send(errorServer)
+        const serverError: responseError = {
+          code: "500",
+          status: "Failed",
+          message: "An error occurred while processing your request. Please try again later"
+        };
+        res.status(500).json(serverError);
       }
     }
   }

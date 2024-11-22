@@ -12,10 +12,12 @@ refunds.get("/requests", async (req: Request, res: Response) => {
     const tokenkey: any = reqHeader["authorization"]
 
     if (!contentType || !tokenkey) {
-        const verifyError: responseError = {
-            message: `Missing reurie hearder : content-type and tonken-key End Point Refunds Get requests`
-        }
-        res.status(400).send(verifyError)
+        const missingHeadersError: responseError = {
+            code: "400",
+            status: "Failed",
+            message: "Missing required headers: content-type and authorization token"
+        };
+        res.status(400).json(missingHeadersError);
     } else {
         try {
             const dbrequests = await refund.find({});
@@ -28,10 +30,12 @@ refunds.get("/requests", async (req: Request, res: Response) => {
             res.status(200).json(successData)
         } catch (error) {
             console.log(error)
-            const errorData: responseError = {
-                message: `This ID cannot be found in the database ${error}`
-            }
-            res.status(500).send(errorData)
+            const serverError: responseError = {
+                code: "500",
+                status: "Failed",
+                message: "An error occurred while processing your request. Please try again later"
+            };
+            res.status(500).json(serverError);
         }
     }
 })
@@ -44,33 +48,49 @@ refunds.get("/requestsId/:refId?", async (req: Request, res: Response) => {
     const { refId }: any = req.params
 
     if (!contentType || !tokenkey) {
-        const verifyError: responseError = {
-            message: `Missing requried herder : contentType and tokenkey EndPoint refunds Get requestId`
-        }
-        res.status(400).send(verifyError)
+        const missingHeadersError: responseError = {
+            code: "400",
+            status: "Failed",
+            message: "Missing required headers: content-type and authorization token"
+        };
+        res.status(400).json(missingHeadersError);
     } else {
         if (!refId) {
-            const reqIdError: responseError = {
-                message: `Missing ID Param`
-            }
-            res.status(400).send(reqIdError)
+            const missingRefIdError: responseError = {
+                code: "400",
+                status: "Failed",
+                message: `Missing required refId : parameter in the request`
+            };
+            res.status(400).send(missingRefIdError)
         }
         else {
             try {
-                const dbrequestsId = await refund.find({ refId: refId })
-                console.log(dbrequestsId)
-                const suuccessData: responseData = {
-                    code: "200",
-                    status: "OK",
-                    data: dbrequestsId
+                const checkId = await refund.findOne({ refId: refId })
+                if (!checkId) {
+                    const idNotFoundError: responseError = {
+                        code: "404",
+                        status: "Failed",
+                        message: `The requested data with the provided ID ${refId} could not be found`
+                    };
+                    res.status(404).send(idNotFoundError)
+                } else {
+                    const refundRequestsById = await refund.find({ refId: refId });
+                    // console.log(refundRequestsById)
+                    const successData: responseData = {
+                        code: "200",
+                        status: "OK",
+                        data: refundRequestsById
+                    };
+                    res.status(200).json(successData)
                 }
-                res.status(200).json(suuccessData)
             } catch (error) {
                 console.log(error)
-                const errorServer: responseError = {
-                    message: `This ID cannot be found in the database ${error}`
-                }
-                res.status(500).send(errorServer)
+                const serverError: responseError = {
+                    code: "500",
+                    status: "Failed",
+                    message: "An error occurred while processing your request. Please try again later"
+                };
+                res.status(500).json(serverError);
             }
         }
     }
@@ -84,38 +104,56 @@ refunds.post("/appoved", async (req: Request, res: Response) => {
     const { refId, status }: any = req.body
 
     if (!contentType || !tokenkey) {
-        const errorHeaderToken: responseError = {
-            message: `Missing required headers: content-type and authorization token End-Point appove:id?`
-        }
-        res.status(400).send(errorHeaderToken)
+        const missingHeadersError: responseError = {
+            code: "400",
+            status: "Failed",
+            message: "Missing required headers: content-type and authorization token"
+        };
+        res.status(400).json(missingHeadersError);
     } else {
         if (!refId) {
-            const errorBodyid: responseError = {
-                message: `Missing requirDed body id`
-            }
-            res.status(400).send(errorBodyid)
+            const missingRefIdError: responseError = {
+                code: "400",
+                status: "Failed",
+                message: `Missing required refId : parameter in the request`
+            };
+            res.status(400).send(missingRefIdError)
         } else {
-            const checkData = await refund.findOne({ refId: refId })
-            if (!checkData) {
-                const errorBodyid: responseError = {
-                    message: `ไม่พบไอดีนี้`
+            try {
+                const checkId = await refund.findOne({ refId: refId })
+                if (!checkId) {
+                    const idNotFoundError: responseError = {
+                        code: "404",
+                        status: "Failed",
+                        message: `The requested data with the provided ID : ${refId} could not be found`
+                    };
+                    res.status(404).send(idNotFoundError)
+                } else {
+                    const dbAppove = await refund.updateOne({ refId: refId }, {
+                        $set: {
+                            status: status
+                        }
+                    });
+                    const successData: responseData = {
+                        code: "200",
+                        status: "OK",
+                        data: dbAppove
+                    };
+                    res.status(200).json(successData)
                 }
-                res.status(400).send(errorBodyid)
-            } else {
-                try {
-                    const dbappove = await refund.updateOne({ refId: refId }, req.body);
-                    res.status(200).json(dbappove)
-                } catch (errer) {
-                    console.log(errer)
-                    const errorServer: responseError = {
-                        message: `Can not Appove Data by id`
-                    }
-                    res.status(500).send(errorServer)
-                }
+            } catch (error) {
+                console.log(error)
+                const serverError: responseError = {
+                    code: "500",
+                    status: "Failed",
+                    message: "An error occurred while processing your request. Please try again later"
+                };
+                res.status(500).json(serverError);
             }
         }
     }
-});
+}
+);
 
 //1.2.14 API : HR - Courses Fee Reimbursement System (FR5: ระบบเบิกค่าอบรม) Reject
 refunds.post("/denied", async (req: Request, res: Response) => {
@@ -125,27 +163,51 @@ refunds.post("/denied", async (req: Request, res: Response) => {
     const { refId, status }: any = req.body
 
     if (!contentType || !tokenkey) {
-        const errorHeaderToken: responseError = {
-            message: `Missing required headers: content-type and authorization token End-Point appove:id?`
-        }
-        res.status(400).send(errorHeaderToken)
+        const missingHeadersError: responseError = {
+            code: "400",
+            status: "Failed",
+            message: "Missing required headers: content-type and authorization token"
+        };
+        res.status(400).json(missingHeadersError);
     } else {
         if (!refId) {
-            const errorBodyid: responseError = {
-                message: `Missing requirDed body id`
-            }
-            res.status(400).send(errorBodyid)
+            const missingRefIdError: responseError = {
+                code: "400",
+                status: "Failed",
+                message: `Missing required refId : parameter in the request`
+            };
+            res.status(400).send(missingRefIdError)
         } else {
             try {
-                // const cerrenData = await Refunds.findById({ _id: reqId })
-                const dbappove = await refund.updateOne({ refId: refId }, req.body);
-                res.status(200).json(dbappove)
-            } catch (errer) {
-                console.log(errer)
-                const errorServer: responseError = {
-                    message: `Can not Appove Data by id`
+                const checkId = await refund.findOne({ refId: refId })
+                if (!checkId) {
+                    const idNotFoundError: responseError = {
+                        code: "404",
+                        status: "Failed",
+                        message: `The requested data with the provided ID : ${refId} could not be found`
+                    };
+                    res.status(404).send(idNotFoundError)
+                } else {
+                    const dbAppove = await refund.updateOne({ refId: refId }, {
+                        $set: {
+                            status: status
+                        }
+                    });
+                    const successData: responseData = {
+                        code: "200",
+                        status: "OK",
+                        data: dbAppove
+                    };
+                    res.status(200).json(successData)
                 }
-                res.status(500).send(errorServer)
+            } catch (error) {
+                console.log(error)
+                const serverError: responseError = {
+                    code: "500",
+                    status: "Failed",
+                    message: "An error occurred while processing your request. Please try again later"
+                };
+                res.status(500).json(serverError);
             }
         }
     }

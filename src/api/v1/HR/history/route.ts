@@ -13,6 +13,8 @@ history.get("/course", async (req: Request, res: Response) => {
     const tokenkey: any = reqHeader["authorization"]
     if (!contentType || !tokenkey) {
         const errorHeaderToken: responseError = {
+            code: "400",
+            status: "Failed",
             message: `Missing required headers: content-type and authorization token End-Point historyCourse`
         }
         res.status(400).send(errorHeaderToken)
@@ -29,10 +31,12 @@ history.get("/course", async (req: Request, res: Response) => {
             res.status(200).json(successData)
         } catch (error) {
             console.log(error)
-            const errorServer: responseError = {
-                message: `Server error`
-            }
-            res.status(500).send(errorServer)
+            const serverError: responseError = {
+                code: "500",
+                status: "Failed",
+                message: "An error occurred while processing your request. Please try again later"
+            };
+            res.status(500).json(serverError);
         }
     }
 })
@@ -45,6 +49,8 @@ history.get("/results", async (req: Request, res: Response) => {
     const { status }: any = req.body
     if (!contentType || !tokenkey) {
         const errorHeaderToken: responseError = {
+            code: "400",
+            status: "Failed",
             message: `Missing required headers: content-type and authorization token End-Point historyCou?`
         }
         res.status(400).send(errorHeaderToken)
@@ -60,10 +66,12 @@ history.get("/results", async (req: Request, res: Response) => {
             res.status(200).json(successData)
         } catch (error) {
             console.log(error)
-            const errorServer: responseError = {
-                message: `Server error`
-            }
-            res.status(500).send(errorServer)
+            const serverError: responseError = {
+                code: "500",
+                status: "Failed",
+                message: "An error occurred while processing your request. Please try again later"
+            };
+            res.status(500).json(serverError);
         }
     }
 })
@@ -75,6 +83,8 @@ history.get("/refund", async (req: Request, res: Response) => {
     const tokenkey: any = reqHeader["authorization"]
     if (!contentType || !tokenkey) {
         const errorHeaderToken: responseError = {
+            code: "400",
+            status: "Failed",
             message: `Missing required headers: content-type and authorization token End-Point historyCou?`
         }
         res.status(400).send(errorHeaderToken)
@@ -90,10 +100,12 @@ history.get("/refund", async (req: Request, res: Response) => {
             res.status(200).json(successData)
         } catch (error) {
             console.log(error)
-            const errorServer: responseError = {
-                message: `Server error`
-            }
-            res.status(500).send(errorServer)
+            const serverError: responseError = {
+                code: "500",
+                status: "Failed",
+                message: "An error occurred while processing your request. Please try again later"
+            };
+            res.status(500).json(serverError);
         }
     }
 })

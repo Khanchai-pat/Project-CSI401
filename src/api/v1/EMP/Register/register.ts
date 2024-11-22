@@ -1,6 +1,6 @@
 import express, { Request, Response } from "express";
-import Course from "../Schema/Course";
-import Registration from "../Schema/Registration";
+import Course from "../../Schema/Course";
+import Registration from "../../Schema/Registration";
 
 
 const register = express.Router();
@@ -73,7 +73,7 @@ register.post("/register", async (req: Request, res: Response) => {
         course.courseLeft -= 1;
         await course.save();
 
-        res.status(200).json({
+        return res.status(200).json({
             code: "200",
             status: "success",
             message: "Registration successful",

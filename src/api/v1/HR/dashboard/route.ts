@@ -14,6 +14,8 @@ dashBoard.get("/dashBoard", async (req: Request, res: Response) => {
 
     if (!contentType || !tokenkey) {
         const verifyError: responseError = {
+            code: "400",
+            status: "Failed",
             message: "missing quried header : contentType And tokenKey"
         }
         res.status(400).json(verifyError)
@@ -66,7 +68,7 @@ dashBoard.get("/dashBoard", async (req: Request, res: Response) => {
                 courseRequests: allCourseRequest,
                 courseResults: allCourseResult,
                 refunds: allRefund,
-                courses : allCourse
+                courses: allCourse
             }
             const successData: responseData = {
                 code: '200',
@@ -76,10 +78,12 @@ dashBoard.get("/dashBoard", async (req: Request, res: Response) => {
             res.status(200).json(successData)
         } catch (error) {
             console.log(error)
-            const errorServer: responseError = {
-                message: "server Error"
-            }
-            res.status(500).json(errorServer)
+            const serverError: responseError = {
+                code: "500",
+                status: "Failed",
+                message: "An error occurred while processing your request. Please try again later"
+            };
+            res.status(500).json(serverError);
         }
     }
 })

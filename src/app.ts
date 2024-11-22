@@ -14,10 +14,10 @@ import { course } from "./api/v1/HR/withdrawRequest/route";
 import { courseUpdate } from "./api/v1/HR/courseResults/route";
 import { refunds } from "./api/v1/HR/refunds/route";
 import { history } from "./api/v1/HR/history/route";
+import { dashBoard } from "./api/v1/HR/dashboard/route";
 
 // MEP
 import { checkdata } from "./api/v1/EMP/Checkdata/results";
-import { dashBoard } from "./api/v1/HR/dashboard/route";
 import { Courses } from "./api/v1/EMP/Course/route";
 
 

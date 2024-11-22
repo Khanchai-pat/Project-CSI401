@@ -22,10 +22,12 @@ manageData.post("/createEmp", async (req: Request, res: Response) => {
     }: any = req.body
 
     if (contentType !== 'application/json' || !tokenkey) {
-        const verifyError: responseError = {
-            message: `Missing requried header: contentType and tokenkey managedata`
-        }
-        res.status(400).send(verifyError)
+        const missingHeadersError: responseError = {
+            code: "400",
+            status: "Failed",
+            message: "Missing required headers: content-type and authorization token"
+        };
+        res.status(400).json(missingHeadersError);
 
     } else {
         if (!empId ||
@@ -37,10 +39,12 @@ manageData.post("/createEmp", async (req: Request, res: Response) => {
             !role ||
             !empStatus
         ) {
-            const errorClient: responseError = {
-                message: `ส่งข้อมูลไม่ครบถ้วน`
-            }
-            res.status(400).send(errorClient)
+            const incompleteDataError: responseError = {
+                code: "400",
+                status: "Failed",
+                message: "Incomplete data provided. Please ensure all required fields are filled in"
+            };
+            res.status(400).json(incompleteDataError);
         } else {
             try {
                 const cerrentData = await employees.findOne({
@@ -51,8 +55,6 @@ manageData.post("/createEmp", async (req: Request, res: Response) => {
                         { tel: tel }
                     ]
                 })
-                console.log(cerrentData)
-                console.log(`data in Database ${cerrentData}`)
                 if (!cerrentData) {
                     const addEmp = await employees.create({
                         empId: empId,
@@ -71,17 +73,21 @@ manageData.post("/createEmp", async (req: Request, res: Response) => {
                     }
                     res.status(200).json(successData)
                 } else {
-                    const errorClient: responseError = {
-                        message: `ข้อมูลซ้ำกัน`
-                    }
-                    res.status(400).send(errorClient)
+                    const duplicateDataError: responseError = {
+                        code: "400",
+                        status: "Failed",
+                        message: "Duplicate data found. The provided employee information already exists in the system"
+                    };
+                    res.status(400).json(duplicateDataError);
                 }
             } catch (error) {
                 console.log(error)
-                const errorServer: responseError = {
-                    message: `server error method manageData createEmp`
-                }
-                res.status(500).send(errorServer)
+                const serverError: responseError = {
+                    code: "500",
+                    status: "Failed",
+                    message: "An error occurred while processing your request. Please try again later"
+                };
+                res.status(500).json(serverError);
             }
         }
     }
@@ -112,48 +118,52 @@ manageData.post("/editEmp", async (req: Request, res: Response) => {
         // trainingLocation,
         // trainingHours,
         // nextExpiryDate
-        
+
     }: any = req.body
 
     console.log(req.body)
 
     if (!contentType || !tokenkey) {
-        const verifyError: responseError = {
-            message: "Missing required headers: content-type and authorization token Route:mangedata Methode:ditEmp"
-        }
-        res.status(400).json(verifyError)
+        const missingHeadersError: responseError = {
+            code: "400",
+            status: "Failed",
+            message: "Missing required headers: content-type and authorization token"
+        };
+        res.status(400).json(missingHeadersError);
     } else {
         if (!empId || empStatus !== 'Active') {
             const reqError: responseError = {
-                message: "No empId and  Status != Active : cannot be found Route:mangedata Methode:ditEmp"
-            }
-            res.status(400).json(reqError)
+                code: "400",
+                status: "Failed",
+                message: "Employee ID is required and the employee status must be 'Active'. Route: manageData, Method: editEmp"
+            };
+            res.status(400).json(reqError);
         } else {
             const checkData = await employees.findOne({ empId: empId });
             if (!checkData) {
-                const errorClient: responseError = {
-                    message: "ไม่พบ empId ที่ต้องการ Route:mangedata Methode:editEmp"
+                const employeeNotFoundError: responseError = {
+                    code: "404",
+                    status: "Failed",
+                    message: `Employee ID${empId} not found Route: manageData, Method: editEmp`
                 };
-                res.status(404).json(errorClient)
+                res.status(404).json(employeeNotFoundError);
             } else {
                 try {
-                    const updateData = await employees
-                        .updateOne({ empId: empId }, req.body)
-                    console.log(` this is update data = ${updateData}`)
-                    const dbEditData: responseData = {
+                    const updateData = await employees.updateOne({ empId: empId }, req.body)
+                    const updateEmployeeResponse: responseData = {
                         code: '200',
                         status: 'OK',
-                        data: {
-                            updateData
-                        }
-                    }
-                    res.status(200).json(dbEditData)
+                        data: updateData
+                    };
+                    res.status(200).json(updateEmployeeResponse);
                 } catch (error) {
                     console.log(error)
                     const serverError: responseError = {
-                        message: "server error Route:mangedata Methode:ditEmp"
-                    }
-                    res.status(400).json(serverError)
+                        code: "500",
+                        status: "Failed",
+                        message: "An error occurred while processing your request. Please try again later"
+                    };
+                    res.status(500).json(serverError);
                 }
             }
 
@@ -173,23 +183,29 @@ manageData.post("/deleteEmp", async (req: Request, res: Response) => {
     } = req.body
 
     if (!contentType || !tokenkey) {
-        const verifyError: responseError = {
-            message: "Missing required headers: content-type and authorization token End-Point deleteEmp"
-        }
-        res.status(400).send(verifyError)
+        const missingHeadersError: responseError = {
+            code: "400",
+            status: "Failed",
+            message: "Missing required headers: content-type and authorization token"
+        };
+        res.status(400).json(missingHeadersError);
     } else {
         if (!empId) {
-            const reqError: responseError = {
-                message: "No empId and  Status != Active : cannot be found Route:mangedata Methode:ditEmp"
-            }
-            res.status(404).json(reqError)
+            const missingEmpIdError: responseError = {
+                code: "400",
+                status: "Failed",
+                message: "Employee ID is required to delete. Route: manageData, Method: deleteEmp"
+            };
+            res.status(400).json(missingEmpIdError)
         } else {
             const checkDataEmp = await employees.findOne({ empId: empId })
             if (!checkDataEmp) {
-                const errorClient: responseError = {
-                    message: "ไม่พบ empId ที่ต้องการ Route:mangedata Methode:deleteEmp"
+                const empIdNotFoundError: responseError = {
+                    code: "400",
+                    status: "Failed",
+                    message: `Employee ID ${empId} not found for deletion. Route: manageData, Method: deleteEmp`
                 };
-                res.status(404).json(errorClient)
+                res.status(400).json(empIdNotFoundError);
             } else {
                 try {
                     const updateData = await employees
@@ -200,20 +216,22 @@ manageData.post("/deleteEmp", async (req: Request, res: Response) => {
                                 }
                             })
 
-                    const dbDeleteEmp: responseData = {
+                    const empDeletionSuccessData: responseData = {
                         code: '200',
                         status: 'OK',
                         data: {
                             updateData
                         }
-                    }
-                    res.status(200).json(dbDeleteEmp)
+                    };
+                    res.status(200).json(empDeletionSuccessData);
                 } catch (error) {
                     console.log(error)
                     const serverError: responseError = {
-                        message: "server error Route:mangedata Methode:ditEmp"
-                    }
-                    res.status(400).json(serverError)
+                        code: "500",
+                        status: "Failed",
+                        message: "An error occurred while processing your request. Please try again later"
+                    };
+                    res.status(500).json(serverError);
                 }
             }
         }
