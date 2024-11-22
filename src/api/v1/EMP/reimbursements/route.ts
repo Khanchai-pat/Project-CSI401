@@ -1,11 +1,11 @@
 import express, { Request, Response } from "express";
 import Reimbursement, { IReimbursement } from "../Schema/Reimbursementschema";
-import { ReimbursementRequest, UpdateRequest } from "./reimbursement";
+import { ReimbursementRequest, } from "./reimbursement";
 
-const reimbursements = express.Router();
+export const requests = express.Router();
 
 
-reimbursements.post("/reimbursements/request", async (req: Request, res: Response) => {
+requests.post("/request", async (req: Request, res: Response) => {
     const { EmpID, courseID, DateReim, MoneyAmount }: ReimbursementRequest = req.body;
 
     try {
@@ -52,3 +52,5 @@ reimbursements.post("/reimbursements/request", async (req: Request, res: Respons
         });
     }
 });
+
+

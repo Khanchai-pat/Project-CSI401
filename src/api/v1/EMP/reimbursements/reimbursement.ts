@@ -5,8 +5,3 @@ export interface ReimbursementRequest {
     MoneyAmount: number;
 }
 
-export interface UpdateRequest {
-    requestId: string;
-    status: "Approved" | "Rejected";
-    approvedBy: string;
-}
