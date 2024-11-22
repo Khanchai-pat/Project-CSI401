@@ -11,7 +11,7 @@ export interface ICourse extends Document {
 }
 
 
-const CourseSchema: Schema = mongoose.Schema({
+const CourseSchema: Schema = new mongoose.Schema({
     courseID: { type: String, required: true, unique: true },
     courseName: { type: String, required: true },
     periods: { type: String, required: true },
