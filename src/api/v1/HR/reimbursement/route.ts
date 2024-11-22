@@ -1,7 +1,7 @@
 
 import express, { Request, Response } from "express";
 import { responseData, responseError } from "../../interfaceRes/response";
-import { refund } from "../Schema/refund"
+import { refund } from "../Schema/reimbursement"
 
 export const reimbursement = express();
 
@@ -65,7 +65,7 @@ reimbursement.get("/requestsId/:refID?", async (req: Request, res: Response) => 
         }
         else {
             try {
-                const checkId = await refund.findOne({ refID: refID })
+                const checkId = await refund.findOne({ refId: refID })
                 if (!checkId) {
                     const idNotFoundError: responseError = {
                         code: "404",
@@ -74,7 +74,7 @@ reimbursement.get("/requestsId/:refID?", async (req: Request, res: Response) => 
                     };
                     res.status(404).send(idNotFoundError)
                 } else {
-                    const refundRequestsById = await refund.find({ refID: refID });
+                    const refundRequestsById = await refund.find({ refId: refID });
                     // console.log(refundRequestsById)
                     const successData: responseData = {
                         code: "200",

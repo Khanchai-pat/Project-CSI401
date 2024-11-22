@@ -2,7 +2,7 @@ import express, { Request, Response } from "express"
 import { responseData, responseError } from '../../interfaceRes/response';
 import { courseRequests } from "../Schema/courseRequest"
 import { courseResults } from "../Schema/courseResults"
-import { refund } from "../Schema/refund"
+import { refund } from "../Schema/reimbursement"
 export const history = express();
 
 

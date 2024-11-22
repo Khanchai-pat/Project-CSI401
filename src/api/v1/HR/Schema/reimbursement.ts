@@ -8,4 +8,4 @@ const refundSchema = new mongoose.Schema({
     status: String
 }, { timestamps: true });
 
-export const refund = mongoose.model("refund", refundSchema, "refund");
+export const refund = mongoose.model("reimbursement", refundSchema, "reimbursement");   
