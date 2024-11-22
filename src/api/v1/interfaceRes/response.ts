@@ -6,5 +6,7 @@ export interface responseData {
 
 
 export interface responseError {
+    code: string,
+    status: String,
     message: string
 }

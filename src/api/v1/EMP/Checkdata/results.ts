@@ -35,6 +35,7 @@ checkdata.post('/checkdata', async (req: Request, res: Response) => {
     }
  
     const Check = mongoose.model("emps", userSchemas);
+    
     // สร้างข้อมูล response
     const CheckdataresponseData = await Check.findOne({
         empId: body.empId

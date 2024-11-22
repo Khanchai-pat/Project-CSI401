@@ -1,6 +1,5 @@
 import express, { Request, Response } from 'express'
 import { responseData, responseError } from '../../interfaceRes/response';
-import mongoose from 'mongoose';
 export const course = express();
 import { courseRequests } from "../Schema/courseRequest"
 
@@ -11,26 +10,31 @@ course.get("/requests", async (req: Request, res: Response) => {
     const tokenkey: string = reqHeader["authorization"];
 
     if (!tokenkey || !contentType) {
-        const errData: responseError = {
-            message: "Missing required headers: content-type and authorization token End-Point /requests"
+        const missingHeadersError: responseError = {
+            code: "400",
+            status: "Failed",
+            message: "Missing required headers: content-type and authorization token"
         };
-        res.status(400).json(errData);
+        res.status(400).json(missingHeadersError);
+    } else {
+        try {
+            const courseRequestData = await courseRequests.find({});
+            const successResponse: responseData = {
+                code: "200",
+                status: "OK",
+                data: courseRequestData
+            };
+            res.status(200).json(successResponse);
+        } catch (error) {
+            console.error(error);
+            const databaseError: responseError = {
+                code: "500",
+                status: "Failed",
+                message: "Internal server error while retrieving course requests."
+            };
+            res.status(500).json(databaseError);
+        }
     }
-    try {
-        const dbRequests = await courseRequests.find({})
-        const reqCourse: responseData = {
-            code: "200",
-            status: "OK",
-            data: dbRequests
-        };
-        res.status(200).json(reqCourse);
-    } catch (error) {
-        const errorDb: responseError = {
-            message: "Internal server error at /requests endpoint."
-        };
-        res.status(500).json(errorDb);
-    }
-    mongoose.connection.close();
 });
 
 ////Show list requests By ID
@@ -42,39 +46,47 @@ course.get("/requestsId/:reqId?", async (req: Request, res: Response) => {
     console.log(reqId)
 
     if (!tokenkey || !contentType) {
-        const errData: responseError = {
-            message: "Missing required headers: content-type and authorization token End-Point /requests/:id"
-        }
-        res.status(500).send(errData)
+        const missingHeadersError: responseError = {
+            code: "400",
+            status: "Failed",
+            message: "Missing required headers: content-type and authorization token"
+        };
+        res.status(400).json(missingHeadersError);
     } else {
         if (!reqId) {
-            const errData: responseError = {
-                message: "Missing Params"
-            }
-            res.status(500).send(errData)
+            const missingParamsError: responseError = {
+                code: "400",
+                status: "Failed",
+                message: "Missing required parameter: reqId"
+            };
+            res.status(400).json(missingParamsError);
         } else {
             try {
-                const checkData = await courseRequests.findOne({ reqId: reqId })
-                if (!checkData) {
-                    const dbnotFound: responseError = {
-                        message: "ไม่พบไอดีนี้"
-                    }
-                    res.status(500).send(dbnotFound)
+                const checkId = await courseRequests.findOne({ reqId: reqId })
+                if (!checkId) {
+                    const idNotFoundError: responseError = {
+                        code: "404",
+                        status: "Failed",
+                        message: `The requested data with the provided ID : ${reqId} could not be found`
+                    };
+                    res.status(404).send(idNotFoundError)
                 } else {
                     const dbRequestsID = await courseRequests.find({ reqId: reqId })
-                    const reqCourse: responseData = {
+                    const response: responseData = {
                         code: "200",
-                        status: "OK /requests/:id",
+                        status: "OK",
                         data: dbRequestsID
                     }
-                    res.status(200).json(reqCourse)
+                    res.status(200).json(response)
                 }
             } catch (error) {
                 console.log(error)
-                const errorDb: responseError = {
-                    message: `Can not sent Data by id`
-                }
-                res.status(400).send(errorDb)
+                const serverError: responseError = {
+                    code: "500",
+                    status: "Failed",
+                    message: "An error occurred while processing your request. Please try again later"
+                };
+                res.status(500).json(serverError);
             }
         }
     }
@@ -89,30 +101,45 @@ course.post("/appove", async (req: Request, res: Response) => {
 
     if (!contentType || !tokenkey) {
         const errorHeaderToken: responseError = {
+            code: "400",
+            status: "Failed",
             message: `Missing required headers: content-type and authorization token End-Point appove:id?`
         }
         res.status(400).send(errorHeaderToken)
     } else {
         if (!reqId) {
-            const errorBodyid: responseError = {
-                message: `Missing requirDed body id`
-            }
-            res.status(400).send(errorBodyid)
+            const missingParamsError: responseError = {
+                code: "400",
+                status: "Failed",
+                message: "Missing required parameter: reqId"
+            };
+            res.status(400).json(missingParamsError);
         } else {
             try {
-                const dbappove = await courseRequests.updateOne({ reqId: reqId }, {
-                    $set: {
-                        status: status
-                    }
-                });
-                res.status(200).json(dbappove)
-                console.log(dbappove)
-            } catch (errer) {
-                console.log(errer)
-                const errorDb: responseError = {
-                    message: `Can not Appove Data by id`
+                const checkId = await courseRequests.findOne({ reqId: reqId })
+                if (!checkId) {
+                    const idNotFoundError: responseError = {
+                        code: "404",
+                        status: "Failed",
+                        message: `The requested data with the provided ID :: ${reqId} could not be found`
+                    };
+                    res.status(404).send(idNotFoundError)
+                } else {
+                    const dbAppove = await courseRequests.updateOne({ reqId: reqId }, {
+                        $set: {
+                            status: status
+                        }
+                    });
+                    res.status(200).json(dbAppove)
                 }
-                res.status(400).send(errorDb)
+            } catch (error) {
+                console.log(error)
+                const serverError: responseError = {
+                    code: "500",
+                    status: "Failed",
+                    message: "An error occurred while processing your request. Please try again later"
+                };
+                res.status(500).json(serverError);
             }
         }
     }
@@ -127,30 +154,45 @@ course.post("/reject", async (req: Request, res: Response) => {
 
     if (!contentType || !tokenkey) {
         const errorHeaderToken: responseError = {
-            message: `Missing required headers: content-type and authorization token End-Point appove:id?`
+            code: "400",
+            status: "Failed",
+            message: `Missing required headers: content-type and authorization token End-Point appove reqId?`
         }
         res.status(400).send(errorHeaderToken)
     } else {
         if (!reqId) {
-            const errorBodyid: responseError = {
-                message: `Missing requirDed body id`
-            }
-            res.status(400).send(errorBodyid)
+            const missingParamsError: responseError = {
+                code: "400",
+                status: "Failed",
+                message: "Missing required parameter: reqId"
+            };
+            res.status(400).json(missingParamsError);
         } else {
             try {
-                // const cerrenData = await courseRequests.findById({ reqId: reqId })
-
-                // const newdata = { ...cerrenData, ...body }
-                // console.log(newdata)
-
-                const dbappove = await courseRequests.updateOne({ reqId: reqId }, req.body);
-                res.status(200).json(dbappove)
-            } catch (errer) {
-                console.log(errer)
-                const errorDb: responseError = {
-                    message: `Can not reject Data by id`
+                const checkId = await courseRequests.findOne({ reqId: reqId })
+                if (!checkId) {
+                    const idNotFoundError: responseError = {
+                        code: "404",
+                        status: "Failed",
+                        message: `The requested data with the provided ID :${reqId} could not be found`
+                    };
+                    res.status(404).send(idNotFoundError)
+                } else {
+                    const dbAppove = await courseRequests.updateOne({ reqId: reqId }, {
+                        $set: {
+                            status: status
+                        }
+                    });
+                    res.status(200).json(dbAppove)
                 }
-                res.status(400).send(errorDb)
+            } catch (error) {
+                console.log(error)
+                const serverError: responseError = {
+                    code: "500",
+                    status: "Failed",
+                    message: "An error occurred while processing your request. Please try again later"
+                };
+                res.status(500).json(serverError);
             }
         }
     }
