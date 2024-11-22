@@ -3,9 +3,9 @@ import express, { Request, Response } from "express";
 import { responseData, responseError } from "../../interfaceRes/response";
 import { refund } from "../Schema/refund"
 
-export const refunds = express();
+export const reimbursement = express();
 
-refunds.get("/requests", async (req: Request, res: Response) => {
+reimbursement.get("/requests", async (req: Request, res: Response) => {
 
     const reqHeader: any = req.headers
     const contentType: any = reqHeader["content-type"]
@@ -41,11 +41,11 @@ refunds.get("/requests", async (req: Request, res: Response) => {
 })
 
 ////1.2.12 API : HR - Courses Fee Reimbursement System (FR5: ระบบเบิกค่าอบรม) Show List byID
-refunds.get("/requestsId/:refId?", async (req: Request, res: Response) => {
+reimbursement.get("/requestsId/:refID?", async (req: Request, res: Response) => {
     const reqHeader: any = req.headers
     const contentType: any = reqHeader["content-type"]
     const tokenkey: any = reqHeader["authorization"]
-    const { refId }: any = req.params
+    const { refID }: any = req.params
 
     if (!contentType || !tokenkey) {
         const missingHeadersError: responseError = {
@@ -55,7 +55,7 @@ refunds.get("/requestsId/:refId?", async (req: Request, res: Response) => {
         };
         res.status(400).json(missingHeadersError);
     } else {
-        if (!refId) {
+        if (!refID) {
             const missingRefIdError: responseError = {
                 code: "400",
                 status: "Failed",
@@ -65,16 +65,16 @@ refunds.get("/requestsId/:refId?", async (req: Request, res: Response) => {
         }
         else {
             try {
-                const checkId = await refund.findOne({ refId: refId })
+                const checkId = await refund.findOne({ refID: refID })
                 if (!checkId) {
                     const idNotFoundError: responseError = {
                         code: "404",
                         status: "Failed",
-                        message: `The requested data with the provided ID ${refId} could not be found`
+                        message: `The requested data with the provided ID ${refID} could not be found`
                     };
                     res.status(404).send(idNotFoundError)
                 } else {
-                    const refundRequestsById = await refund.find({ refId: refId });
+                    const refundRequestsById = await refund.find({ refID: refID });
                     // console.log(refundRequestsById)
                     const successData: responseData = {
                         code: "200",
@@ -97,7 +97,7 @@ refunds.get("/requestsId/:refId?", async (req: Request, res: Response) => {
 });
 
 //1.2.13 API : HR - Courses Fee Reimbursement System (FR5: ระบบเบิกค่าอบรม) Appove
-refunds.post("/appoved", async (req: Request, res: Response) => {
+reimbursement.post("/appoved", async (req: Request, res: Response) => {
     const reqHeader: any = req.headers
     const contentType: any = reqHeader["content-type"]
     const tokenkey: any = reqHeader["authorization"]
@@ -156,7 +156,7 @@ refunds.post("/appoved", async (req: Request, res: Response) => {
 );
 
 //1.2.14 API : HR - Courses Fee Reimbursement System (FR5: ระบบเบิกค่าอบรม) Reject
-refunds.post("/denied", async (req: Request, res: Response) => {
+reimbursement.post("/denied", async (req: Request, res: Response) => {
     const reqHeader: any = req.headers
     const contentType: any = reqHeader["content-type"]
     const tokenkey: any = reqHeader["authorization"]

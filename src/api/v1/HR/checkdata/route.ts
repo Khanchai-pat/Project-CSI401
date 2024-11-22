@@ -58,62 +58,62 @@ checkData.get("/checkEmp", async (req: Request, res: Response) => {
 });
 
 // Check Data by Employee ID
-checkData.get("/checkEmpId/:empId?", async (req: Request, res: Response) => {
-  const reqHeader: any = req.headers;
-  const contentType: any = reqHeader["content-type"];
-  const tokenkey: any = reqHeader["authorization"];
-  const { empId } = req.params;
+  checkData.get("/checkEmpId/:empID?", async (req: Request, res: Response) => {
+    const reqHeader: any = req.headers;
+    const contentType: any = reqHeader["content-type"];
+    const tokenkey: any = reqHeader["authorization"];
+    const { empID } = req.params;
 
-  if (!tokenkey || !contentType) {
-    // ข้อผิดพลาดในการยืนยัน header ที่จำเป็น
-    const missingHeaders: responseError = {
-      code: "400",
-      status: "Failed",
-      message: "Bad Request: Missing required headers - 'Content-Type' and 'Authorization' are needed for endpoint /checkEmpId.",
-    };
-    res.status(400).json(missingHeaders);
-  } else {
-
-    if (!empId) {
-      // กรณีไม่มีการส่ง empId มาใน request
-      const missingParamError: responseError = {
+    if (!tokenkey || !contentType) {
+      
+      const missingHeaders: responseError = {
         code: "400",
         status: "Failed",
-        message: "Bad Request: Missing 'empId' parameter for endpoint /checkEmpId.",
+        message: "Bad Request: Missing required headers - 'Content-Type' and 'Authorization' are needed for endpoint /checkEmpId.",
       };
-      res.status(400).json(missingParamError);
+      res.status(400).json(missingHeaders);
     } else {
-      try {
-        // Process การ query ข้อมูลพนักงานจากฐานข้อมูลโดยใช้ empId
-        const dbResponse = await employees.find({ empId: empId });
-        if (dbResponse.length === 0) {
-          // กรณีไม่มีข้อมูลที่ตรงกับ empId
-          const noDataError: responseError = {
-            code: "404",
-            status: "Not Found",
-            message: `Employee with ID '${empId}' not found.`,
-          };
-          res.status(404).json(noDataError);
-        }
 
-        // ถ้ามีข้อมูล ตอบกลับสถานะสำเร็จ
-        const checkEmpID: responseData = {
-          code: "200",
-          status: "Success",
-          data: dbResponse,
-        };
-        res.status(200).json(checkEmpID);
-      } catch (error) {
-        console.log(error)
-        const serverError: responseError = {
-          code: "500",
+      if (!empID) {
+        
+        const missingParamError: responseError = {
+          code: "400",
           status: "Failed",
-          message: "An error occurred while processing your request. Please try again later"
+          message: "Bad Request: Missing 'empId' parameter for endpoint /checkEmpId.",
         };
-        res.status(500).json(serverError);
+        res.status(400).json(missingParamError);
+      } else {
+        try {
+          // Process การ query ข้อมูลพนักงานจากฐานข้อมูลโดยใช้ empId
+          const dbResponse = await employees.find({ empID: empID });
+          if (dbResponse.length === 0) {
+            // กรณีไม่มีข้อมูลที่ตรงกับ empId
+            const noDataError: responseError = {
+              code: "404",
+              status: "Not Found",
+              message: `Employee with ID '${empID}' not found.`,
+            };
+            res.status(404).json(noDataError);
+          }
+
+          // ถ้ามีข้อมูล ตอบกลับสถานะสำเร็จ
+          const checkEmpID: responseData = {
+            code: "200",
+            status: "Success",
+            data: dbResponse,
+          };
+          res.status(200).json(checkEmpID);
+        } catch (error) {
+          console.log(error)
+          const serverError: responseError = {
+            code: "500",
+            status: "Failed",
+            message: "An error occurred while processing your request. Please try again later"
+          };
+          res.status(500).json(serverError);
+        }
       }
     }
   }
-}
 
-);
+  );
