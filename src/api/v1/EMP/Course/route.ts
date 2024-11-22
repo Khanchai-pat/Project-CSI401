@@ -91,12 +91,43 @@ const verifyToken = (token: string | undefined): boolean => {
 //         });
 //     }
 // });
+Courses.post("/register", async (req : Request , res : Response) => {
+    const reqHeader: any = req.headers
+    const contentType: any = reqHeader["content-type"]
+    const tokenkey: any = reqHeader["authorization"]
+    const {body,empID,coursesID} = req.body
+
+    if (!tokenkey || !contentType) {
+        res.status(401).json({
+            code: "401",
+            status: "error",
+            message: "Unauthorized",
+        });
+    }
+    else if (!empID || !coursesID) {
+        res.status(404).json({
+            code: "404",
+            status: "error",
+            message: "EmpID/Course not found",
+        });
+    }
+    else {
+    const dbResults = await coursesResults.updateOne({ empID : empID.body },{ $set : {courseID : coursesID.body} }) 
+    const resultsData: responseData = {
+      code: "200",
+      status: "OK",
+      data: dbResults
+    }
+    res.status(200).json(resultsData)
+    }
+})
 
 Courses.get("/results", async (req : Request , res : Response) => {
-    const token = req.headers["token-key"] as string;
-    const contentType = req.headers["content-type"] as string; 
+    const reqHeader: any = req.headers
+    const contentType: any = reqHeader["content-type"]
+    const tokenkey: any = reqHeader["authorization"]
     const empID = req.body
-    if (!verifyToken(token) && !contentType && contentType != "application/json") {
+    if (!tokenkey || !contentType) {
         res.status(401).json({
            code: "401",
            status: "error",
