@@ -16,4 +16,4 @@ const CoursesResult = new mongoose.Schema({
     status: String
 });
 
-export const coursesResults = mongoose.model("courseResults", CoursesResult, "courseResults");
+export const coursesResults = mongoose.model("coursesResults", CoursesResult, "coursesResults");

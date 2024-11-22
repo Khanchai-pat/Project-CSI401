@@ -1,5 +1,5 @@
 import express, { Request, Response } from "express";
-import Reimbursement, { IReimbursement } from "../Schema/Reimbursementschema";
+import Reimbursement from "../Schema/Reimbursementschema";
 import { ReimbursementRequest, } from "./reimbursement";
 
 export const requests = express.Router();
@@ -23,7 +23,7 @@ requests.post("/request", async (req: Request, res: Response) => {
             });
         }
 
-        const newRequest: IReimbursement = new Reimbursement({
+        const newRequest = new Reimbursement({
             employeeId: EmpID,
             courseId: courseID,
             requestDate: DateReim,

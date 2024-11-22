@@ -19,7 +19,7 @@ import { dashBoard } from "./api/v1/HR/dashboard/route";
 // MEP
 import { checkdata } from "./api/v1/EMP/Checkdata/results";
 import { Courses } from "./api/v1/EMP/Course/route";
-import { reimbursements } from "./api/v1/EMP/reimbursements/route";
+
 
 
 dotenv.config();
@@ -50,7 +50,6 @@ app.use("/dashBoard", dashBoard)
 //EMP
 app.use("/checkdata", checkdata)
 app.use("/courses", Courses)
-app.use("/requests", reimbursements)
 
 // swagger
 useSwagger(app)

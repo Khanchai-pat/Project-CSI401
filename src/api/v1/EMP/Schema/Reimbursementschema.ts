@@ -1,15 +1,7 @@
-import mongoose, { Schema, Document } from "mongoose";
+import mongoose from "mongoose";
 
-export interface IReimbursement extends Document {
-    employeeId: string;
-    courseId: string;
-    requestDate: Date;
-    courseCost: number;
-    status: "Pending" | "Approved" | "Rejected" | "Cancelled";
-    approvedBy?: string;
-}
 
-const ReimbursementSchema: Schema = new Schema({
+const ReimbursementSchema = new mongoose.Schema({
     employeeId: { type: String, required: true },
     courseId: { type: String, required: true },
     requestDate: { type: Date, required: true },
@@ -18,4 +10,4 @@ const ReimbursementSchema: Schema = new Schema({
     approvedBy: { type: String }
 });
 
-export default mongoose.model<IReimbursement>("Reimbursement", ReimbursementSchema);
+export default mongoose.model("Reimbursement", ReimbursementSchema);

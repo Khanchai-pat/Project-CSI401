@@ -1,13 +1,5 @@
 import mongoose, { Schema, Document } from "mongoose";
 
-export interface IRegistration extends Document {
-    employeeId: string;
-    courseId: string;
-    courseName: string;
-    periods: string;
-    registrationDate: Date;
-}
-
 const RegistrationSchema: Schema = new Schema({
     employeeId: { type: String, required: true },
     courseId: { type: String, required: true },
@@ -16,4 +8,4 @@ const RegistrationSchema: Schema = new Schema({
     registrationDate: { type: Date, default: Date.now },
 });
 
-export default mongoose.model<IRegistration>("Registration", RegistrationSchema,);
+export default mongoose.model("Registration", RegistrationSchema,);

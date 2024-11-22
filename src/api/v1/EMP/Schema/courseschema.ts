@@ -1,17 +1,7 @@
-import mongoose, { Schema, Document } from "mongoose";
+import mongoose from "mongoose";
 
 
-export interface ICourse extends Document {
-    courseID: string;
-    courseName: string;
-    periods: string;
-    traininghours: number;
-    courseLimit: number;
-    courseLeft: number;
-}
-
-
-const CourseSchema: Schema = new mongoose.Schema({
+const CourseSchema = new mongoose.Schema({
     courseID: { type: String, required: true, unique: true },
     courseName: { type: String, required: true },
     periods: { type: String, required: true },
@@ -21,4 +11,4 @@ const CourseSchema: Schema = new mongoose.Schema({
 });
 
 
-export default mongoose.model<ICourse>("Course", CourseSchema);
+export default mongoose.model("Course", CourseSchema);
