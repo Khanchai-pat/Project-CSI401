@@ -93,10 +93,11 @@ const verifyToken = (token: string | undefined): boolean => {
 // });
 
 Courses.get("/results", async (req : Request , res : Response) => {
-    const token = req.headers["token-key"] as string;
-    const contentType = req.headers["content-type"] as string; 
+    const reqHeader: any = req.headers
+    const contentType: any = reqHeader["content-type"]
+    const tokenkey: any = reqHeader["authorization"]
     const empID = req.body
-    if (!verifyToken(token) && !contentType && contentType != "application/json") {
+    if (!tokenkey || !contentType) {
         res.status(401).json({
            code: "401",
            status: "error",
