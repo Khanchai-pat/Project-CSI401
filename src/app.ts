@@ -25,7 +25,7 @@ import { Courses } from "./api/v1/EMP/Course/route";
 dotenv.config();
 
 // Connect to MongoDB when server starts
-mongoose.connect(process.env.MONGOBD_URL!)
+mongoose.connect(process.env.mongocloud!)
     .then(() => console.log("MongoDB connected successfully"))
     .catch((error) => console.error("MongoDB connection error:", error));
 
