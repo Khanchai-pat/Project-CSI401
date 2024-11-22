@@ -1,6 +1,7 @@
 import express, { Request, Response } from 'express'
 import { responseData, responseError } from '../../interfaceRes/response'
 import { employees } from "../Schema/emp"
+import { users } from "../Schema/users"
 export const manageData = express();
 
 //create-Emp
@@ -11,14 +12,14 @@ manageData.post("/createEmp", async (req: Request, res: Response) => {
     const tokenkey: any = reqHeader["authorization"]
 
     const {
-        empId,
+        empID,
         empName,
         departMent,
-        cardId,
+        cardID,
         email,
         tel,
         role,
-        empStatus
+        status
     }: any = req.body
 
     if (contentType !== 'application/json' || !tokenkey) {
@@ -30,14 +31,14 @@ manageData.post("/createEmp", async (req: Request, res: Response) => {
         res.status(400).json(missingHeadersError);
 
     } else {
-        if (!empId ||
+        if (!empID ||
             !empName ||
             !departMent ||
-            !cardId ||
+            !cardID ||
             !email ||
             !tel ||
             !role ||
-            !empStatus
+            !status
         ) {
             const incompleteDataError: responseError = {
                 code: "400",
@@ -49,27 +50,35 @@ manageData.post("/createEmp", async (req: Request, res: Response) => {
             try {
                 const cerrentData = await employees.findOne({
                     $or: [
-                        { empId: empId },
-                        { cardId: cardId },
+                        { empId: empID },
+                        { cardId: cardID },
                         { email: email },
                         { tel: tel }
                     ]
                 })
                 if (!cerrentData) {
                     const addEmp = await employees.create({
-                        empId: empId,
+                        empId: empID,
                         empName: empName,
                         departMent: departMent,
-                        cardId: cardId,
+                        cardId: cardID,
                         email: email,
                         tel: tel,
                         role: role,
-                        empStatus: empStatus
+                        empStatus: status
+                    })
+                    const addUser = await users.create({
+                        email: email,
+                        cardID: cardID,
+                        role: role
                     })
                     const successData: responseData = {
                         code: "200",
                         status: "OK",
-                        data: addEmp
+                        data: {
+                            addEmp,
+                            addUser
+                        }
                     }
                     res.status(200).json(successData)
                 } else {
