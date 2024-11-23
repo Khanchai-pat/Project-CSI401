@@ -126,7 +126,7 @@ Courses.get("/results", async (req : Request , res : Response) => {
     const reqHeader: any = req.headers
     const contentType: any = reqHeader["content-type"]
     const tokenkey: any = reqHeader["authorization"]
-    const empID = req.body
+    const empID = req.params
     if (!tokenkey || !contentType) {
         res.status(401).json({
            code: "401",
@@ -144,6 +144,39 @@ Courses.get("/results", async (req : Request , res : Response) => {
    
    else {
     const dbResults = await coursesResults.find({ empID : empID.body })
+    const resultsData: responseData = {
+      code: "200",
+      status: "OK",
+      data: dbResults
+    }
+    res.status(200).json(resultsData)
+   }
+
+})
+
+
+Courses.post("/requests", async (req : Request , res : Response) => {
+    const reqHeader: any = req.headers
+    const contentType: any = reqHeader["content-type"]
+    const tokenkey: any = reqHeader["authorization"]
+    const {empID,courseID,reqid} = req.body
+    if (!tokenkey || !contentType) {
+        res.status(401).json({
+           code: "401",
+           status: "error",
+           message: "Unauthorized",
+       });
+}
+        else if (!empID || !courseID) {
+        res.status(404).json({
+           code: "404",
+           status: "error",
+           message: "EmpID/courseID not found",
+       });
+   }
+   
+   else {
+    const dbResults = await coursesResults.create({ reqid : reqid.body })
     const resultsData: responseData = {
       code: "200",
       status: "OK",
