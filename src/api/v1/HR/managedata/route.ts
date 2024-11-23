@@ -68,8 +68,8 @@ manageData.post("/createEmp", async (req: Request, res: Response) => {
                         empStatus: status
                     })
                     const addUser = await users.create({
-                        email: email,
-                        cardID: cardID,
+                        username: email,
+                        password: cardID,
                         role: role
                     })
                     const successData: responseData = {

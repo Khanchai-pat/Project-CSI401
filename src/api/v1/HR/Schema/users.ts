@@ -1,8 +1,8 @@
 import mongoose from "mongoose";
 
 const userChemas = new mongoose.Schema({
-    email: String,
-    cardID: String,
+    username: String,
+    password: String,
     role: String,
 }, { timestamps: true })
 
