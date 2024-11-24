@@ -7,6 +7,7 @@ import mongoose from "mongoose";
 import { useSwagger } from "../miidleware/swagger";
 // const morgan = require('morgan');
 
+//HR
 import { auth } from "./api/v1/auth/auth";
 import { checkData } from "./api/v1/HR/checkdata/route";
 import { manageData } from "./api/v1/HR/managedata/route";
@@ -19,6 +20,7 @@ import { dashBoard } from "./api/v1/HR/dashboard/route";
 // MEP
 import { checkdata } from "./api/v1/EMP/Checkdata/results";
 import { Courses } from "./api/v1/EMP/Course/route";
+import { enrollment } from "./api/v1/HR/enrollment/route";
 
 
 
@@ -46,6 +48,7 @@ app.use("/courseupdate", courseUpdate)
 app.use("/reimbursement", reimbursement)
 app.use("/history", history)
 app.use("/dashBoard", dashBoard)
+app.use("/enrollment", enrollment)
 
 //EMP
 app.use("/checkdata", checkdata)

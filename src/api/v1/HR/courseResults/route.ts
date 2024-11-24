@@ -11,6 +11,7 @@ courseUpdate.get("/results", async (req: Request, res: Response) => {
   const contentType: string = reqHeader["content-type"];
   const tokenkey: string = reqHeader["authorization"];
 
+
   if (!tokenkey || !contentType) {
     const missingHeaders: responseError = {
       code: "400",

@@ -2,6 +2,7 @@ import express, { Request, Response } from 'express'
 import { responseData, responseError } from '../../interfaceRes/response';
 export const course = express();
 import { courseRequests } from "../Schema/courseRequest"
+import { enrollments } from "../Schema/enrollment"
 
 course.get("/requests", async (req: Request, res: Response) => {
 
@@ -97,7 +98,7 @@ course.post("/appove", async (req: Request, res: Response) => {
     const reqHeader: any = req.headers
     const contentType: any = reqHeader["content-type"]
     const tokenkey: any = reqHeader["authorization"]
-    const { reqId, status }: any = req.body
+    const { reqId, empId }: any = req.body
 
     if (!contentType || !tokenkey) {
         const errorHeaderToken: responseError = {
@@ -127,9 +128,18 @@ course.post("/appove", async (req: Request, res: Response) => {
                 } else {
                     const dbAppove = await courseRequests.updateOne({ reqId: reqId }, {
                         $set: {
-                            status: status
+                            status: "appove"
                         }
                     });
+
+                    const dbCancle = await enrollments.updateOne({
+                        empId: empId
+
+                    }, {
+                        $set: {
+                            status: "Cencle"
+                        }
+                    })
                     res.status(200).json(dbAppove)
                 }
             } catch (error) {
@@ -150,7 +160,7 @@ course.post("/reject", async (req: Request, res: Response) => {
     const reqHeader: any = req.headers
     const contentType: any = reqHeader["content-type"]
     const tokenkey: any = reqHeader["authorization"]
-    const { reqId, status }: any = req.body
+    const { reqId }: any = req.body
 
     if (!contentType || !tokenkey) {
         const errorHeaderToken: responseError = {
@@ -180,7 +190,7 @@ course.post("/reject", async (req: Request, res: Response) => {
                 } else {
                     const dbAppove = await courseRequests.updateOne({ reqId: reqId }, {
                         $set: {
-                            status: status
+                            status: "deny"
                         }
                     });
                     res.status(200).json(dbAppove)

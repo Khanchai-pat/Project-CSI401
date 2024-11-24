@@ -8,4 +8,4 @@ const reqsSchema = new mongoose.Schema({
     status: String
 }, { timestamps: true });
 
-export const courseResults = mongoose.model("courseResults", reqsSchema, "courseResults");
+export const courseResults = mongoose.model("courseResult", reqsSchema, "courseResult");
