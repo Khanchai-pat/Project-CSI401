@@ -95,7 +95,7 @@ Courses.post("/register", async (req : Request , res : Response) => {
     const reqHeader: any = req.headers
     const contentType: any = reqHeader["content-type"]
     const tokenkey: any = reqHeader["authorization"]
-    const {body,empID,coursesID} = req.body
+    const {body} = req.body
 
     if (!tokenkey || !contentType) {
         res.status(401).json({
@@ -104,7 +104,7 @@ Courses.post("/register", async (req : Request , res : Response) => {
             message: "Unauthorized",
         });
     }
-    else if (!empID || !coursesID) {
+    else if (!body.empID || !body.coursesID) {
         res.status(404).json({
             code: "404",
             status: "error",
@@ -112,7 +112,7 @@ Courses.post("/register", async (req : Request , res : Response) => {
         });
     }
     else {
-    const dbResults = await coursesResults.updateOne({ empID : empID.body },{ $set : {courseID : coursesID.body} }) 
+    const dbResults = await coursesResults.create({reqid : body.reqid}) 
     const resultsData: responseData = {
       code: "200",
       status: "OK",
