@@ -5,6 +5,8 @@ import Registration from "../Schema/Registration";
 import { coursesResults } from "../Schema/courseresult";
 import { courseRequests } from "../../Schema/courseRequest";
 import { count } from "console";
+import { enrollment } from "../../HR/enrollment/route";
+import { enrollments } from "../../Schema/enrollment";
 export const Courses = express();
 
 const verifyToken = (token: string | undefined): boolean => {
@@ -100,14 +102,18 @@ Courses.post("/register", async (req: Request, res: Response) => {
       status: "error",
       message: "Unauthorized",
     });
-  } else if (!body.empID || !body.coursesID) {
+  } else if (!body.EmpId || !body.coursesId) {
     res.status(404).json({
       code: "404",
       status: "error",
       message: "EmpID/Course not found",
     });
   } else {
-    const dbResults = await coursesResults.create({ reqid: body.reqid });
+    const dbResults = await enrollments.create({ 
+        courseId: body.courseId,
+        sessionId : body.sessionId,
+        status : "registered"
+     });
     const resultsData: responseData = {
       code: "200",
       status: "OK",
