@@ -4,6 +4,8 @@ import { responseData, responseError } from '../../interfaceRes/response'
 import Course from "../Schema/Course";
 import Registration from "../Schema/Registration";
 import { coursesResults } from '../Schema/courseresult';
+import { courseRequests } from '../../Schema/courseRequest';
+import { count } from 'console';
 export const Courses = express();
 
 
@@ -176,7 +178,9 @@ Courses.post("/requests", async (req : Request , res : Response) => {
    }
    
    else {
-    const dbResults = await coursesResults.create({ reqid : reqid.body })
+    const findReq = await courseRequests.find({})
+    const createReqid = findReq.length 
+    const dbResults = await courseRequests.create({ reqid : createReqid })
     const resultsData: responseData = {
       code: "200",
       status: "OK",
