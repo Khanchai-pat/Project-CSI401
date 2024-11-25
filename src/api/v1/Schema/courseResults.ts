@@ -3,7 +3,7 @@ import mongoose from "mongoose";
 const reqsSchema = new mongoose.Schema({
     // coed: { type: String, required: true }
     reqid: String,
-    EmpID: String,
+    empID: String,
     courseID: String,
     status: String
 }, { timestamps: true });
