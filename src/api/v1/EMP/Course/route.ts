@@ -1,21 +1,16 @@
-
-import express, { Request, Response } from 'express'
-import { responseData, responseError } from '../../interfaceRes/response'
+import express, { Request, Response } from "express";
+import { responseData, responseError } from "../../interfaceRes/response";
 import Course from "../Schema/Course";
 import Registration from "../Schema/Registration";
-import { coursesResults } from '../Schema/courseresult';
-import { courseRequests } from '../../Schema/courseRequest';
-import { count } from 'console';
+import { coursesResults } from "../Schema/courseresult";
+import { courseRequests } from "../../Schema/courseRequest";
+import { count } from "console";
 export const Courses = express();
 
-
-
-
 const verifyToken = (token: string | undefined): boolean => {
-    const validToken = "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9";
-    return token === validToken;
+  const validToken = "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9";
+  return token === validToken;
 };
-
 
 // Courses.post("/register", async (req: Request, res: Response) => {
 //     const token = req.headers["token-key"] as string;
@@ -93,102 +88,95 @@ const verifyToken = (token: string | undefined): boolean => {
 //         });
 //     }
 // });
-Courses.post("/register", async (req : Request , res : Response) => {
-    const reqHeader: any = req.headers
-    const contentType: any = reqHeader["content-type"]
-    const tokenkey: any = reqHeader["authorization"]
-    const {body} = req.body
+Courses.post("/register", async (req: Request, res: Response) => {
+  const reqHeader: any = req.headers;
+  const contentType: any = reqHeader["content-type"];
+  const tokenkey: any = reqHeader["authorization"];
+  const { body } = req.body;
 
-    if (!tokenkey || !contentType) {
-        res.status(401).json({
-            code: "401",
-            status: "error",
-            message: "Unauthorized",
-        });
-    }
-    else if (!body.empID || !body.coursesID) {
-        res.status(404).json({
-            code: "404",
-            status: "error",
-            message: "EmpID/Course not found",
-        });
-    }
-    else {
-    const dbResults = await coursesResults.create({reqid : body.reqid}) 
+  if (!tokenkey || !contentType) {
+    res.status(401).json({
+      code: "401",
+      status: "error",
+      message: "Unauthorized",
+    });
+  } else if (!body.empID || !body.coursesID) {
+    res.status(404).json({
+      code: "404",
+      status: "error",
+      message: "EmpID/Course not found",
+    });
+  } else {
+    const dbResults = await coursesResults.create({ reqid: body.reqid });
     const resultsData: responseData = {
       code: "200",
       status: "OK",
-      data: dbResults
-    }
-    res.status(200).json(resultsData)
-    }
-})
+      data: dbResults,
+    };
+    res.status(200).json(resultsData);
+  }
+});
 
-Courses.get("/results", async (req : Request , res : Response) => {
-    const reqHeader: any = req.headers
-    const contentType: any = reqHeader["content-type"]
-    const tokenkey: any = reqHeader["authorization"]
-    const empID = req.params
-    if (!tokenkey || !contentType) {
-        res.status(401).json({
-           code: "401",
-           status: "error",
-           message: "Unauthorized",
-       });
-}
-        else if (!empID) {
-        res.status(404).json({
-           code: "404",
-           status: "error",
-           message: "EmpID not found",
-       });
-   }
-   
-   else {
-    const dbResults = await coursesResults.find({ empID : empID.body })
+Courses.get("/results", async (req: Request, res: Response) => {
+  const reqHeader: any = req.headers;
+  const contentType: any = reqHeader["content-type"];
+  const tokenkey: any = reqHeader["authorization"];
+  const empID = req.params;
+  if (!tokenkey || !contentType) {
+    res.status(401).json({
+      code: "401",
+      status: "error",
+      message: "Unauthorized",
+    });
+  } else if (!empID) {
+    res.status(404).json({
+      code: "404",
+      status: "error",
+      message: "EmpID not found",
+    });
+  } else {
+    const dbResults = await coursesResults.find({ empID: empID.body });
     const resultsData: responseData = {
       code: "200",
       status: "OK",
-      data: dbResults
-    }
-    res.status(200).json(resultsData)
-   }
+      data: dbResults,
+    };
+    res.status(200).json(resultsData);
+  }
+});
 
-})
-
-
-Courses.post("/requests", async (req : Request , res : Response) => {
-    const reqHeader: any = req.headers
-    const contentType: any = reqHeader["content-type"]
-    const tokenkey: any = reqHeader["authorization"]
-    const {empID,courseID,reqid} = req.body
-    if (!tokenkey || !contentType) {
-        res.status(401).json({
-           code: "401",
-           status: "error",
-           message: "Unauthorized",
-       });
-}
-        else if (!empID || !courseID) {
-        res.status(404).json({
-           code: "404",
-           status: "error",
-           message: "EmpID/courseID not found",
-       });
-   }
-   
-   else {
-    const findReq = await courseRequests.find({})
-    const createReqid = findReq.length 
-    const dbResults = await courseRequests.create({ reqid : createReqid })
+Courses.post("/requests", async (req: Request, res: Response) => {
+  const reqHeader: any = req.headers;
+  const contentType: any = reqHeader["content-type"];
+  const tokenkey: any = reqHeader["authorization"];
+  const { empID, courseID ,sessionID} = req.body;
+  if (!tokenkey || !contentType) {
+    res.status(401).json({
+      code: "401",
+      status: "error",
+      message: "Unauthorized",
+    });
+  } else if (!empID || !courseID) {
+    res.status(404).json({
+      code: "404",
+      status: "error",
+      message: "EmpID/courseID not found",
+    });
+  } else {
+    const findReq = await courseRequests.countDocuments({});
+    const createReqid = "WR" + String(findReq + 1).padStart(3, "0");
+    const dbResults = await courseRequests.create({
+      reqId: createReqid,
+      empID: empID,
+      courseID: courseID,
+      sessionID: sessionID,
+      status: "pending",
+    });
     const resultsData: responseData = {
       code: "200",
       status: "OK",
-      data: dbResults
-    }
-    res.status(200).json(resultsData)
-   }
-
-})
-
-
+      data: dbResults,
+    };
+    res.status(200).json(resultsData);
+  }
+});

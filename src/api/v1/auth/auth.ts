@@ -1,7 +1,8 @@
 import express, { Request, Response } from "express";
 import { responseData, responseError } from "../interfaceRes/response";
-import { users } from "../HR/Schema/users";
+
 import jwt from "jsonwebtoken";
+import { users } from "../Schema/users";
 
 export const auth = express();
 const secretKey = process.env.SECRET_KEY || "defaultSecretKey";
