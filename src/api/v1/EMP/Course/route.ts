@@ -7,6 +7,8 @@ import { courseRequests } from "../../Schema/courseRequest";
 import { count } from "console";
 import { enrollment } from "../../HR/enrollment/route";
 import { enrollments } from "../../Schema/enrollment";
+import { courseResult } from "../../HR/courseResults/route";
+import { courseResults } from "../../Schema/courseResults";
 export const Courses = express();
 
 const verifyToken = (token: string | undefined): boolean => {
@@ -141,7 +143,7 @@ Courses.get("/results", async (req: Request, res: Response) => {
       message: "EmpID not found",
     });
   } else {
-    const dbResults = await coursesResults.find({ empID: empID.body });
+    const dbResults = await courseResults.find({ empID: empID });
     const resultsData: responseData = {
       code: "200",
       status: "OK",
