@@ -10,12 +10,13 @@ import { useSwagger } from "../miidleware/swagger";
 //HR
 import { auth } from "./api/v1/auth/auth";
 import { checkData } from "./api/v1/HR/checkdata/route";
-import { manageData } from "./api/v1/HR/managedata/route";
-import { course } from "./api/v1/HR/withdrawRequest/route";
-import { courseUpdate } from "./api/v1/HR/courseResults/route";
+import { manageData } from "./api/v1/HR/manageEmp/route";
+import { withdrawRequest } from "./api/v1/HR/withdrawRequest/route";
+import { courseResult } from "./api/v1/HR/courseResults/route";
 import { reimbursement } from "./api/v1/HR/reimbursement/route";
 import { history } from "./api/v1/HR/history/route";
 import { dashBoard } from "./api/v1/HR/dashboard/route";
+import { courses } from "./api/v1/HR/courseManage/route"
 
 // MEP
 import { checkdata } from "./api/v1/EMP/Checkdata/results";
@@ -43,12 +44,13 @@ app.use(morgan('dev'))
 app.use("/auth", auth)
 app.use("/checkData", checkData)
 app.use("/manageData", manageData)
-app.use("/course", course)
-app.use("/courseupdate", courseUpdate)
+app.use("/withdrawRequest", withdrawRequest)
+app.use("/courseResult", courseResult)
 app.use("/reimbursement", reimbursement)
 app.use("/history", history)
 app.use("/dashBoard", dashBoard)
 app.use("/enrollment", enrollment)
+app.use("/courses", courses)
 
 //EMP
 app.use("/checkdata", checkdata)

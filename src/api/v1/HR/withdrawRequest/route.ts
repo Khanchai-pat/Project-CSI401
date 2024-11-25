@@ -1,10 +1,10 @@
 import express, { Request, Response } from 'express'
 import { responseData, responseError } from '../../interfaceRes/response';
-export const course = express();
+export const withdrawRequest = express();
 import { courseRequests } from "../../Schema/courseRequest"
 import { enrollments } from "../../Schema/enrollment"
 
-course.get("/requests", async (req: Request, res: Response) => {
+withdrawRequest.get("/requests", async (req: Request, res: Response) => {
 
     const reqHeader: any = req.headers;
     const contentType: string = reqHeader["content-type"];
@@ -39,7 +39,7 @@ course.get("/requests", async (req: Request, res: Response) => {
 });
 
 ////Show list requests By ID
-course.get("/requestsId/:reqId?", async (req: Request, res: Response) => {
+withdrawRequest.get("/requestsId/:reqId?", async (req: Request, res: Response) => {
     const reqHeader: any = req.headers
     const contentType: any = reqHeader["content-type"]
     const tokenkey: any = reqHeader["authorization"]
@@ -94,7 +94,7 @@ course.get("/requestsId/:reqId?", async (req: Request, res: Response) => {
 })
 
 //Show list request ByID appove
-course.post("/appove", async (req: Request, res: Response) => {
+withdrawRequest.post("/appove", async (req: Request, res: Response) => {
     const reqHeader: any = req.headers
     const contentType: any = reqHeader["content-type"]
     const tokenkey: any = reqHeader["authorization"]
@@ -156,7 +156,7 @@ course.post("/appove", async (req: Request, res: Response) => {
 })
 
 // Show list request ByID reject
-course.post("/reject", async (req: Request, res: Response) => {
+withdrawRequest.post("/reject", async (req: Request, res: Response) => {
     const reqHeader: any = req.headers
     const contentType: any = reqHeader["content-type"]
     const tokenkey: any = reqHeader["authorization"]

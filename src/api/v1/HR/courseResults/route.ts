@@ -1,11 +1,11 @@
 import express, { Request, Response } from "express";
 import { responseData, responseError } from '../../interfaceRes/response';
 
-export const courseUpdate = express();
+export const courseResult = express();
 import { courseResults } from "../../Schema/courseResults"
 
 //1.2.14 API : HR - Show Courses Results
-courseUpdate.get("/results", async (req: Request, res: Response) => {
+courseResult.get("/results", async (req: Request, res: Response) => {
 
   const reqHeader: any = req.headers;
   const contentType: string = reqHeader["content-type"];
@@ -42,7 +42,7 @@ courseUpdate.get("/results", async (req: Request, res: Response) => {
 });
 
 //1.2.15 API : HR - Show Courses Results ByID
-courseUpdate.get("/resultsId/:reqid?", async (req: Request, res: Response) => {
+courseResult.get("/resultsId/:reqid?", async (req: Request, res: Response) => {
 
   const reqHeader: any = req.headers;
   const contentType: any = reqHeader["content-type"];
@@ -100,7 +100,7 @@ courseUpdate.get("/resultsId/:reqid?", async (req: Request, res: Response) => {
 });
 
 //1.2.16 API : HR - Show Courses Results ByID Update
-courseUpdate.post("/update", async (req: Request, res: Response) => {
+courseResult.post("/update", async (req: Request, res: Response) => {
   const reqHeader: any = req.headers;
   const contentType: string = reqHeader["content-type"];
   const tokenkey: string = reqHeader["authorization"];
