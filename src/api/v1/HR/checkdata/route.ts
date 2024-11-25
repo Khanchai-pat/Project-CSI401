@@ -1,7 +1,7 @@
 import express, { Request, Response } from "express";
 import { responseData, responseError } from '../../interfaceRes/response';
 export const checkData = express();
-import { employees } from "../Schema/emp"
+import { employees } from "../../Schema/emp"
 
 // Check Data EMP
 checkData.get("/checkEmp", async (req: Request, res: Response) => {

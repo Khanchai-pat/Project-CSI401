@@ -2,7 +2,7 @@ import express, { Request, Response } from "express";
 import { responseData, responseError } from '../../interfaceRes/response';
 
 export const courseUpdate = express();
-import { courseResults } from "../Schema/courseResults"
+import { courseResults } from "../../Schema/courseResults"
 
 //1.2.14 API : HR - Show Courses Results
 courseUpdate.get("/results", async (req: Request, res: Response) => {

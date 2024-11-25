@@ -1,7 +1,7 @@
 import express, { Request, Response } from 'express'
 import { responseData, responseError } from '../../interfaceRes/response'
-import { employees } from "../Schema/emp"
-import { users } from "../Schema/users"
+import { employees } from "../../Schema/emp"
+import { users } from "../../Schema/users"
 export const manageData = express();
 
 //create-Emp

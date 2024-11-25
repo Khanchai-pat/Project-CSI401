@@ -1,10 +1,10 @@
 import express, { Request, Response } from "express"
 import { responseData, responseError } from "../../interfaceRes/response"
-import { courseRequests } from "../Schema/courseRequest"
-import { courseResults } from "../Schema/courseResults"
-import { refund } from "../Schema/reimbursement"
-import { employees } from "../Schema/emp"
-import { course } from "../Schema/course"
+import { courseRequests } from "../../Schema/courseRequest"
+import { courseResults } from "../../Schema/courseResults"
+import { refund } from "../../Schema/reimbursement"
+import { employees } from "../../Schema/emp"
+import { course } from "../../Schema/course"
 export const dashBoard = express();
 
 dashBoard.get("/dashBoard", async (req: Request, res: Response) => {

@@ -1,8 +1,8 @@
 import express, { Request, Response } from 'express'
 import { responseData, responseError } from '../../interfaceRes/response';
 export const course = express();
-import { courseRequests } from "../Schema/courseRequest"
-import { enrollments } from "../Schema/enrollment"
+import { courseRequests } from "../../Schema/courseRequest"
+import { enrollments } from "../../Schema/enrollment"
 
 course.get("/requests", async (req: Request, res: Response) => {
 

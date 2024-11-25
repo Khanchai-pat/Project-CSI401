@@ -1,7 +1,7 @@
 
 import express, { Request, Response } from "express";
 import { responseData, responseError } from "../../interfaceRes/response";
-import { refund } from "../Schema/reimbursement"
+import { refund } from "../../Schema/reimbursement"
 
 export const reimbursement = express();
 

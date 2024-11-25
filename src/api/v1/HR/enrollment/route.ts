@@ -1,7 +1,6 @@
 import express, { Request, Response } from "express"
-import { enrollments } from "../Schema/enrollment"
+import { enrollments } from "../../Schema/enrollment"
 import { responseData, responseError } from "../../interfaceRes/response";
-import {}
 export const enrollment = express()
 
 enrollment.post("/showCourse", async (req: Request, res: Response) => {
