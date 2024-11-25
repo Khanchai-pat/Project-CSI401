@@ -94,7 +94,7 @@ Courses.post("/register", async (req: Request, res: Response) => {
   const reqHeader: any = req.headers;
   const contentType: any = reqHeader["content-type"];
   const tokenkey: any = reqHeader["authorization"];
-  const { body } = req.body;
+  const { empId,courseId,sessionId} = req.body;
 
   if (!tokenkey || !contentType) {
     res.status(401).json({
@@ -102,7 +102,7 @@ Courses.post("/register", async (req: Request, res: Response) => {
       status: "error",
       message: "Unauthorized",
     });
-  } else if (!body.EmpId || !body.coursesId) {
+  } else if (!empId || !courseId) {
     res.status(404).json({
       code: "404",
       status: "error",
@@ -110,8 +110,8 @@ Courses.post("/register", async (req: Request, res: Response) => {
     });
   } else {
     const dbResults = await enrollments.create({ 
-        courseId: body.courseId,
-        sessionId : body.sessionId,
+        courseId: courseId,
+        sessionId : sessionId,
         status : "registered"
      });
     const resultsData: responseData = {
