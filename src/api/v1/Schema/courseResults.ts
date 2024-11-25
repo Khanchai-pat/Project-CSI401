@@ -1,10 +1,16 @@
 import mongoose from "mongoose";
 
 const reqsSchema = new mongoose.Schema({
-    // coed: { type: String, required: true }
     reqid: String,
     empID: String,
+    empName:String,
     courseID: String,
+    sessionID : String,
+    courseName : String,
+    trainingDate : Date,
+    periods : String,
+    trainingHours : Number,
+    trainingLocation : String,
     status: String
 }, { timestamps: true });
 

@@ -1,10 +1,12 @@
 import mongoose from "mongoose";
 
 const refundSchema = new mongoose.Schema({
-    // coed: { type: String, required: true }
     reqId: String,
-    EmpID: String,
+    empID: String,
     courseID: String,
+    cardID:String,
+    bankAccount:String,
+    amount:Number,
     status: String
 }, { timestamps: true });
 
