@@ -8,6 +8,9 @@ const empSchema = new mongoose.Schema({
     email: String,
     tel: String,
     role: String,
+    firstTrainingDate: Date,
+    expiryDate: Date,
+    nextExpiryDate: String,
     empStatus: String
 }, { timestamps: true })
 

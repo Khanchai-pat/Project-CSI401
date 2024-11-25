@@ -1,6 +1,5 @@
 import mongoose from "mongoose";
 
-
 const CoursesResult = new mongoose.Schema({
     // coed: { type: String, required: true }
     reqid: String,

@@ -1,13 +1,32 @@
 import mongoose from "mongoose";
 
-const courseSchema = new mongoose.Schema({
-    // coed: { type: String, required: true }
+const sessionSchema = new mongoose.Schema({
+  trainingDate: String,
+  trainingLocation: String,
+  periods: String,
+  hours: Number,
+  courseLimit: Number,
+  courseLeft: Number,
+  sessionId: String,
+  status: String,
+});
+
+const courseSchema = new mongoose.Schema(
+  {
     courseId: String,
     courseName: String,
-    trainingDate: String,
-    trainingLocation: String,
-    hours: String,
-    maxSeats: String
-}, { timestamps: true });
+    sessions: [sessionSchema],
+  },
+  { timestamps: true }
+);
+
+// const dbResults = await course.find({ courseId: "C001" });
+// const filteredResults = dbResults.map((course) => ({
+//   courseId: course.courseId,
+//   courseName: course.courseName,
+//   sessions: course.sessions.filter(
+//     (session) => session.sessionId === "S002"
+//   ),
+// }));
 
 export const course = mongoose.model("course", courseSchema, "course");
