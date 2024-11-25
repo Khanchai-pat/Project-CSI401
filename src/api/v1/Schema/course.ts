@@ -13,7 +13,6 @@ const courseSchema = new mongoose.Schema({
     courseLimit: String,
     courseLeft: String,
 
-
 }, { timestamps: true });
 
 export const course = mongoose.model("course", courseSchema, "course");

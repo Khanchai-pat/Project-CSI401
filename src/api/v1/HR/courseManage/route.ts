@@ -1,6 +1,5 @@
 import express, { Response, Request } from "express"
 import { responseData, responseError } from "../../interfaceRes/response";
-import mongoose from "mongoose";
 import { course } from "../../Schema/course"
 
 
@@ -80,11 +79,12 @@ courses.post("/createCourse", async (req: Request, res: Response) => {
 })
 
 
-courses.post("/createCourse", async (req: Request, res: Response) => {
+courses.post("/addSession", async (req: Request, res: Response) => {
     const reqHeader: any = req.headers
     const contentType: any = reqHeader["content-type"]
     const tokenkey: any = reqHeader["authorization"]
     const {
+        courseId,
         sessionId,
         trainingDate,
         trainingLocation,
@@ -104,6 +104,7 @@ courses.post("/createCourse", async (req: Request, res: Response) => {
 
     } else {
         if (
+            !courseId ||
             !sessionId ||
             !trainingDate ||
             !trainingLocation ||
@@ -120,7 +121,34 @@ courses.post("/createCourse", async (req: Request, res: Response) => {
             };
             res.status(400).json(incompleteDataError);
         } else {
-
+            try {
+                const cerrenCourse = await course.findOne({ courseId: courseId })
+                console.log(cerrenCourse)
+                if (!cerrenCourse) {
+                    const successData: responseData = {
+                        code: "200",
+                        status: "OK",
+                        data: {
+                        }
+                    }
+                    res.status(200).json(successData)
+                } else {
+                    const missingId: responseError = {
+                        code: "404",
+                        status: "Failed",
+                        message: `with ID '${courseId}' not found.`,
+                    };
+                    res.status(404).json(missingId);
+                }
+            } catch (error) {
+                console.log(error)
+                const serverError: responseError = {
+                    code: "500",
+                    status: "Failed",
+                    message: "An error occurred while processing your request. Please try again later"
+                };
+                res.status(500).json(serverError);
+            }
         }
     }
 })
