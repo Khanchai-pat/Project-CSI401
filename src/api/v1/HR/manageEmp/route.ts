@@ -9,7 +9,7 @@ manageData.post("/createEmp", async (req: Request, res: Response) => {
     // res headers
     const reqHeader: any = req.headers
     const contentType: any = reqHeader["content-type"]
-    const tokenkey: any = reqHeader["authorization"]
+    const tokenkey: any = reqHeader["token-key"]
 
     const {
         empId,
@@ -37,7 +37,7 @@ manageData.post("/createEmp", async (req: Request, res: Response) => {
             !cardId ||
             !email ||
             !tel ||
-            !role ||
+            // !role ||
             !status
         ) {
             const incompleteDataError: responseError = {
@@ -64,8 +64,8 @@ manageData.post("/createEmp", async (req: Request, res: Response) => {
                         cardId: cardId,
                         email: email,
                         tel: tel,
-                        role: role,
-                        empStatus: status
+                        role: role || "EMP",
+                        status: status
                     })
                     const addUser = await users.create({
                         username: email,
@@ -107,7 +107,7 @@ manageData.post("/createEmp", async (req: Request, res: Response) => {
 manageData.post("/editEmp", async (req: Request, res: Response) => {
     const reqHeader: any = req.headers
     const contentType: any = reqHeader["content-type"]
-    const tokenkey: any = reqHeader["authorization"]
+    const tokenkey: any = reqHeader["token-key"]
 
     const {
         empId,
@@ -143,7 +143,7 @@ manageData.post("/editEmp", async (req: Request, res: Response) => {
             const reqError: responseError = {
                 code: "400",
                 status: "Failed",
-                message: "Employee Id is required and the employee status must be 'Active'. Route: manageData, Method: editEmp"
+                message: "Employee Id is required and the employee status must be 'Active' Route: manageData, Method: editEmp"
             };
             res.status(400).json(reqError);
         } else {
@@ -152,7 +152,7 @@ manageData.post("/editEmp", async (req: Request, res: Response) => {
                 const employeeNotFoundError: responseError = {
                     code: "404",
                     status: "Failed",
-                    message: `Employee Id${empId} not found Route: manageData, Method: editEmp`
+                    message: `Employee Id '${empId}' not found Route: manageData, Method: editEmp`
                 };
                 res.status(404).json(employeeNotFoundError);
             } else {
@@ -183,7 +183,7 @@ manageData.post("/editEmp", async (req: Request, res: Response) => {
 manageData.post("/removeEmp", async (req: Request, res: Response) => {
     const reqHeader: any = req.headers
     const contentType: any = reqHeader["content-type"]
-    const tokenkey: any = reqHeader["authorization"]
+    const tokenkey: any = reqHeader["token-key"]
 
     const {
         empId,
@@ -198,7 +198,7 @@ manageData.post("/removeEmp", async (req: Request, res: Response) => {
         };
         res.status(400).json(missingHeadersError);
     } else {
-        if (!empId) {
+        if (!empId || status !== 'active') {
             const missingempIdError: responseError = {
                 code: "400",
                 status: "Failed",
@@ -221,7 +221,7 @@ manageData.post("/removeEmp", async (req: Request, res: Response) => {
                             {
                                 $set: {
                                     // status: "Inactive"
-                                    status: status
+                                    status: "Inactive"
                                 }
                             })
 

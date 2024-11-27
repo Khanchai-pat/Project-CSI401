@@ -10,7 +10,7 @@ export const history = express();
 history.get("/course", async (req: Request, res: Response) => {
     const reqHeader: any = req.headers
     const contentType: any = reqHeader["content-type"]
-    const tokenkey: any = reqHeader["authorization"]
+    const tokenkey: any = reqHeader["token-key"]
     if (!contentType || !tokenkey) {
         const errorHeaderToken: responseError = {
             code: "400",
@@ -45,7 +45,7 @@ history.get("/course", async (req: Request, res: Response) => {
 history.get("/results", async (req: Request, res: Response) => {
     const reqHeader: any = req.headers
     const contentType: any = reqHeader["content-type"]
-    const tokenkey: any = reqHeader["authorization"]
+    const tokenkey: any = reqHeader["token-key"]
     const { status }: any = req.body
     if (!contentType || !tokenkey) {
         const errorHeaderToken: responseError = {
@@ -77,10 +77,10 @@ history.get("/results", async (req: Request, res: Response) => {
 })
 
 
-history.get("/refund", async (req: Request, res: Response) => {
+history.get("/reimbursement", async (req: Request, res: Response) => {
     const reqHeader: any = req.headers
     const contentType: any = reqHeader["content-type"]
-    const tokenkey: any = reqHeader["authorization"]
+    const tokenkey: any = reqHeader["token-key"]
     if (!contentType || !tokenkey) {
         const errorHeaderToken: responseError = {
             code: "400",

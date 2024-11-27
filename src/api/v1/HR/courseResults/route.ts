@@ -9,7 +9,7 @@ courseResult.get("/results", async (req: Request, res: Response) => {
 
   const reqHeader: any = req.headers;
   const contentType: string = reqHeader["content-type"];
-  const tokenkey: string = reqHeader["authorization"];
+  const tokenkey: string = reqHeader["token-key"];
 
 
   if (!tokenkey || !contentType) {
@@ -42,12 +42,12 @@ courseResult.get("/results", async (req: Request, res: Response) => {
 });
 
 //1.2.15 API : HR - Show Courses Results ById
-courseResult.get("/resultsId/:reqid?", async (req: Request, res: Response) => {
+courseResult.get("/resultsId/:reqId?", async (req: Request, res: Response) => {
 
   const reqHeader: any = req.headers;
   const contentType: any = reqHeader["content-type"];
-  const tokenkey: any = reqHeader["authorization"];
-  const { reqid } = req.params
+  const tokenkey: any = reqHeader["token-key"];
+  const { reqId } = req.params
 
   if (!tokenkey || !contentType) {
     const missingHeaders: responseError = {
@@ -59,26 +59,26 @@ courseResult.get("/resultsId/:reqid?", async (req: Request, res: Response) => {
     res.status(400).json(missingHeaders)
   }
   else {
-    if (!reqid) {
+    if (!reqId) {
       const missingId: responseError = {
         code: "400",
         status: "Failed",
         message:
-          "Parameter 'reqid' is missing",
+          "Parameter 'reqId' is missing",
       };
       res.status(400).json(missingId);
     } else {
       try {
-        const checkData = await courseResults.findOne({ reqid: reqid })
+        const checkData = await courseResults.findOne({ reqId: reqId })
         if (!checkData) {
           const missingId: responseError = {
             code: "404",
             status: "Failed",
-            message: `Employee with Id '${reqid}' not found.`,
+            message: `courseResult with Id '${reqId}' not found.`,
           };
           res.status(404).json(missingId);
         } else {
-          const dbResults = await courseResults.find({ reqid: reqid })
+          const dbResults = await courseResults.find({ reqId: reqId })
           const resData: responseData = {
             code: "200",
             status: "OK",
@@ -103,8 +103,8 @@ courseResult.get("/resultsId/:reqid?", async (req: Request, res: Response) => {
 courseResult.post("/update", async (req: Request, res: Response) => {
   const reqHeader: any = req.headers;
   const contentType: string = reqHeader["content-type"];
-  const tokenkey: string = reqHeader["authorization"];
-  const { reqid, status } = req.body
+  const tokenkey: string = reqHeader["token-key"];
+  const { reqId } = req.body
 
   if (!tokenkey || !contentType) {
     const missingHeaders: responseError = {
@@ -115,7 +115,7 @@ courseResult.post("/update", async (req: Request, res: Response) => {
     };
     res.status(400).json(missingHeaders);
   } else {
-    if (!reqid) {
+    if (!reqId) {
       const missingId: responseError = {
         code: "400",
         status: "Failed",
@@ -124,16 +124,20 @@ courseResult.post("/update", async (req: Request, res: Response) => {
       res.status(400).json(missingId)
     } else {
       try {
-        const cerrenId = await courseResults.findOne({ reqid: reqid })
+        const cerrenId = await courseResults.findOne({ reqId: reqId })
         if (!cerrenId) {
           const notFoundError: responseError = {
             code: "404",
             status: "Failed",
-            message: `Id  ${reqid} : not found in the database.`,
+            message: `Id  ${reqId} : not found in the database.`,
           };
           res.status(404).json(notFoundError);
         } else {
-          const updateData = await courseResults.updateOne({ reqid: reqid }, req.body)
+          const updateData = await courseResults.updateOne({ reqId: reqId }, {
+            $set: {
+              status : "complete"
+            }
+          })
           res.status(200).json(updateData)
         }
       } catch (error) {

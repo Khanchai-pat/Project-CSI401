@@ -8,7 +8,7 @@ withdrawRequest.get("/requests", async (req: Request, res: Response) => {
 
     const reqHeader: any = req.headers;
     const contentType: string = reqHeader["content-type"];
-    const tokenkey: string = reqHeader["authorization"];
+    const tokenkey: string = reqHeader["token-key"];
 
     if (!tokenkey || !contentType) {
         const missingHeadersError: responseError = {
@@ -42,7 +42,7 @@ withdrawRequest.get("/requests", async (req: Request, res: Response) => {
 withdrawRequest.get("/requestsId/:reqId?", async (req: Request, res: Response) => {
     const reqHeader: any = req.headers
     const contentType: any = reqHeader["content-type"]
-    const tokenkey: any = reqHeader["authorization"]
+    const tokenkey: any = reqHeader["token-key"]
     const { reqId }: any = req.params
     console.log(reqId)
 
@@ -68,7 +68,7 @@ withdrawRequest.get("/requestsId/:reqId?", async (req: Request, res: Response) =
                     const idNotFoundError: responseError = {
                         code: "404",
                         status: "Failed",
-                        message: `The requested data with the provided Id : ${reqId} could not be found`
+                        message: `The requested data with the provided Id '${reqId}' could not be found`
                     };
                     res.status(404).send(idNotFoundError)
                 } else {
@@ -94,10 +94,10 @@ withdrawRequest.get("/requestsId/:reqId?", async (req: Request, res: Response) =
 })
 
 //Show list request ById appove
-withdrawRequest.post("/appove", async (req: Request, res: Response) => {
+withdrawRequest.post("/appoved", async (req: Request, res: Response) => {
     const reqHeader: any = req.headers
     const contentType: any = reqHeader["content-type"]
-    const tokenkey: any = reqHeader["authorization"]
+    const tokenkey: any = reqHeader["token-key"]
     const { reqId, empId }: any = req.body
 
     if (!contentType || !tokenkey) {
@@ -159,7 +159,7 @@ withdrawRequest.post("/appove", async (req: Request, res: Response) => {
 withdrawRequest.post("/denied", async (req: Request, res: Response) => {
     const reqHeader: any = req.headers
     const contentType: any = reqHeader["content-type"]
-    const tokenkey: any = reqHeader["authorization"]
+    const tokenkey: any = reqHeader["token-key"]
     const { reqId }: any = req.body
 
     if (!contentType || !tokenkey) {
@@ -190,7 +190,7 @@ withdrawRequest.post("/denied", async (req: Request, res: Response) => {
                 } else {
                     const dbAppove = await courseRequests.updateOne({ reqId: reqId }, {
                         $set: {
-                            status: "deny"
+                            status: "denied"
                         }
                     });
                     res.status(200).json(dbAppove)

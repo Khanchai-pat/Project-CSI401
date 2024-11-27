@@ -109,7 +109,7 @@ courses.post("/courseDetail", async (req: Request, res: Response) => {
 courses.post("/createCourse", async (req: Request, res: Response) => {
     const reqHeader: any = req.headers
     const contentType: any = reqHeader["content-type"]
-    const tokenkey: any = reqHeader["authorization"]
+    const tokenkey: any = reqHeader["token-key"]
 
     const {
         courseId,
@@ -181,7 +181,7 @@ courses.post("/createCourse", async (req: Request, res: Response) => {
 courses.post("/addSession", async (req: Request, res: Response) => {
     const reqHeader: any = req.headers
     const contentType: any = reqHeader["content-type"]
-    const tokenkey: any = reqHeader["authorization"]
+    const tokenkey: any = reqHeader["token-key"]
     const {
         courseId,
         sessionId,
@@ -288,7 +288,7 @@ courses.post("/addSession", async (req: Request, res: Response) => {
 courses.post("/deleteCourse", async (req: Request, res: Response) => {
     const reqHeader: any = req.headers
     const contentType: any = reqHeader["content-type"]
-    const tokenkey: any = reqHeader["authorization"]
+    const tokenkey: any = reqHeader["token-key"]
     const { courseId }: any = req.body
 
     if (contentType !== 'application/json' || !tokenkey) {

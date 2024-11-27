@@ -9,7 +9,7 @@ reimbursement.get("/requests", async (req: Request, res: Response) => {
 
     const reqHeader: any = req.headers
     const contentType: any = reqHeader["content-type"]
-    const tokenkey: any = reqHeader["authorization"]
+    const tokenkey: any = reqHeader["token-key"]
 
     if (!contentType || !tokenkey) {
         const missingHeadersError: responseError = {
@@ -44,7 +44,7 @@ reimbursement.get("/requests", async (req: Request, res: Response) => {
 reimbursement.get("/requestsId/:refId?", async (req: Request, res: Response) => {
     const reqHeader: any = req.headers
     const contentType: any = reqHeader["content-type"]
-    const tokenkey: any = reqHeader["authorization"]
+    const tokenkey: any = reqHeader["token-key"]
     const { refId }: any = req.params
 
     if (!contentType || !tokenkey) {
@@ -70,7 +70,7 @@ reimbursement.get("/requestsId/:refId?", async (req: Request, res: Response) => 
                     const idNotFoundError: responseError = {
                         code: "404",
                         status: "Failed",
-                        message: `The requested data with the provided Id ${refId} could not be found`
+                        message: `The requested data with the provided Id '${refId}'could not be found`
                     };
                     res.status(404).send(idNotFoundError)
                 } else {
@@ -100,7 +100,7 @@ reimbursement.get("/requestsId/:refId?", async (req: Request, res: Response) => 
 reimbursement.post("/appoved", async (req: Request, res: Response) => {
     const reqHeader: any = req.headers
     const contentType: any = reqHeader["content-type"]
-    const tokenkey: any = reqHeader["authorization"]
+    const tokenkey: any = reqHeader["token-key"]
     const { refId, status }: any = req.body
 
     if (!contentType || !tokenkey) {
@@ -131,7 +131,7 @@ reimbursement.post("/appoved", async (req: Request, res: Response) => {
                 } else {
                     const dbAppove = await reimbursements.updateOne({ refId: refId }, {
                         $set: {
-                            status: status
+                            status: "appoved"
                         }
                     });
                     const successData: responseData = {
@@ -159,7 +159,7 @@ reimbursement.post("/appoved", async (req: Request, res: Response) => {
 reimbursement.post("/denied", async (req: Request, res: Response) => {
     const reqHeader: any = req.headers
     const contentType: any = reqHeader["content-type"]
-    const tokenkey: any = reqHeader["authorization"]
+    const tokenkey: any = reqHeader["token-key"]
     const { refId, status }: any = req.body
 
     if (!contentType || !tokenkey) {
@@ -190,7 +190,7 @@ reimbursement.post("/denied", async (req: Request, res: Response) => {
                 } else {
                     const dbAppove = await reimbursements.updateOne({ refId: refId }, {
                         $set: {
-                            status: status
+                            status: "denied"
                         }
                     });
                     const successData: responseData = {
