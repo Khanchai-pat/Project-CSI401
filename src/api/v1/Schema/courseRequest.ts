@@ -4,7 +4,7 @@ const reqSchema = new mongoose.Schema(
   {
     // coed: { type: String, required: true }
     reqId: String,
-    empID: String,
+    empId: String,
     sessionID: String,
     courseID: String,
     status: String,

@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 
 const reqsSchema = new mongoose.Schema({
     reqid: String,
-    empID: String,
+    empId: String,
     empName:String,
     courseID: String,
     sessionID : String,

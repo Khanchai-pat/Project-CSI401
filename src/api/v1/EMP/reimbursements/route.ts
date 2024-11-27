@@ -11,14 +11,14 @@ empReimbursement.post("/requests", async (req: Request, res: Response) => {
     const reqHeader: any = req.headers;
     const contentType: any = reqHeader["content-type"];
     const tokenkey: any = reqHeader["authorization"];
-    const { empID, courseID ,moneyAmount,bankAccount,empName,department,cardID} = req.body;
+    const { empId, courseID ,moneyAmount,bankAccount,empName,department,cardID} = req.body;
     if (!tokenkey || !contentType) {
       res.status(401).json({
         code: "401",
         status: "error",
         message: "Unauthorized",
       });
-    } else if (!empID || !courseID || !bankAccount) {
+    } else if (!empId || !courseID || !bankAccount) {
       res.status(404).json({
         code: "404",
         status: "error",
@@ -30,7 +30,7 @@ empReimbursement.post("/requests", async (req: Request, res: Response) => {
       const dbResults = await reimbursements.create({
         reqId: createReqid,
         courseID: courseID,
-        empID: empID,
+        empId: empId,
         empName : empName,
         department : department,
         cardID : cardID,

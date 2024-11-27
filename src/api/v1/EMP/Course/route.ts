@@ -47,21 +47,21 @@ Courses.get("/results", async (req: Request, res: Response) => {
   const reqHeader: any = req.headers;
   const contentType: any = reqHeader["content-type"];
   const tokenkey: any = reqHeader["authorization"];
-  const empID = req.params;
+  const empId = req.params;
   if (!tokenkey || !contentType) {
     res.status(401).json({
       code: "401",
       status: "error",
       message: "Unauthorized",
     });
-  } else if (!empID) {
+  } else if (!empId) {
     res.status(404).json({
       code: "404",
       status: "error",
       message: "EmpID not found",
     });
   } else {
-    const dbResults = await courseResults.find({ empID: empID });
+    const dbResults = await courseResults.find({ empId: empId });
     const resultsData: responseData = {
       code: "200",
       status: "OK",
@@ -75,14 +75,14 @@ Courses.post("/requests", async (req: Request, res: Response) => {
   const reqHeader: any = req.headers;
   const contentType: any = reqHeader["content-type"];
   const tokenkey: any = reqHeader["authorization"];
-  const { empID, courseID, sessionID } = req.body;
+  const { empId, courseID, sessionID } = req.body;
   if (!tokenkey || !contentType) {
     res.status(401).json({
       code: "401",
       status: "error",
       message: "Unauthorized",
     });
-  } else if (!empID || !courseID) {
+  } else if (!empId || !courseID) {
     res.status(404).json({
       code: "404",
       status: "error",
@@ -93,7 +93,7 @@ Courses.post("/requests", async (req: Request, res: Response) => {
     const createReqid = "WR" + String(findReq + 1).padStart(3, "0");
     const dbResults = await courseRequests.create({
       reqId: createReqid,
-      empID: empID,
+      empId: empId,
       courseID: courseID,
       sessionID: sessionID,
       status: "pending",

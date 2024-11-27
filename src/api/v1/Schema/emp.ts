@@ -1,10 +1,10 @@
 import mongoose from "mongoose"
 
 const empSchema = new mongoose.Schema({
-    empID: String,
+    empId: String,
     empName: String,
     department: String,
-    cardID: String,
+    cardId: String,
     email: String,
     tel: String,
     role: String,
