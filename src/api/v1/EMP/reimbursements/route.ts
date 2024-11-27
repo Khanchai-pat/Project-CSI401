@@ -1,9 +1,13 @@
 import express, { Request, Response } from "express";
+<<<<<<< HEAD
 // import Reimbursement from "../Schema/Reimbursementschema";
 // import { reimbursements, } from "/../reimbursement";
 import { reimbursement } from "../../HR/reimbursement/route";
 import { reimbursements} from "../../Schema/reimbursement";
+=======
+>>>>>>> 7fb51790a6bcd5ba6a4b625bb3779b5252b4d1cc
 import { responseData, responseError } from "../../interfaceRes/response";
+import { reimbursements } from "../../Schema/reimbursement";
 
 export const empReimbursement = express.Router();
 
@@ -28,9 +32,9 @@ empReimbursement.post("/requests", async (req: Request, res: Response) => {
         message: "EmpID/courseID not found",
       });
     } else {
-      const findReq = await refund.countDocuments({});
+      const findReq = await reimbursements.countDocuments({});
       const createReqid = "R" + String(findReq + 1).padStart(3, "0");
-      const dbResults = await refund.create({
+      const dbResults = await reimbursements.create({
         reqId: createReqid,
         courseID: courseID,
         empID: empID,
