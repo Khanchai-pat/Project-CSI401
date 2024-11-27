@@ -1,7 +1,6 @@
 import express, { Request, Response } from "express";
-import { responseData, responseError } from "../../interfaceRes/response";
+import { responseData,responseError } from "../../interfaceRes/response";
 import { employees } from "../../Schema/emp";
-import { courseResult } from "../../HR/courseResults/route";
 import { courseResults } from "../../Schema/courseResults";
 import { enrollments } from "../../Schema/enrollment";
 import { course } from "../../Schema/course";

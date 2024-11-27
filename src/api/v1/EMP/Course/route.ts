@@ -1,11 +1,14 @@
 import express, { Request, Response } from "express";
 import { responseData, responseError } from "../../interfaceRes/response";
+<<<<<<< HEAD
 // import { course } from "../../Schema/course";
 // import {Registration} from "../../Schema/Registration";
 // import { count } from "console";
 // import { enrollment } from "../../HR/enrollment/route";
 // import { courseResult } from "../../HR/courseResults/route";
 
+=======
+>>>>>>> 99b2815f0f0631f67fd715165619dbcb34ac1576
 import { courseRequests } from "../../Schema/courseRequest";
 import { enrollments } from "../../Schema/enrollment";
 import { courseResults } from "../../Schema/courseResults";
