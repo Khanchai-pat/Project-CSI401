@@ -7,6 +7,7 @@ import mongoose from "mongoose";
 import { useSwagger } from "../miidleware/swagger";
 // const morgan = require('morgan');
 
+
 //HR
 import { auth } from "./api/v1/auth/auth";
 import { checkData } from "./api/v1/HR/checkEmp/route";
@@ -23,7 +24,6 @@ import { checkdata } from "./api/v1/EMP/Checkdata/results";
 import { Courses } from "./api/v1/EMP/Course/route";
 import { enrollment } from "./api/v1/HR/enrollment/route";
 import { empReimbursement } from "./api/v1/EMP/reimbursements/route";
-
 
 
 dotenv.config();

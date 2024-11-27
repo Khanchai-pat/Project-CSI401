@@ -1,11 +1,4 @@
 import express, { Request, Response } from "express";
-<<<<<<< HEAD
-// import Reimbursement from "../Schema/Reimbursementschema";
-// import { reimbursements, } from "/../reimbursement";
-import { reimbursement } from "../../HR/reimbursement/route";
-import { reimbursements} from "../../Schema/reimbursement";
-=======
->>>>>>> 7fb51790a6bcd5ba6a4b625bb3779b5252b4d1cc
 import { responseData, responseError } from "../../interfaceRes/response";
 import { reimbursements } from "../../Schema/reimbursement";
 
@@ -15,45 +8,45 @@ export const empReimbursement = express.Router();
 
 
 empReimbursement.post("/requests", async (req: Request, res: Response) => {
-    const reqHeader: any = req.headers;
-    const contentType: any = reqHeader["content-type"];
-    const tokenkey: any = reqHeader["authorization"];
-    const { empID, courseID ,moneyAmount,bankAccount,empName,department,cardID} = req.body;
-    if (!tokenkey || !contentType) {
-      res.status(401).json({
-        code: "401",
-        status: "error",
-        message: "Unauthorized",
-      });
-    } else if (!empID || !courseID || !bankAccount) {
-      res.status(404).json({
-        code: "404",
-        status: "error",
-        message: "EmpID/courseID not found",
-      });
-    } else {
-      const findReq = await reimbursements.countDocuments({});
-      const createReqid = "R" + String(findReq + 1).padStart(3, "0");
-      const dbResults = await reimbursements.create({
-        reqId: createReqid,
-        courseID: courseID,
-        empID: empID,
-        empName : empName,
-        department : department,
-        cardID : cardID,
-        bankAccount : bankAccount,
-        MoneyAmout: moneyAmount,
-        status: "pending",
-      });
-      const resultsData: responseData = {
-        code: "200",
-        status: "OK",
-        data: dbResults,
-      };
-      res.status(200).json(resultsData);
-    }
-  });
-  
+  const reqHeader: any = req.headers;
+  const contentType: any = reqHeader["content-type"];
+  const tokenkey: any = reqHeader["authorization"];
+  const { empID, courseID, moneyAmount, bankAccount, empName, department, cardID } = req.body;
+  if (!tokenkey || !contentType) {
+    res.status(401).json({
+      code: "401",
+      status: "error",
+      message: "Unauthorized",
+    });
+  } else if (!empID || !courseID || !bankAccount) {
+    res.status(404).json({
+      code: "404",
+      status: "error",
+      message: "EmpID/courseID not found",
+    });
+  } else {
+    const findReq = await reimbursements.countDocuments({});
+    const createReqid = "R" + String(findReq + 1).padStart(3, "0");
+    const dbResults = await reimbursements.create({
+      reqId: createReqid,
+      courseID: courseID,
+      empID: empID,
+      empName: empName,
+      department: department,
+      cardID: cardID,
+      bankAccount: bankAccount,
+      MoneyAmout: moneyAmount,
+      status: "pending",
+    });
+    const resultsData: responseData = {
+      code: "200",
+      status: "OK",
+      data: dbResults,
+    };
+    res.status(200).json(resultsData);
+  }
+});
+
 
 // requests.post("/request", async (req: Request, res: Response) => {
 //     const { EmpID, courseID, DateReim, MoneyAmount }: ReimbursementRequest = req.body;
