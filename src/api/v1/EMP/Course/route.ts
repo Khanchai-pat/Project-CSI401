@@ -1,13 +1,7 @@
 import express, { Request, Response } from "express";
 import { responseData, responseError } from "../../interfaceRes/response";
-import Course from "../Schema/Course";
-import Registration from "../Schema/Registration";
-import { coursesResults } from "../Schema/courseresult";
 import { courseRequests } from "../../Schema/courseRequest";
-import { count } from "console";
-import { enrollment } from "../../HR/enrollment/route";
 import { enrollments } from "../../Schema/enrollment";
-import { courseResult } from "../../HR/courseResults/route";
 import { courseResults } from "../../Schema/courseResults";
 export const Courses = express();
 
