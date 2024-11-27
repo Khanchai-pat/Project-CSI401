@@ -1,44 +1,38 @@
 import express, { Request, Response } from 'express';
 import { responseData, responseError } from '../../interfaceRes/response'
-import mongoose from 'mongoose';
+import { employees } from '../../Schema/emp';
 
 export const checkdata = express();
-const userSchemas = new mongoose.Schema({
-    // coed: { type: String, required: true }
-    empID: String,
-    empName: String,
-    courses: Array,
-    courseID: String,
-    courseName: String,
-    completionDate: Number,
-    status: String,
-});
 
 
 
 
 checkdata.post('/checkdata', async (req: Request, res: Response) => {
     const reqHeader: any = req.headers;
-    // const contentType: any = reqHeader["content-type"];
+    const contentType: any = reqHeader["content-type"];
     const tokenkey: any = reqHeader["authorization"];
     // const empID = req.query.Empid as string;
-    const { body } = req.body
+    const { empID } = req.body
 
 
     // ตรวจสอบการมี empID ในคำขอและเช็ค contentType
-    if (!tokenkey || tokenkey != "'ssp'") {
+    if (!tokenkey || !contentType) {
         res.status(400).json({
             code: "400",
             status: "Bad Request",
             message: "Cannot Show "
         });
     }
- 
-    const Check = mongoose.model("emps", userSchemas);
-    
+    else if (!empID){
+        res.status(404).json({
+            code: "404",
+            status: "error",
+            message: "EmpID not found",
+          });
+    }  
     // สร้างข้อมูล response
-    const CheckdataresponseData = await Check.findOne({
-        empId: body.empId
+    const CheckdataresponseData = await employees.findOne({
+        empID: empID
     });
   
     res.status(200).json({
