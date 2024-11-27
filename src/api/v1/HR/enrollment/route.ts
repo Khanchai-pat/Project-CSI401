@@ -75,7 +75,7 @@ enrollment.post("/approved", async (req: Request, res: Response) => {
                         const missingCourseId: responseError = {
                             code: "404",
                             status: "Failed",
-                            message: `with ID '${courseId}' courseId  not found checkEnrollment`,
+                            message: `with Id '${courseId}' courseId  not found checkEnrollment`,
                         };
                         res.status(404).json(missingCourseId);
                     } else {
@@ -83,7 +83,7 @@ enrollment.post("/approved", async (req: Request, res: Response) => {
                             const missingSessionId: responseError = {
                                 code: "404",
                                 status: "Failed",
-                                message: `with ID '${sessionId}' sessionId not found checkEnrollment`,
+                                message: `with Id '${sessionId}' sessionId not found checkEnrollment`,
                             };
                             res.status(404).json(missingSessionId);
                         } else {
@@ -157,7 +157,7 @@ enrollment.post("/denied", async (req: Request, res: Response) => {
                         const missingCourseId: responseError = {
                             code: "404",
                             status: "Failed",
-                            message: `with ID '${courseId}' courseId  not found checkEnrollment`,
+                            message: `with Id '${courseId}' courseId  not found checkEnrollment`,
                         };
                         res.status(404).json(missingCourseId);
                     } else {
@@ -165,7 +165,7 @@ enrollment.post("/denied", async (req: Request, res: Response) => {
                             const missingSessionId: responseError = {
                                 code: "404",
                                 status: "Failed",
-                                message: `with ID '${sessionId}' sessionId not found checkEnrollment`,
+                                message: `with Id '${sessionId}' sessionId not found checkEnrollment`,
                             };
                             res.status(404).json(missingSessionId);
                         } else {

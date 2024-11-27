@@ -226,7 +226,7 @@ courses.post("/addSession", async (req: Request, res: Response) => {
                     const missingId: responseError = {
                         code: "404",
                         status: "Failed",
-                        message: `with ID '${courseId}' not found.`,
+                        message: `with Id '${courseId}' not found.`,
                     };
                     res.status(404).json(missingId);
 
@@ -240,7 +240,7 @@ courses.post("/addSession", async (req: Request, res: Response) => {
                         const duplicateSessionError: responseError = {
                             code: "409",
                             status: "Failed",
-                            message: `Session ID '${sessionId}' already exists in the course.`,
+                            message: `Session Id '${sessionId}' already exists in the course.`,
                         };
                         res.status(409).json(duplicateSessionError);
                     } else {
@@ -307,7 +307,7 @@ courses.post("/deleteCourse", async (req: Request, res: Response) => {
                 const missingId: responseError = {
                     code: "404",
                     status: "Failed",
-                    message: `with ID '${courseId}' not found.`,
+                    message: `with Id '${courseId}' not found.`,
                 };
                 res.status(404).json(missingId);
             } else {
@@ -363,7 +363,7 @@ courses.post("/editCouse", async (req: Request, res: Response) => {
                 const missingId: responseError = {
                     code: "404",
                     status: "Failed",
-                    message: `with ID '${courseId}' courseId not found.`,
+                    message: `with Id '${courseId}' courseId not found.`,
                 };
                 res.status(404).json(missingId);
             } else {
@@ -375,7 +375,7 @@ courses.post("/editCouse", async (req: Request, res: Response) => {
                     const missingId: responseError = {
                         code: "404",
                         status: "Failed",
-                        message: `with ID '${sessionId}' sessionId not found.`,
+                        message: `with Id '${sessionId}' sessionId not found.`,
                     };
                     res.status(404).json(missingId);
                 } else {

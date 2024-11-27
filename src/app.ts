@@ -20,7 +20,7 @@ import { dashBoard } from "./api/v1/HR/dashboard/route";
 import { courses } from "./api/v1/HR/courseManage/route"
 
 // MEP
-import { checkdata } from "./api/v1/EMP/Checkdata/results";
+import { checkdata } from "./api/v1/EMP/Checkdata/route";
 import { Courses } from "./api/v1/EMP/Course/route";
 import { enrollment } from "./api/v1/HR/enrollment/route";
 import { empReimbursement } from "./api/v1/EMP/reimbursements/route";

@@ -121,7 +121,7 @@ manageData.post("/editEmp", async (req: Request, res: Response) => {
 
         // firstTrainingDate,
         // trainingDate,
-        // courseID,
+        // courseId,
         // courseName,
         // trainingLocation,
         // trainingHours,
@@ -143,7 +143,7 @@ manageData.post("/editEmp", async (req: Request, res: Response) => {
             const reqError: responseError = {
                 code: "400",
                 status: "Failed",
-                message: "Employee ID is required and the employee status must be 'Active'. Route: manageData, Method: editEmp"
+                message: "Employee Id is required and the employee status must be 'Active'. Route: manageData, Method: editEmp"
             };
             res.status(400).json(reqError);
         } else {
@@ -152,7 +152,7 @@ manageData.post("/editEmp", async (req: Request, res: Response) => {
                 const employeeNotFoundError: responseError = {
                     code: "404",
                     status: "Failed",
-                    message: `Employee ID${empId} not found Route: manageData, Method: editEmp`
+                    message: `Employee Id${empId} not found Route: manageData, Method: editEmp`
                 };
                 res.status(404).json(employeeNotFoundError);
             } else {
@@ -202,7 +202,7 @@ manageData.post("/removeEmp", async (req: Request, res: Response) => {
             const missingempIdError: responseError = {
                 code: "400",
                 status: "Failed",
-                message: "Employee ID is required to delete. Route: manageData, Method: deleteEmp"
+                message: "Employee Id is required to delete. Route: manageData, Method: deleteEmp"
             };
             res.status(400).json(missingempIdError)
         } else {
@@ -211,7 +211,7 @@ manageData.post("/removeEmp", async (req: Request, res: Response) => {
                 const empIdNotFoundError: responseError = {
                     code: "400",
                     status: "Failed",
-                    message: `Employee ID  '${empId}' not found for deletion. Route: manageData, Method: removeEmp`
+                    message: `Employee Id  '${empId}' not found for deletion. Route: manageData, Method: removeEmp`
                 };
                 res.status(400).json(empIdNotFoundError);
             } else {

@@ -39,7 +39,7 @@ checkData.get("/checkEmp", async (req: Request, res: Response) => {
   }
 });
 
-// Check Data by Employee ID
+// Check Data by Employee Id
 checkData.get("/checkEmpId/:empId?", async (req: Request, res: Response) => {
   const reqHeader: any = req.headers;
   const contentType: any = reqHeader["content-type"];
@@ -72,7 +72,7 @@ checkData.get("/checkEmpId/:empId?", async (req: Request, res: Response) => {
           const noDataError: responseError = {
             code: "404",
             status: "Not Found",
-            message: `Employee with ID '${empId}' not found.`,
+            message: `Employee with Id '${empId}' not found.`,
           };
           res.status(404).json(noDataError);
         }

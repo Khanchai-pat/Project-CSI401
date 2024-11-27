@@ -9,29 +9,29 @@ empReimbursement.post("/requests", async (req: Request, res: Response) => {
   const reqHeader: any = req.headers;
   const contentType: any = reqHeader["content-type"];
   const tokenkey: any = reqHeader["authorization"];
-  const { empID, courseID, moneyAmount, bankAccount, empName, department, cardID } = req.body;
+  const { empId, courseId, moneyAmount, bankAccount, empName, department, cardId } = req.body;
   if (!tokenkey || !contentType) {
     res.status(401).json({
       code: "401",
       status: "error",
       message: "Unauthorized",
     });
-  } else if (!empID || !courseID || !bankAccount) {
+  } else if (!empId || !courseId || !bankAccount) {
     res.status(404).json({
       code: "404",
       status: "error",
-      message: "EmpID/courseID not found",
+      message: "EmpId/courseId not found",
     });
   } else {
     const findReq = await reimbursements.countDocuments({});
     const createReqid = "R" + String(findReq + 1).padStart(3, "0");
     const dbResults = await reimbursements.create({
       reqId: createReqid,
-      courseID: courseID,
-      empID: empID,
+      courseId: courseId,
+      empId: empId,
       empName: empName,
       department: department,
-      cardID: cardID,
+      cardId: cardId,
       bankAccount: bankAccount,
       MoneyAmout: moneyAmount,
       status: "pending",
@@ -47,12 +47,12 @@ empReimbursement.post("/requests", async (req: Request, res: Response) => {
 
 
 // requests.post("/request", async (req: Request, res: Response) => {
-//     const { EmpID, courseID, DateReim, MoneyAmount }: ReimbursementRequest = req.body;
+//     const { EmpId, courseId, DateReim, MoneyAmount }: ReimbursementRequest = req.body;
 
 //     try {
 //         const currentYear = new Date(DateReim).getFullYear();
 //         const existingRequest = await Reimbursement.findOne({
-//             employeeId: EmpID,
+//             employeeId: EmpId,
 //             requestDate: { $gte: new Date(`${currentYear}`), $lte: new Date(`${currentYear}`) }
 //         });
 
@@ -65,8 +65,8 @@ empReimbursement.post("/requests", async (req: Request, res: Response) => {
 //         }
 
 //         const newRequest = new Reimbursement({
-//             employeeId: EmpID,
-//             courseId: courseID,
+//             employeeId: EmpId,
+//             courseId: courseId,
 //             requestDate: DateReim,
 //             courseCost: MoneyAmount
 //         });
@@ -78,8 +78,8 @@ empReimbursement.post("/requests", async (req: Request, res: Response) => {
 //             status: "success",
 //             message: "Successful",
 //             data: {
-//                 EmpID,
-//                 courseID,
+//                 EmpId,
+//                 courseId,
 //                 DateReim,
 //                 MoneyAmount,
 //                 statusPending: "Pending"
