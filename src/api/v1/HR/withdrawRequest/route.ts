@@ -156,7 +156,7 @@ withdrawRequest.post("/appove", async (req: Request, res: Response) => {
 })
 
 // Show list request ByID reject
-withdrawRequest.post("/reject", async (req: Request, res: Response) => {
+withdrawRequest.post("/denied", async (req: Request, res: Response) => {
     const reqHeader: any = req.headers
     const contentType: any = reqHeader["content-type"]
     const tokenkey: any = reqHeader["authorization"]

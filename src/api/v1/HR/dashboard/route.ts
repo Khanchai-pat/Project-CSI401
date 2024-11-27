@@ -10,7 +10,7 @@ export const dashBoard = express();
 dashBoard.get("/dashBoard", async (req: Request, res: Response) => {
     const reqHeader: any = req.headers;
     const contentType: string = reqHeader["content-type"];
-    const tokenkey: string = reqHeader["authorization"];
+    const tokenkey: string = reqHeader["token-key"];
 
     if (!contentType || !tokenkey) {
         const verifyError: responseError = {

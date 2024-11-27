@@ -230,3 +230,84 @@ courses.post("/deleteCourse", async (req: Request, res: Response) => {
         }
     }
 })
+
+courses.post("/editCouse", async (req: Request, res: Response) => {
+    const reqHeader: any = req.headers
+    const contentType: any = reqHeader["content-type"]
+    const tokenkey: any = reqHeader["authorization"]
+    const {
+        courseId,
+        sessionId,
+        trainingDate,
+        trainingLocation,
+        periods,
+        hours,
+        courseLimit,
+        courseLeft,
+        status
+    }: any = req.body
+
+    if (contentType !== 'application/json' || !tokenkey) {
+        const missingHeadersError: responseError = {
+            code: "400",
+            status: "Failed",
+            message: "Missing required headers: content-type and authorization token"
+        };
+        res.status(400).json(missingHeadersError);
+
+    } else {
+        try {
+            const cerrenCourse = await course.findOne({ courseId: courseId })
+            // console.log(cerrenCourse)
+            if (!cerrenCourse) {
+                const missingId: responseError = {
+                    code: "404",
+                    status: "Failed",
+                    message: `with ID '${courseId}' courseId not found.`,
+                };
+                res.status(404).json(missingId);
+            } else {
+
+                const curSessionsid = cerrenCourse.sessions.some(
+                    (session: any) => session.sessionId === sessionId
+                );
+                if (!curSessionsid) {
+                    const missingId: responseError = {
+                        code: "404",
+                        status: "Failed",
+                        message: `with ID '${sessionId}' sessionId not found.`,
+                    };
+                    res.status(404).json(missingId);
+                } else {
+                    const updateSesion = await course.updateOne({
+                        courseId: courseId, "sessions.sessionId": sessionId
+                    }, {
+                        $set: {
+                            "sessions.$.trainingDate": trainingDate,
+                            "sessions.$.trainingLocation": trainingLocation,
+                            "sessions.$.periods": periods,
+                            "sessions.$.hours": hours,
+                            "sessions.$.courseLimit": courseLimit,
+                            "sessions.$.courseLeft": courseLeft,
+                            "sessions.$.status": status,
+                        }
+                    })
+                    const successData: responseData = {
+                        code: "200",
+                        status: "OK",
+                        data: updateSesion
+                    };
+                    res.status(200).json(successData);
+                }
+            }
+        } catch (error) {
+            console.log(error)
+            const serverError: responseError = {
+                code: "500",
+                status: "Failed",
+                message: "An error occurred while processing your request. Please try again later"
+            };
+            res.status(500).json(serverError);
+        }
+    }
+})

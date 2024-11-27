@@ -35,8 +35,10 @@ mongoose.connect(process.env.mongocloud!)
 
 
 const app = express();
+app.use(express.json({
+    strict: true, // ป้องกัน JSON ไม่ถูกต้อง
+}));
 
-app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cors());
 app.use(helmet());
