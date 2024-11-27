@@ -2,7 +2,7 @@ import express, { Request, Response } from "express"
 import { responseData, responseError } from '../../interfaceRes/response';
 import { courseRequests } from "../../Schema/courseRequest"
 import { courseResults } from "../../Schema/courseResults"
-import { refund } from "../../Schema/reimbursement"
+import { reimbursements } from "../../Schema/reimbursement"
 export const history = express();
 
 
@@ -90,7 +90,7 @@ history.get("/refund", async (req: Request, res: Response) => {
         res.status(400).send(errorHeaderToken)
     } else {
         try {
-            const dbHistorys = await refund
+            const dbHistorys = await reimbursements
                 .find({})
             const successData: responseData = {
                 code: '200',
