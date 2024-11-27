@@ -26,7 +26,7 @@ Courses.post("/register", async (req: Request, res: Response) => {
     res.status(404).json({
       code: "404",
       status: "error",
-      message: "EmpID/Course not found",
+      message: "EmpId/Course not found",
     });
   } else {
     const dbResults = await enrollments.create({
@@ -58,7 +58,7 @@ Courses.get("/results", async (req: Request, res: Response) => {
     res.status(404).json({
       code: "404",
       status: "error",
-      message: "EmpID not found",
+      message: "EmpId not found",
     });
   } else {
     const dbResults = await courseResults.find({ empId: empId });
@@ -75,18 +75,18 @@ Courses.post("/requests", async (req: Request, res: Response) => {
   const reqHeader: any = req.headers;
   const contentType: any = reqHeader["content-type"];
   const tokenkey: any = reqHeader["authorization"];
-  const { empId, courseID, sessionID } = req.body;
+  const { empId, courseId, sessionId } = req.body;
   if (!tokenkey || !contentType) {
     res.status(401).json({
       code: "401",
       status: "error",
       message: "Unauthorized",
     });
-  } else if (!empId || !courseID) {
+  } else if (!empId || !courseId) {
     res.status(404).json({
       code: "404",
       status: "error",
-      message: "EmpID/courseID not found",
+      message: "EmpId/courseId not found",
     });
   } else {
     const findReq = await courseRequests.countDocuments({});
@@ -94,8 +94,8 @@ Courses.post("/requests", async (req: Request, res: Response) => {
     const dbResults = await courseRequests.create({
       reqId: createReqid,
       empId: empId,
-      courseID: courseID,
-      sessionID: sessionID,
+      courseId: courseId,
+      sessionId: sessionId,
       status: "pending",
     });
     const resultsData: responseData = {

@@ -40,7 +40,7 @@ checkdata.post("/dashboard", async (req: Request, res: Response) => {
   const { empId } = req.body;
 
   // ตรวจสอบการมี empId ในคำขอและเช็ค contentType
-  if (!tokenkey || !contentType && contentType != "ssp") {
+  if (!tokenkey || !contentType || contentType != "application/json") {
     res.status(400).json({
       code: "400",
       status: "Bad Request",

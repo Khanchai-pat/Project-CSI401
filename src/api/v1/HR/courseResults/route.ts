@@ -41,7 +41,7 @@ courseResult.get("/results", async (req: Request, res: Response) => {
   }
 });
 
-//1.2.15 API : HR - Show Courses Results ByID
+//1.2.15 API : HR - Show Courses Results ById
 courseResult.get("/resultsId/:reqid?", async (req: Request, res: Response) => {
 
   const reqHeader: any = req.headers;
@@ -54,7 +54,7 @@ courseResult.get("/resultsId/:reqid?", async (req: Request, res: Response) => {
       code: "500",
       status: "Failed",
       message:
-        "Missing required headers: content-type and authorization token End-Point /requests ByID HR - Show Courses Results ByID ",
+        "Missing required headers: content-type and authorization token End-Point /requests ById HR - Show Courses Results ById ",
     };
     res.status(400).json(missingHeaders)
   }
@@ -74,7 +74,7 @@ courseResult.get("/resultsId/:reqid?", async (req: Request, res: Response) => {
           const missingId: responseError = {
             code: "404",
             status: "Failed",
-            message: `Employee with ID '${reqid}' not found.`,
+            message: `Employee with Id '${reqid}' not found.`,
           };
           res.status(404).json(missingId);
         } else {
@@ -99,7 +99,7 @@ courseResult.get("/resultsId/:reqid?", async (req: Request, res: Response) => {
   }
 });
 
-//1.2.16 API : HR - Show Courses Results ByID Update
+//1.2.16 API : HR - Show Courses Results ById Update
 courseResult.post("/update", async (req: Request, res: Response) => {
   const reqHeader: any = req.headers;
   const contentType: string = reqHeader["content-type"];
@@ -111,7 +111,7 @@ courseResult.post("/update", async (req: Request, res: Response) => {
       code: "400",
       status: "Failed",
       message:
-        "Missing required headers: content-type and authorization token End-Point /requests ByID HR - Show Courses update",
+        "Missing required headers: content-type and authorization token End-Point /requests ById HR - Show Courses update",
     };
     res.status(400).json(missingHeaders);
   } else {
@@ -119,7 +119,7 @@ courseResult.post("/update", async (req: Request, res: Response) => {
       const missingId: responseError = {
         code: "400",
         status: "Failed",
-        message: `Missing 'reqId' : req.body. No ID sent in request.`,
+        message: `Missing 'reqId' : req.body. No Id sent in request.`,
       };
       res.status(400).json(missingId)
     } else {
@@ -129,7 +129,7 @@ courseResult.post("/update", async (req: Request, res: Response) => {
           const notFoundError: responseError = {
             code: "404",
             status: "Failed",
-            message: `ID  ${reqid} : not found in the database.`,
+            message: `Id  ${reqid} : not found in the database.`,
           };
           res.status(404).json(notFoundError);
         } else {

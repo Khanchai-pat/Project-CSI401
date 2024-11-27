@@ -40,12 +40,12 @@ reimbursement.get("/requests", async (req: Request, res: Response) => {
     }
 })
 
-////1.2.12 API : HR - Courses Fee Reimbursement System (FR5: ระบบเบิกค่าอบรม) Show List byID
-reimbursement.get("/requestsId/:refID?", async (req: Request, res: Response) => {
+////1.2.12 API : HR - Courses Fee Reimbursement System (FR5: ระบบเบิกค่าอบรม) Show List byId
+reimbursement.get("/requestsId/:refId?", async (req: Request, res: Response) => {
     const reqHeader: any = req.headers
     const contentType: any = reqHeader["content-type"]
     const tokenkey: any = reqHeader["authorization"]
-    const { refID }: any = req.params
+    const { refId }: any = req.params
 
     if (!contentType || !tokenkey) {
         const missingHeadersError: responseError = {
@@ -55,7 +55,7 @@ reimbursement.get("/requestsId/:refID?", async (req: Request, res: Response) => 
         };
         res.status(400).json(missingHeadersError);
     } else {
-        if (!refID) {
+        if (!refId) {
             const missingRefIdError: responseError = {
                 code: "400",
                 status: "Failed",
@@ -65,16 +65,16 @@ reimbursement.get("/requestsId/:refID?", async (req: Request, res: Response) => 
         }
         else {
             try {
-                const checkId = await reimbursements.findOne({ refId: refID })
+                const checkId = await reimbursements.findOne({ refId: refId })
                 if (!checkId) {
                     const idNotFoundError: responseError = {
                         code: "404",
                         status: "Failed",
-                        message: `The requested data with the provided ID ${refID} could not be found`
+                        message: `The requested data with the provided Id ${refId} could not be found`
                     };
                     res.status(404).send(idNotFoundError)
                 } else {
-                    const refundRequestsById = await reimbursements.find({ refId: refID });
+                    const refundRequestsById = await reimbursements.find({ refId: refId });
                     // console.log(refundRequestsById)
                     const successData: responseData = {
                         code: "200",
@@ -125,7 +125,7 @@ reimbursement.post("/appoved", async (req: Request, res: Response) => {
                     const idNotFoundError: responseError = {
                         code: "404",
                         status: "Failed",
-                        message: `The requested data with the provided ID : ${refId} could not be found`
+                        message: `The requested data with the provided Id : ${refId} could not be found`
                     };
                     res.status(404).send(idNotFoundError)
                 } else {
@@ -184,7 +184,7 @@ reimbursement.post("/denied", async (req: Request, res: Response) => {
                     const idNotFoundError: responseError = {
                         code: "404",
                         status: "Failed",
-                        message: `The requested data with the provided ID : ${refId} could not be found`
+                        message: `The requested data with the provided Id : ${refId} could not be found`
                     };
                     res.status(404).send(idNotFoundError)
                 } else {

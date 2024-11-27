@@ -38,7 +38,7 @@ withdrawRequest.get("/requests", async (req: Request, res: Response) => {
     }
 });
 
-////Show list requests By ID
+////Show list requests By Id
 withdrawRequest.get("/requestsId/:reqId?", async (req: Request, res: Response) => {
     const reqHeader: any = req.headers
     const contentType: any = reqHeader["content-type"]
@@ -68,15 +68,15 @@ withdrawRequest.get("/requestsId/:reqId?", async (req: Request, res: Response) =
                     const idNotFoundError: responseError = {
                         code: "404",
                         status: "Failed",
-                        message: `The requested data with the provided ID : ${reqId} could not be found`
+                        message: `The requested data with the provided Id : ${reqId} could not be found`
                     };
                     res.status(404).send(idNotFoundError)
                 } else {
-                    const dbRequestsID = await courseRequests.find({ reqId: reqId })
+                    const dbRequestsId = await courseRequests.find({ reqId: reqId })
                     const response: responseData = {
                         code: "200",
                         status: "OK",
-                        data: dbRequestsID
+                        data: dbRequestsId
                     }
                     res.status(200).json(response)
                 }
@@ -93,7 +93,7 @@ withdrawRequest.get("/requestsId/:reqId?", async (req: Request, res: Response) =
     }
 })
 
-//Show list request ByID appove
+//Show list request ById appove
 withdrawRequest.post("/appove", async (req: Request, res: Response) => {
     const reqHeader: any = req.headers
     const contentType: any = reqHeader["content-type"]
@@ -122,7 +122,7 @@ withdrawRequest.post("/appove", async (req: Request, res: Response) => {
                     const idNotFoundError: responseError = {
                         code: "404",
                         status: "Failed",
-                        message: `The requested data with the provided ID :: ${reqId} could not be found`
+                        message: `The requested data with the provided Id :: ${reqId} could not be found`
                     };
                     res.status(404).send(idNotFoundError)
                 } else {
@@ -155,7 +155,7 @@ withdrawRequest.post("/appove", async (req: Request, res: Response) => {
     }
 })
 
-// Show list request ByID reject
+// Show list request ById reject
 withdrawRequest.post("/denied", async (req: Request, res: Response) => {
     const reqHeader: any = req.headers
     const contentType: any = reqHeader["content-type"]
@@ -184,7 +184,7 @@ withdrawRequest.post("/denied", async (req: Request, res: Response) => {
                     const idNotFoundError: responseError = {
                         code: "404",
                         status: "Failed",
-                        message: `The requested data with the provided ID :${reqId} could not be found`
+                        message: `The requested data with the provided Id :${reqId} could not be found`
                     };
                     res.status(404).send(idNotFoundError)
                 } else {
