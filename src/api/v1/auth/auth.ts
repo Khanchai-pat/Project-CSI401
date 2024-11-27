@@ -7,6 +7,31 @@ import { users } from "../Schema/users";
 export const auth = express();
 const secretKey = process.env.SECRET_KEY || "defaultSecretKey";
 
+/**
+ * @swagger
+ *  /auth/login:
+ *   post:
+ *     summary: API Login
+ *     tags:
+ *       - Authentication
+ *     requestBody:
+ *       description: User credentials
+ *       required: true
+ *       content:
+ *          application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               username:
+ *                 type: string
+ *               password:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Successfully signed in
+ *       400:
+ *         description: No username or password
+ */
 auth.post("/login", async (req: Request, res: Response) => {
   const reqHeader: any = req.headers;
   const contentType: any = reqHeader["content-type"];

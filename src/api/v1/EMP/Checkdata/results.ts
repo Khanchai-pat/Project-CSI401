@@ -8,6 +8,31 @@ import { course } from "../../Schema/course";
 
 export const checkdata = express();
 
+/**
+ * @swagger
+ *  /checkdata/dashboard:
+ *   post:
+ *     summary: Emp Dashboard
+ *     tags:
+ *       - Employees DashBoard
+ *     requestBody:
+ *       description: User Info
+ *       required: true
+ *       content:
+ *          application/json:
+ *           schema:
+ *             type: ob ject
+ *             properties:
+ *               username:
+ *                 type: string
+ *               password:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Successfully signed in
+ *       400:
+ *         description: No username or password
+ */
 checkdata.post("/dashboard", async (req: Request, res: Response) => {
   const reqHeader: any = req.headers;
   const contentType: any = reqHeader["content-type"];
