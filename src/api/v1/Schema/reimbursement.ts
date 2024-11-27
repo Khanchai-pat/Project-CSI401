@@ -5,6 +5,7 @@ const refundSchema = new mongoose.Schema({
     empID: String,
     courseID: String,
     cardID:String,
+    MoneyAmout : String,
     bankAccount:String,
     amount:Number,
     status: String

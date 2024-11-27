@@ -22,6 +22,7 @@ import { courses } from "./api/v1/HR/courseManage/route"
 import { checkdata } from "./api/v1/EMP/Checkdata/results";
 import { Courses } from "./api/v1/EMP/Course/route";
 import { enrollment } from "./api/v1/HR/enrollment/route";
+import { empReimbursement } from "./api/v1/EMP/reimbursements/route";
 
 
 
@@ -55,6 +56,7 @@ app.use("/courses", courses)
 //EMP
 app.use("/checkdata", checkdata)
 app.use("/courses", Courses)
+app.use("/reimbursements", empReimbursement)
 
 // swagger
 useSwagger(app)
