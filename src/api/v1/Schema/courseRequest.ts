@@ -12,6 +12,6 @@ const reqSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-export const courseRequests = mongoose.model("courseRequest", reqSchema,
-  "courseRequest"
+export const courseRequests = mongoose.model("withdrawRequest", reqSchema,
+  "withdrawRequest"
 );

@@ -3,7 +3,7 @@ import { enrollments } from "../../Schema/enrollment"
 import { responseData, responseError } from "../../interfaceRes/response";
 export const enrollment = express()
 
-enrollment.get("/show", async (req: Request, res: Response) => {
+enrollment.get("/showEnrollment", async (req: Request, res: Response) => {
     const reqHeader: any = req.headers;
     const contentType: any = reqHeader["content-type"];
     const tokenkey: any = reqHeader["token-key"];

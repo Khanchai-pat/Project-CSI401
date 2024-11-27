@@ -5,6 +5,107 @@ import { course } from "../../Schema/course"
 
 export const courses = express();
 
+courses.get("/showCourse", async (req: Request, res: Response) => {
+
+    const reqHeader: any = req.headers;
+    const contentType: any = reqHeader["content-type"];
+    const tokenkey: any = reqHeader["token-key"];
+    // if (!tokenkey || !contentType){}
+    if (!tokenkey || !contentType) {
+        const missingHeaders: responseError = {
+            code: "400",
+            status: "Failed",
+            message: "Bad Request: Missing required headers - 'Content-Type' and 'token-key' are needed",
+        };
+        res.status(400).json(missingHeaders);
+    } else {
+        try {
+            // Process
+            const currentCourse = await course.find({});
+            const reqCheckData: responseData = {
+                code: "200",
+                status: "showCourse data retrieved successfully",
+                data: currentCourse,
+            };
+            res.status(200).json(reqCheckData);
+        } catch (error) {
+            console.log(error)
+            const serverError: responseError = {
+                code: "500",
+                status: "Failed",
+                message: "An error occurred while processing your request. Please try again later"
+            };
+            res.status(500).json(serverError);
+        }
+    }
+});
+
+courses.post("/courseDetail", async (req: Request, res: Response) => {
+    const reqHeader: any = req.headers;
+    const contentType: any = reqHeader["content-type"];
+    const tokenkey: any = reqHeader["token-key"];
+    const { courseId, sessionId } = req.body;
+
+    if (!tokenkey || !contentType) {
+        const missingHeaders: responseError = {
+            code: "400",
+            status: "Failed",
+            message: "Bad Request: Missing required headers - 'Content-Type' and 'token-key' are needed ",
+        };
+        res.status(400).json(missingHeaders);
+    } else {
+
+        if (!courseId) {
+            const missingParamError: responseError = {
+                code: "400",
+                status: "Failed",
+                message: `Bad Request: Missing 'empId' parameter for endpoint`,
+            };
+            res.status(400).json(missingParamError);
+        } else {
+            try {
+                const currentCourse = await course
+                    .find({ courseId: courseId });
+                if (!currentCourse) {
+                    // กรณีไม่มีข้อมูลที่ตรงกับ empId
+                    const noDataError: responseError = {
+                        code: "404",
+                        status: "Not Found",
+                        message: `course with courseId '${courseId}' not found.`,
+                    };
+                    res.status(404).json(noDataError);
+                } else {
+                    const courseDetails = await course
+                        .find({
+                            courseId: courseId,
+                            'sessions.sessionId': sessionId
+                        }, {
+                            "courseName": 1,
+                            "sessions.$": 1
+                        })
+                    const checkempId: responseData = {
+                        code: "200",
+                        status: "Success",
+                        data: courseDetails
+                    };
+                    res.status(200).json(checkempId);
+                }
+
+            } catch (error) {
+                console.log(error)
+                const serverError: responseError = {
+                    code: "500",
+                    status: "Failed",
+                    message: "An error occurred while processing your request. Please try again later"
+                };
+                res.status(500).json(serverError);
+            }
+        }
+    }
+}
+);
+
+
 courses.post("/createCourse", async (req: Request, res: Response) => {
     const reqHeader: any = req.headers
     const contentType: any = reqHeader["content-type"]
@@ -89,8 +190,8 @@ courses.post("/addSession", async (req: Request, res: Response) => {
         periods,
         hours,
         courseLimit,
-        courseLeft,
-        status, }: any = req.body
+        status
+    }: any = req.body
 
     if (contentType !== 'application/json' || !tokenkey) {
         const missingHeadersError: responseError = {
@@ -109,7 +210,6 @@ courses.post("/addSession", async (req: Request, res: Response) => {
             !periods ||
             !hours ||
             !courseLimit ||
-            !courseLeft ||
             !status
         ) {
             const incompleteDataError: responseError = {
@@ -152,7 +252,7 @@ courses.post("/addSession", async (req: Request, res: Response) => {
                             periods: periods,
                             hours: hours,
                             courseLimit: courseLimit,
-                            courseLeft: courseLeft,
+                            courseLeft: courseLimit,
                             status: status,
                         };
                         const updateData = await course.updateOne(

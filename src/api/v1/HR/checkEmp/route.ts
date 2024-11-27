@@ -95,5 +95,4 @@ checkData.get("/checkEmpId/:empId?", async (req: Request, res: Response) => {
     }
   }
 }
-
 );
