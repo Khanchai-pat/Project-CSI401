@@ -4,6 +4,7 @@ import { employees } from "../../Schema/emp";
 import { courseResult } from "../../HR/courseResults/route";
 import { courseResults } from "../../Schema/courseResults";
 import { enrollments } from "../../Schema/enrollment";
+import { course } from "../../Schema/course";
 
 export const checkdata = express();
 
@@ -49,7 +50,7 @@ checkdata.post("/enrollments", async (req: Request, res: Response) => {
   const contentType: any = reqHeader["content-type"];
   const tokenkey: any = reqHeader["authorization"];
   // const empID = req.query.Empid as string;
-  const { empID} = req.body;
+  const { empID } = req.body;
 
   // ตรวจสอบการมี empID ในคำขอและเช็ค contentType
   if (!tokenkey || !contentType) {
@@ -66,12 +67,23 @@ checkdata.post("/enrollments", async (req: Request, res: Response) => {
     });
   } else {
     // สร้างข้อมูล response
-    const enrollment = await enrollments.find({empId : empID,status : "registered"})
-
+    const enrollment = await enrollments.find({
+      empId: empID,
+      status: "registered",
+    });
+    const courseId = enrollment.map((item) => item.courseId);
+    const sid = enrollment.map((item) => item.sessionId);
+    const courseData = await course.find({ 
+        courseId: courseId,
+        "sessions.sessionId": sid
+    }, {
+        "courseName": 1,
+        "sessions.$": 1 
+    });
     res.status(200).json({
       code: "200",
       status: "success",
-      data: {enrollment},
+      data: courseData,
     });
   }
 });
