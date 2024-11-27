@@ -17,24 +17,6 @@ checkData.get("/checkEmp", async (req: Request, res: Response) => {
       message: "Bad Request: Missing required headers - 'Content-Type' and 'token-key' are needed for endpoint /checkEmp.",
     };
     res.status(400).json(missingHeaders);
-    // try {
-    //   // Process
-    //   const dbResponse = await employees.find({});
-    //   const reqCheckData: responseData = {
-    //     code: "200",
-    //     status: "Employee data retrieved successfully",
-    //     data: dbResponse,
-    //   };
-    //   res.status(200).json(reqCheckData);
-    // } catch (error) {
-    //   console.log(error);
-    //   const errData: responseError = {
-    //     code: "500",
-    //     status: "Failed",
-    //     message: `Internal Server Error: Unable to retrieve employee data. Reason`,
-    //   };
-    //   res.status(500).json(errData);
-    // }
   } else {
     try {
       // Process
@@ -65,7 +47,6 @@ checkData.get("/checkEmpId/:empId?", async (req: Request, res: Response) => {
   const { empId } = req.params;
 
   if (!tokenkey || !contentType) {
-    // ข้อผิดพลาดในการยืนยัน header ที่จำเป็น
     const missingHeaders: responseError = {
       code: "400",
       status: "Failed",
@@ -96,7 +77,6 @@ checkData.get("/checkEmpId/:empId?", async (req: Request, res: Response) => {
           res.status(404).json(noDataError);
         }
 
-        // ถ้ามีข้อมูล ตอบกลับสถานะสำเร็จ
         const checkEmpID: responseData = {
           code: "200",
           status: "Success",
