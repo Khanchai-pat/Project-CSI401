@@ -9,29 +9,95 @@ export const checkdata = express();
 
 /**
  * @swagger
- *  /checkdata/dashboard:
+ * /checkdata/dashboard:
  *   post:
- *     summary: Emp Dashboard
+ *     summary: Fetch employee data and course results
  *     tags:
- *       - Employees DashBoard
+ *       - Checkdata
+ *     parameters:
+ *       - in: header
+ *         name: Content-Type
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Specify the content type, e.g., application/json
+ *       - in: header
+ *         name: Authorization
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Bearer token for authentication
  *     requestBody:
- *       description: User Info
+ *       description: Request body containing the employee ID
  *       required: true
  *       content:
- *          application/json:
+ *         application/json:
  *           schema:
- *             type: ob ject
+ *             type: object
  *             properties:
- *               username:
+ *               empId:
  *                 type: string
- *               password:
- *                 type: string
+ *                 description: Employee ID to retrieve data for
+ *                 example: EMP001
  *     responses:
  *       200:
- *         description: Successfully signed in
+ *         description: Successfully fetched employee data and course results
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 code:
+ *                   type: string
+ *                   example: "200"
+ *                 status:
+ *                   type: string
+ *                   example: "success"
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     empData:
+ *                       type: object
+ *                       description: Employee data
+ *                     courseResult:
+ *                       type: array
+ *                       items:
+ *                         type: object
+ *                         description: Course results for the employee
  *       400:
- *         description: No username or password
+ *         description: Bad request - Missing Authorization or Content-Type
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 code:
+ *                   type: string
+ *                   example: "400"
+ *                 status:
+ *                   type: string
+ *                   example: "Bad Request"
+ *                 message:
+ *                   type: string
+ *                   example: "Cannot Show"
+ *       404:
+ *         description: Employee ID not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 code:
+ *                   type: string
+ *                   example: "404"
+ *                 status:
+ *                   type: string
+ *                   example: "error"
+ *                 message:
+ *                   type: string
+ *                   example: "EmpID not found"
  */
+
 checkdata.post("/dashboard", async (req: Request, res: Response) => {
   const reqHeader: any = req.headers;
   const contentType: any = reqHeader["content-type"];
