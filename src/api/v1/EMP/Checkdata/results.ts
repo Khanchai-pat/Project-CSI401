@@ -36,17 +36,17 @@ checkdata.post("/dashboard", async (req: Request, res: Response) => {
   const reqHeader: any = req.headers;
   const contentType: any = reqHeader["content-type"];
   const tokenkey: any = reqHeader["authorization"];
-  // const empID = req.query.Empid as string;
-  const { empID } = req.body;
+  // const empId = req.query.Empid as string;
+  const { empId } = req.body;
 
-  // ตรวจสอบการมี empID ในคำขอและเช็ค contentType
-  if (!tokenkey || !contentType) {
+  // ตรวจสอบการมี empId ในคำขอและเช็ค contentType
+  if (!tokenkey || !contentType && contentType != "ssp") {
     res.status(400).json({
       code: "400",
       status: "Bad Request",
       message: "Cannot Show ",
     });
-  } else if (!empID) {
+  } else if (!empId) {
     res.status(404).json({
       code: "404",
       status: "error",
@@ -55,10 +55,10 @@ checkdata.post("/dashboard", async (req: Request, res: Response) => {
   } else {
     // สร้างข้อมูล response
     const empData = await employees.findOne({
-      empID: empID,
+      empId: empId,
     });
     const courseResult = await courseResults
-      .find({ empID: empID })
+      .find({ empId: empId })
       .sort({ _id: -1 });
 
     res.status(200).json({
@@ -73,17 +73,17 @@ checkdata.post("/enrollments", async (req: Request, res: Response) => {
   const reqHeader: any = req.headers;
   const contentType: any = reqHeader["content-type"];
   const tokenkey: any = reqHeader["authorization"];
-  // const empID = req.query.Empid as string;
-  const { empID } = req.body;
+  // const empId = req.query.Empid as string;
+  const { empId } = req.body;
 
-  // ตรวจสอบการมี empID ในคำขอและเช็ค contentType
+  // ตรวจสอบการมี empId ในคำขอและเช็ค contentType
   if (!tokenkey || !contentType) {
     res.status(400).json({
       code: "400",
       status: "Bad Request",
       message: "Cannot Show ",
     });
-  } else if (!empID) {
+  } else if (!empId) {
     res.status(404).json({
       code: "404",
       status: "error",
@@ -92,7 +92,7 @@ checkdata.post("/enrollments", async (req: Request, res: Response) => {
   } else {
     // สร้างข้อมูล response
     const enrollment = await enrollments.find({
-      empId: empID,
+      empId: empId,
       status: "registered",
     });
     const courseId = enrollment.map((item) => item.courseId);
