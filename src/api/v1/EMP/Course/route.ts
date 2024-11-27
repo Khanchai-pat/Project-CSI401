@@ -7,6 +7,8 @@ import { courseRequests } from "../../Schema/courseRequest";
 import { count } from "console";
 import { enrollment } from "../../HR/enrollment/route";
 import { enrollments } from "../../Schema/enrollment";
+import { courseResult } from "../../HR/courseResults/route";
+import { courseResults } from "../../Schema/courseResults";
 export const Courses = express();
 
 const verifyToken = (token: string | undefined): boolean => {
@@ -94,7 +96,7 @@ Courses.post("/register", async (req: Request, res: Response) => {
   const reqHeader: any = req.headers;
   const contentType: any = reqHeader["content-type"];
   const tokenkey: any = reqHeader["authorization"];
-  const { body } = req.body;
+  const { empId,courseId,sessionId} = req.body;
 
   if (!tokenkey || !contentType) {
     res.status(401).json({
@@ -102,7 +104,7 @@ Courses.post("/register", async (req: Request, res: Response) => {
       status: "error",
       message: "Unauthorized",
     });
-  } else if (!body.EmpId || !body.coursesId) {
+  } else if (!empId || !courseId) {
     res.status(404).json({
       code: "404",
       status: "error",
@@ -110,8 +112,8 @@ Courses.post("/register", async (req: Request, res: Response) => {
     });
   } else {
     const dbResults = await enrollments.create({ 
-        courseId: body.courseId,
-        sessionId : body.sessionId,
+        courseId: courseId,
+        sessionId : sessionId,
         status : "registered"
      });
     const resultsData: responseData = {
@@ -141,7 +143,7 @@ Courses.get("/results", async (req: Request, res: Response) => {
       message: "EmpID not found",
     });
   } else {
-    const dbResults = await coursesResults.find({ empID: empID.body });
+    const dbResults = await courseResults.find({ empID: empID });
     const resultsData: responseData = {
       code: "200",
       status: "OK",
