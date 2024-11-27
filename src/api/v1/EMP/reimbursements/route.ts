@@ -1,11 +1,8 @@
 import express, { Request, Response } from "express";
-<<<<<<< HEAD
 import Reimbursement from "../Schema/Reimbursementschema";
 import { ReimbursementRequest, } from "../reimbursement";
 import { reimbursement } from "../../HR/reimbursement/route";
-=======
->>>>>>> 99b2815f0f0631f67fd715165619dbcb34ac1576
-import { refund,} from "../../Schema/reimbursement";
+import { reimbursements} from "../../Schema/reimbursement";
 import { responseData, responseError } from "../../interfaceRes/response";
 
 export const empReimbursement = express.Router();
