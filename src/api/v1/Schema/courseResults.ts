@@ -1,11 +1,11 @@
 import mongoose from "mongoose";
 
 const reqsSchema = new mongoose.Schema({
-    reqid: String,
-    empID: String,
+    reqId: String,
+    empId: String,
     empName:String,
-    courseID: String,
-    sessionID : String,
+    courseId: String,
+    sessionId : String,
     courseName : String,
     trainingDate : Date,
     periods : String,
