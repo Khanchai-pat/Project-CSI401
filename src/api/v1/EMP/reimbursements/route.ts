@@ -2,7 +2,8 @@ import express, { Request, Response } from "express";
 import Reimbursement from "../Schema/Reimbursementschema";
 import { ReimbursementRequest, } from "./reimbursement";
 import { reimbursement } from "../../HR/reimbursement/route";
-import { refund } from "../../Schema/reimbursement";
+import { refund,} from "../../Schema/reimbursement";
+import { employees } from "../../Schema/emp";
 import { responseData, responseError } from "../../interfaceRes/response";
 
 export const empReimbursement = express.Router();
@@ -14,14 +15,14 @@ empReimbursement.post("/requests", async (req: Request, res: Response) => {
     const reqHeader: any = req.headers;
     const contentType: any = reqHeader["content-type"];
     const tokenkey: any = reqHeader["authorization"];
-    const { empID, courseID ,moneyAmount} = req.body;
+    const { empID, courseID ,moneyAmount,bankAccount,empName,department,cardID} = req.body;
     if (!tokenkey || !contentType) {
       res.status(401).json({
         code: "401",
         status: "error",
         message: "Unauthorized",
       });
-    } else if (!empID || !courseID) {
+    } else if (!empID || !courseID || !bankAccount) {
       res.status(404).json({
         code: "404",
         status: "error",
@@ -32,8 +33,12 @@ empReimbursement.post("/requests", async (req: Request, res: Response) => {
       const createReqid = "R" + String(findReq + 1).padStart(3, "0");
       const dbResults = await refund.create({
         reqId: createReqid,
-        empID: empID,
         courseID: courseID,
+        empID: empID,
+        empName : empName,
+        department : department,
+        cardID : cardID,
+        bankAccount : bankAccount,
         MoneyAmout: moneyAmount,
         status: "pending",
       });
