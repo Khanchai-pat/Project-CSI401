@@ -12,10 +12,10 @@ manageData.post("/createEmp", async (req: Request, res: Response) => {
     const tokenkey: any = reqHeader["authorization"]
 
     const {
-        empID,
+        empId,
         empName,
         departMent,
-        cardID,
+        cardId,
         email,
         tel,
         role,
@@ -31,10 +31,10 @@ manageData.post("/createEmp", async (req: Request, res: Response) => {
         res.status(400).json(missingHeadersError);
 
     } else {
-        if (!empID ||
+        if (!empId ||
             !empName ||
             !departMent ||
-            !cardID ||
+            !cardId ||
             !email ||
             !tel ||
             !role ||
@@ -50,18 +50,18 @@ manageData.post("/createEmp", async (req: Request, res: Response) => {
             try {
                 const cerrentData = await employees.findOne({
                     $or: [
-                        { empId: empID },
-                        { cardId: cardID },
+                        { empId: empId },
+                        { cardId: cardId },
                         { email: email },
                         { tel: tel }
                     ]
                 })
                 if (!cerrentData) {
                     const addEmp = await employees.create({
-                        empId: empID,
+                        empId: empId,
                         empName: empName,
                         departMent: departMent,
-                        cardId: cardID,
+                        cardId: cardId,
                         email: email,
                         tel: tel,
                         role: role,
@@ -69,7 +69,7 @@ manageData.post("/createEmp", async (req: Request, res: Response) => {
                     })
                     const addUser = await users.create({
                         username: email,
-                        password: cardID,
+                        password: cardId,
                         role: role
                     })
                     const successData: responseData = {
@@ -110,15 +110,14 @@ manageData.post("/editEmp", async (req: Request, res: Response) => {
     const tokenkey: any = reqHeader["authorization"]
 
     const {
-        id,
         empId,
         empName,
         departMent,
-        cardID,
+        cardId,
         email,
         tel,
         role,
-        empStatus
+        status
 
         // firstTrainingDate,
         // trainingDate,
@@ -140,7 +139,7 @@ manageData.post("/editEmp", async (req: Request, res: Response) => {
         };
         res.status(400).json(missingHeadersError);
     } else {
-        if (!empId || empStatus !== 'Active') {
+        if (!empId || status !== 'active') {
             const reqError: responseError = {
                 code: "400",
                 status: "Failed",
@@ -181,14 +180,14 @@ manageData.post("/editEmp", async (req: Request, res: Response) => {
 })
 
 //delete-Emp
-manageData.post("/deleteEmp", async (req: Request, res: Response) => {
+manageData.post("/removeEmp", async (req: Request, res: Response) => {
     const reqHeader: any = req.headers
     const contentType: any = reqHeader["content-type"]
     const tokenkey: any = reqHeader["authorization"]
 
     const {
         empId,
-        empStatus
+        status
     } = req.body
 
     if (!contentType || !tokenkey) {
@@ -200,19 +199,19 @@ manageData.post("/deleteEmp", async (req: Request, res: Response) => {
         res.status(400).json(missingHeadersError);
     } else {
         if (!empId) {
-            const missingEmpIdError: responseError = {
+            const missingempIdError: responseError = {
                 code: "400",
                 status: "Failed",
                 message: "Employee ID is required to delete. Route: manageData, Method: deleteEmp"
             };
-            res.status(400).json(missingEmpIdError)
+            res.status(400).json(missingempIdError)
         } else {
             const checkDataEmp = await employees.findOne({ empId: empId })
             if (!checkDataEmp) {
                 const empIdNotFoundError: responseError = {
                     code: "400",
                     status: "Failed",
-                    message: `Employee ID ${empId} not found for deletion. Route: manageData, Method: deleteEmp`
+                    message: `Employee ID  '${empId}' not found for deletion. Route: manageData, Method: removeEmp`
                 };
                 res.status(400).json(empIdNotFoundError);
             } else {
@@ -221,7 +220,8 @@ manageData.post("/deleteEmp", async (req: Request, res: Response) => {
                         .updateOne({ empId: empId },
                             {
                                 $set: {
-                                    empStatus: empStatus
+                                    // status: "Inactive"
+                                    status: status
                                 }
                             })
 

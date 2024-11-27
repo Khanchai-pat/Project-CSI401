@@ -60,13 +60,13 @@ checkData.get("/checkEmpId/:empId?", async (req: Request, res: Response) => {
       const missingParamError: responseError = {
         code: "400",
         status: "Failed",
-        message: "Bad Request: Missing 'empId' parameter for endpoint /checkEmpId.",
+        message: "Bad Request: Missing 'empId' parameter for endpoint /checkempId.",
       };
       res.status(400).json(missingParamError);
     } else {
       try {
         // Process การ query ข้อมูลพนักงานจากฐานข้อมูลโดยใช้ empId
-        const dbResponse = await employees.find({ empID: empId });
+        const dbResponse = await employees.find({ empId: empId });
         if (dbResponse.length === 0) {
           // กรณีไม่มีข้อมูลที่ตรงกับ empId
           const noDataError: responseError = {
@@ -77,12 +77,12 @@ checkData.get("/checkEmpId/:empId?", async (req: Request, res: Response) => {
           res.status(404).json(noDataError);
         }
 
-        const checkEmpID: responseData = {
+        const checkempId: responseData = {
           code: "200",
           status: "Success",
           data: dbResponse,
         };
-        res.status(200).json(checkEmpID);
+        res.status(200).json(checkempId);
       } catch (error) {
         console.log(error)
         const serverError: responseError = {

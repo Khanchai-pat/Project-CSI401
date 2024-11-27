@@ -9,7 +9,7 @@ import { useSwagger } from "../miidleware/swagger";
 
 //HR
 import { auth } from "./api/v1/auth/auth";
-import { checkData } from "./api/v1/HR/checkdata/route";
+import { checkData } from "./api/v1/HR/checkEmp/route";
 import { manageData } from "./api/v1/HR/manageEmp/route";
 import { withdrawRequest } from "./api/v1/HR/withdrawRequest/route";
 import { courseResult } from "./api/v1/HR/courseResults/route";

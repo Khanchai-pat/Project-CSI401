@@ -11,7 +11,7 @@ const empSchema = new mongoose.Schema({
     firstTrainingDate: Date,
     expiryDate: Date,
     nextExpiryDate: String,
-    empStatus: String
+    status: String
 }, { timestamps: true })
 
-export const employees = mongoose.model('emp', empSchema,"emp")
+export const employees = mongoose.model('emp', empSchema, "emp")
