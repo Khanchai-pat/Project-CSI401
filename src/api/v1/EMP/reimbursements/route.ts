@@ -1,56 +1,98 @@
 import express, { Request, Response } from "express";
 import Reimbursement from "../Schema/Reimbursementschema";
 import { ReimbursementRequest, } from "./reimbursement";
+import { reimbursement } from "../../HR/reimbursement/route";
+import { refund } from "../../Schema/reimbursement";
+import { responseData, responseError } from "../../interfaceRes/response";
 
-export const requests = express.Router();
+export const empReimbursement = express.Router();
 
 
-requests.post("/request", async (req: Request, res: Response) => {
-    const { EmpID, courseID, DateReim, MoneyAmount }: ReimbursementRequest = req.body;
 
-    try {
-        const currentYear = new Date(DateReim).getFullYear();
-        const existingRequest = await Reimbursement.findOne({
-            employeeId: EmpID,
-            requestDate: { $gte: new Date(`${currentYear}`), $lte: new Date(`${currentYear}`) }
-        });
 
-        if (existingRequest) {
-                res.status(400).json({
-                code: 400,
-                status: "error",
-                message: "Request already submitted for this year"
-            });
-        }
-
-        const newRequest = new Reimbursement({
-            employeeId: EmpID,
-            courseId: courseID,
-            requestDate: DateReim,
-            courseCost: MoneyAmount
-        });
-
-        await newRequest.save();
-
-        res.status(200).json({
-            code: 200,
-            status: "success",
-            message: "Successful",
-            data: {
-                EmpID,
-                courseID,
-                DateReim,
-                MoneyAmount,
-                statusPending: "Pending"
-            }
-        });
-    } catch (err) {
-        res.status(400).json({
-            code: 400,
-            status: "Bad Request",
-            message: "Cannot",
-        });
+empReimbursement.post("/requests", async (req: Request, res: Response) => {
+    const reqHeader: any = req.headers;
+    const contentType: any = reqHeader["content-type"];
+    const tokenkey: any = reqHeader["authorization"];
+    const { empID, courseID ,moneyAmount} = req.body;
+    if (!tokenkey || !contentType) {
+      res.status(401).json({
+        code: "401",
+        status: "error",
+        message: "Unauthorized",
+      });
+    } else if (!empID || !courseID) {
+      res.status(404).json({
+        code: "404",
+        status: "error",
+        message: "EmpID/courseID not found",
+      });
+    } else {
+      const findReq = await refund.countDocuments({});
+      const createReqid = "R" + String(findReq + 1).padStart(3, "0");
+      const dbResults = await refund.create({
+        reqId: createReqid,
+        empID: empID,
+        courseID: courseID,
+        MoneyAmout: moneyAmount,
+        status: "pending",
+      });
+      const resultsData: responseData = {
+        code: "200",
+        status: "OK",
+        data: dbResults,
+      };
+      res.status(200).json(resultsData);
     }
-});
+  });
+  
+
+// requests.post("/request", async (req: Request, res: Response) => {
+//     const { EmpID, courseID, DateReim, MoneyAmount }: ReimbursementRequest = req.body;
+
+//     try {
+//         const currentYear = new Date(DateReim).getFullYear();
+//         const existingRequest = await Reimbursement.findOne({
+//             employeeId: EmpID,
+//             requestDate: { $gte: new Date(`${currentYear}`), $lte: new Date(`${currentYear}`) }
+//         });
+
+//         if (existingRequest) {
+//                 res.status(400).json({
+//                 code: 400,
+//                 status: "error",
+//                 message: "Request already submitted for this year"
+//             });
+//         }
+
+//         const newRequest = new Reimbursement({
+//             employeeId: EmpID,
+//             courseId: courseID,
+//             requestDate: DateReim,
+//             courseCost: MoneyAmount
+//         });
+
+//         await newRequest.save();
+
+//         res.status(200).json({
+//             code: 200,
+//             status: "success",
+//             message: "Successful",
+//             data: {
+//                 EmpID,
+//                 courseID,
+//                 DateReim,
+//                 MoneyAmount,
+//                 statusPending: "Pending"
+//             }
+//         });
+//     } catch (err) {
+//         res.status(400).json({
+//             code: 400,
+//             status: "Bad Request",
+//             message: "Cannot",
+//         });
+//     }
+// });
 
 
