@@ -2,15 +2,15 @@ import mongoose from "mongoose";
 
 const refundSchema = new mongoose.Schema({
     reqId: String,
-    empID: String,
+    empId: String,
     empName: String,
-    department: String,
-    courseID: String,
-    cardID: String,
-    MoneyAmout : String,
+    departMent: String,
+    courseId: String,
+    cardId: String,
+    moneyAmout : String,
     bankAccount:String,
     amount:Number,
     status: String
 }, { timestamps: true });
 
-export const refund = mongoose.model("reimbursement", refundSchema, "reimbursement");   
+export const reimbursements = mongoose.model("reimbursement", refundSchema, "reimbursement");   

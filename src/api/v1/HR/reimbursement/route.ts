@@ -1,7 +1,7 @@
 
 import express, { Request, Response } from "express";
 import { responseData, responseError } from "../../interfaceRes/response";
-import { refund } from "../../Schema/reimbursement"
+import { reimbursements } from "../../Schema/reimbursement"
 
 export const reimbursement = express();
 
@@ -20,7 +20,7 @@ reimbursement.get("/requests", async (req: Request, res: Response) => {
         res.status(400).json(missingHeadersError);
     } else {
         try {
-            const dbrequests = await refund.find({});
+            const dbrequests = await reimbursements.find({});
             console.log(dbrequests)
             const successData: responseData = {
                 code: "200",
@@ -65,7 +65,7 @@ reimbursement.get("/requestsId/:refID?", async (req: Request, res: Response) => 
         }
         else {
             try {
-                const checkId = await refund.findOne({ refId: refID })
+                const checkId = await reimbursements.findOne({ refId: refID })
                 if (!checkId) {
                     const idNotFoundError: responseError = {
                         code: "404",
@@ -74,7 +74,7 @@ reimbursement.get("/requestsId/:refID?", async (req: Request, res: Response) => 
                     };
                     res.status(404).send(idNotFoundError)
                 } else {
-                    const refundRequestsById = await refund.find({ refId: refID });
+                    const refundRequestsById = await reimbursements.find({ refId: refID });
                     // console.log(refundRequestsById)
                     const successData: responseData = {
                         code: "200",
@@ -120,7 +120,7 @@ reimbursement.post("/appoved", async (req: Request, res: Response) => {
             res.status(400).send(missingRefIdError)
         } else {
             try {
-                const checkId = await refund.findOne({ refId: refId })
+                const checkId = await reimbursements.findOne({ refId: refId })
                 if (!checkId) {
                     const idNotFoundError: responseError = {
                         code: "404",
@@ -129,7 +129,7 @@ reimbursement.post("/appoved", async (req: Request, res: Response) => {
                     };
                     res.status(404).send(idNotFoundError)
                 } else {
-                    const dbAppove = await refund.updateOne({ refId: refId }, {
+                    const dbAppove = await reimbursements.updateOne({ refId: refId }, {
                         $set: {
                             status: status
                         }
@@ -179,7 +179,7 @@ reimbursement.post("/denied", async (req: Request, res: Response) => {
             res.status(400).send(missingRefIdError)
         } else {
             try {
-                const checkId = await refund.findOne({ refId: refId })
+                const checkId = await reimbursements.findOne({ refId: refId })
                 if (!checkId) {
                     const idNotFoundError: responseError = {
                         code: "404",
@@ -188,7 +188,7 @@ reimbursement.post("/denied", async (req: Request, res: Response) => {
                     };
                     res.status(404).send(idNotFoundError)
                 } else {
-                    const dbAppove = await refund.updateOne({ refId: refId }, {
+                    const dbAppove = await reimbursements.updateOne({ refId: refId }, {
                         $set: {
                             status: status
                         }

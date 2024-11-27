@@ -1,13 +1,13 @@
 import express, { Request, Response } from "express";
 import { responseData, responseError } from "../../interfaceRes/response";
-import Course from "../Schema/Course";
-import Registration from "../Schema/Registration";
-import { coursesResults } from "../Schema/courseresult";
+// import { course } from "../../Schema/course";
+// import {Registration} from "../../Schema/Registration";
+// import { count } from "console";
+// import { enrollment } from "../../HR/enrollment/route";
+// import { courseResult } from "../../HR/courseResults/route";
+
 import { courseRequests } from "../../Schema/courseRequest";
-import { count } from "console";
-import { enrollment } from "../../HR/enrollment/route";
 import { enrollments } from "../../Schema/enrollment";
-import { courseResult } from "../../HR/courseResults/route";
 import { courseResults } from "../../Schema/courseResults";
 export const Courses = express();
 
@@ -96,7 +96,7 @@ Courses.post("/register", async (req: Request, res: Response) => {
   const reqHeader: any = req.headers;
   const contentType: any = reqHeader["content-type"];
   const tokenkey: any = reqHeader["authorization"];
-  const { empId,courseId,sessionId} = req.body;
+  const { empId, courseId, sessionId } = req.body;
 
   if (!tokenkey || !contentType) {
     res.status(401).json({
@@ -111,11 +111,11 @@ Courses.post("/register", async (req: Request, res: Response) => {
       message: "EmpID/Course not found",
     });
   } else {
-    const dbResults = await enrollments.create({ 
-        courseId: courseId,
-        sessionId : sessionId,
-        status : "registered"
-     });
+    const dbResults = await enrollments.create({
+      courseId: courseId,
+      sessionId: sessionId,
+      status: "registered"
+    });
     const resultsData: responseData = {
       code: "200",
       status: "OK",
@@ -157,7 +157,7 @@ Courses.post("/requests", async (req: Request, res: Response) => {
   const reqHeader: any = req.headers;
   const contentType: any = reqHeader["content-type"];
   const tokenkey: any = reqHeader["authorization"];
-  const { empID, courseID ,sessionID} = req.body;
+  const { empID, courseID, sessionID } = req.body;
   if (!tokenkey || !contentType) {
     res.status(401).json({
       code: "401",
