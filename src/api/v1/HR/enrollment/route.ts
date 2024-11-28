@@ -1,14 +1,16 @@
 import express, { Request, Response } from "express"
 import { enrollments } from "../../Schema/enrollment"
 import { responseData, responseError } from "../../interfaceRes/response";
+import { verifyToken } from "../../middleware/route";
+
 export const enrollment = express()
 
-enrollment.get("/showEnrollment", async (req: Request, res: Response) => {
+enrollment.get("/showEnrollment", verifyToken, async (req: Request, res: Response) => {
     const reqHeader: any = req.headers;
     const contentType: any = reqHeader["content-type"];
-    const tokenkey: any = reqHeader["token-key"];
+    // const tokenkey: any = reqHeader["token-key"];
 
-    if (!tokenkey || !contentType) {
+    if (!contentType || contentType != "application/json") {
         const missingHeaders: responseError = {
             code: "400",
             status: "Failed",
@@ -37,13 +39,13 @@ enrollment.get("/showEnrollment", async (req: Request, res: Response) => {
 });
 
 
-enrollment.post("/approved", async (req: Request, res: Response) => {
+enrollment.post("/approved", verifyToken, async (req: Request, res: Response) => {
     const reqHeader: any = req.headers;
     const contentType: any = reqHeader["content-type"];
     const tokenkey: any = reqHeader["token-key"];
     const { empId, courseId, sessionId }: any = req.body
 
-    if (!tokenkey || !contentType) {
+    if (!contentType || contentType != "application/json") {
         const missingHeaders: responseError = {
             code: "400",
             status: "Failed",
@@ -119,13 +121,13 @@ enrollment.post("/approved", async (req: Request, res: Response) => {
 
 
 
-enrollment.post("/denied", async (req: Request, res: Response) => {
+enrollment.post("/denied", verifyToken, async (req: Request, res: Response) => {
     const reqHeader: any = req.headers;
     const contentType: any = reqHeader["content-type"];
     const tokenkey: any = reqHeader["token-key"];
     const { empId, courseId, sessionId }: any = req.body
 
-    if (!tokenkey || !contentType) {
+    if (!contentType || contentType != "application/json") {
         const missingHeaders: responseError = {
             code: "400",
             status: "Failed",

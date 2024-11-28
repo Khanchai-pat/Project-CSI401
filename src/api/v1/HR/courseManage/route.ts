@@ -1,17 +1,20 @@
 import express, { Response, Request } from "express"
 import { responseData, responseError } from "../../interfaceRes/response";
 import { course } from "../../Schema/course"
+import { verifyToken } from "../../middleware/route";
 
 
 export const courses = express();
 
-courses.get("/showCourse", async (req: Request, res: Response) => {
+courses.get("/showCourse", verifyToken, async (req: Request, res: Response) => {
 
     const reqHeader: any = req.headers;
     const contentType: any = reqHeader["content-type"];
-    const tokenkey: any = reqHeader["token-key"];
-    // if (!tokenkey || !contentType){}
-    if (!tokenkey || !contentType) {
+
+    // const tokenkey: any = reqHeader["token-key"];
+    // if (!contentType || contentType != "application/json"){}
+
+    if (!contentType || contentType != "application/json") {
         const missingHeaders: responseError = {
             code: "400",
             status: "Failed",
@@ -40,13 +43,13 @@ courses.get("/showCourse", async (req: Request, res: Response) => {
     }
 });
 
-courses.post("/courseDetail", async (req: Request, res: Response) => {
+courses.post("/courseDetail", verifyToken, async (req: Request, res: Response) => {
     const reqHeader: any = req.headers;
     const contentType: any = reqHeader["content-type"];
-    const tokenkey: any = reqHeader["token-key"];
+    // const tokenkey: any = reqHeader["token-key"];
     const { courseId, sessionId } = req.body;
 
-    if (!tokenkey || !contentType) {
+    if (!contentType || contentType != "application/json") {
         const missingHeaders: responseError = {
             code: "400",
             status: "Failed",
@@ -106,7 +109,7 @@ courses.post("/courseDetail", async (req: Request, res: Response) => {
 );
 
 
-courses.post("/createCourse", async (req: Request, res: Response) => {
+courses.post("/createCourse", verifyToken, async (req: Request, res: Response) => {
     const reqHeader: any = req.headers
     const contentType: any = reqHeader["content-type"]
     const tokenkey: any = reqHeader["token-key"]
@@ -178,10 +181,10 @@ courses.post("/createCourse", async (req: Request, res: Response) => {
 })
 
 
-courses.post("/addSession", async (req: Request, res: Response) => {
+courses.post("/addSession", verifyToken, async (req: Request, res: Response) => {
     const reqHeader: any = req.headers
     const contentType: any = reqHeader["content-type"]
-    const tokenkey: any = reqHeader["token-key"]
+    // const tokenkey: any = reqHeader["token-key"]
     const {
         courseId,
         sessionId,
@@ -193,7 +196,7 @@ courses.post("/addSession", async (req: Request, res: Response) => {
         status
     }: any = req.body
 
-    if (contentType !== 'application/json' || !tokenkey) {
+    if (!contentType || contentType != "application/json") {
         const missingHeadersError: responseError = {
             code: "400",
             status: "Failed",
@@ -285,13 +288,13 @@ courses.post("/addSession", async (req: Request, res: Response) => {
 })
 
 
-courses.post("/deleteCourse", async (req: Request, res: Response) => {
+courses.post("/closeCourse", verifyToken, async (req: Request, res: Response) => {
     const reqHeader: any = req.headers
     const contentType: any = reqHeader["content-type"]
-    const tokenkey: any = reqHeader["token-key"]
-    const { courseId }: any = req.body
+    // const tokenkey: any = reqHeader["token-key"]
+    const { courseId, status }: any = req.body
 
-    if (contentType !== 'application/json' || !tokenkey) {
+    if (!contentType || contentType != "application/json") {
         const missingHeadersError: responseError = {
             code: "400",
             status: "Failed",
@@ -311,7 +314,11 @@ courses.post("/deleteCourse", async (req: Request, res: Response) => {
                 };
                 res.status(404).json(missingId);
             } else {
-                const deleteCourse = await course.deleteOne({ courseId: courseId })
+                const deleteCourse = await course.updateOne({ courseId: courseId }, {
+                    $set: {
+                        status: status
+                    }
+                })
                 const successData: responseData = {
                     code: "200",
                     status: "OK",
@@ -331,10 +338,10 @@ courses.post("/deleteCourse", async (req: Request, res: Response) => {
     }
 })
 
-courses.post("/editCouse", async (req: Request, res: Response) => {
+courses.post("/editCouse", verifyToken, async (req: Request, res: Response) => {
     const reqHeader: any = req.headers
     const contentType: any = reqHeader["content-type"]
-    const tokenkey: any = reqHeader["authorization"]
+    // const tokenkey: any = reqHeader["authorization"]
     const {
         courseId,
         sessionId,
@@ -347,7 +354,7 @@ courses.post("/editCouse", async (req: Request, res: Response) => {
         status
     }: any = req.body
 
-    if (contentType !== 'application/json' || !tokenkey) {
+    if (!contentType || contentType != "application/json") {
         const missingHeadersError: responseError = {
             code: "400",
             status: "Failed",

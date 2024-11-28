@@ -2,16 +2,17 @@
 import express, { Request, Response } from "express";
 import { responseData, responseError } from "../../interfaceRes/response";
 import { reimbursements } from "../../Schema/reimbursement"
+import { verifyToken } from "../../middleware/route";
 
 export const reimbursement = express();
 
-reimbursement.get("/requests", async (req: Request, res: Response) => {
+reimbursement.get("/requests", verifyToken, async (req: Request, res: Response) => {
 
     const reqHeader: any = req.headers
     const contentType: any = reqHeader["content-type"]
     const tokenkey: any = reqHeader["token-key"]
 
-    if (!contentType || !tokenkey) {
+    if (!contentType || contentType != "application/json") {
         const missingHeadersError: responseError = {
             code: "400",
             status: "Failed",
@@ -41,13 +42,13 @@ reimbursement.get("/requests", async (req: Request, res: Response) => {
 })
 
 ////1.2.12 API : HR - Courses Fee Reimbursement System (FR5: ระบบเบิกค่าอบรม) Show List byId
-reimbursement.get("/requestsId/:refId?", async (req: Request, res: Response) => {
+reimbursement.get("/requestsId/:refId?", verifyToken, async (req: Request, res: Response) => {
     const reqHeader: any = req.headers
     const contentType: any = reqHeader["content-type"]
     const tokenkey: any = reqHeader["token-key"]
     const { refId }: any = req.params
 
-    if (!contentType || !tokenkey) {
+    if (!contentType || contentType != "application/json") {
         const missingHeadersError: responseError = {
             code: "400",
             status: "Failed",
@@ -97,13 +98,13 @@ reimbursement.get("/requestsId/:refId?", async (req: Request, res: Response) => 
 });
 
 //1.2.13 API : HR - Courses Fee Reimbursement System (FR5: ระบบเบิกค่าอบรม) Appove
-reimbursement.post("/appoved", async (req: Request, res: Response) => {
+reimbursement.post("/appoved", verifyToken, async (req: Request, res: Response) => {
     const reqHeader: any = req.headers
     const contentType: any = reqHeader["content-type"]
     const tokenkey: any = reqHeader["token-key"]
     const { refId, status }: any = req.body
 
-    if (!contentType || !tokenkey) {
+    if (!contentType || contentType != "application/json") {
         const missingHeadersError: responseError = {
             code: "400",
             status: "Failed",
@@ -156,13 +157,13 @@ reimbursement.post("/appoved", async (req: Request, res: Response) => {
 );
 
 //1.2.14 API : HR - Courses Fee Reimbursement System (FR5: ระบบเบิกค่าอบรม) Reject
-reimbursement.post("/denied", async (req: Request, res: Response) => {
+reimbursement.post("/denied", verifyToken, async (req: Request, res: Response) => {
     const reqHeader: any = req.headers
     const contentType: any = reqHeader["content-type"]
-    const tokenkey: any = reqHeader["token-key"]
+    // const tokenkey: any = reqHeader["token-key"]
     const { refId, status }: any = req.body
 
-    if (!contentType || !tokenkey) {
+    if (!contentType || contentType != "application/json") {
         const missingHeadersError: responseError = {
             code: "400",
             status: "Failed",

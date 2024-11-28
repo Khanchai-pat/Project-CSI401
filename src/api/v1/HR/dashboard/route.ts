@@ -5,14 +5,16 @@ import { courseResults } from "../../Schema/courseResults"
 import { reimbursements } from "../../Schema/reimbursement"
 import { employees } from "../../Schema/emp"
 import { course } from "../../Schema/course"
+import { verifyToken } from "../../middleware/route"
+
 export const dashBoard = express();
 
-dashBoard.get("/dashBoard", async (req: Request, res: Response) => {
+dashBoard.get("/dashBoard", verifyToken, async (req: Request, res: Response) => {
     const reqHeader: any = req.headers;
     const contentType: string = reqHeader["content-type"];
-    const tokenkey: string = reqHeader["token-key"];
+    // const tokenkey: string = reqHeader["token-key"];
 
-    if (!contentType || !tokenkey) {
+    if (!contentType || contentType != "application/json") {
         const verifyError: responseError = {
             code: "400",
             status: "Failed",

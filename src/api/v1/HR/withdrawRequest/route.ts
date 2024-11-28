@@ -1,16 +1,19 @@
 import express, { Request, Response } from 'express'
 import { responseData, responseError } from '../../interfaceRes/response';
-export const withdrawRequest = express();
 import { courseRequests } from "../../Schema/courseRequest"
 import { enrollments } from "../../Schema/enrollment"
+import { verifyToken } from '../../middleware/route';
 
-withdrawRequest.get("/requests", async (req: Request, res: Response) => {
+export const withdrawRequest = express();
+
+
+withdrawRequest.get("/requests", verifyToken, async (req: Request, res: Response) => {
 
     const reqHeader: any = req.headers;
     const contentType: string = reqHeader["content-type"];
     const tokenkey: string = reqHeader["token-key"];
 
-    if (!tokenkey || !contentType) {
+    if (!contentType || contentType != "application/json") {
         const missingHeadersError: responseError = {
             code: "400",
             status: "Failed",
@@ -39,14 +42,14 @@ withdrawRequest.get("/requests", async (req: Request, res: Response) => {
 });
 
 ////Show list requests By Id
-withdrawRequest.get("/requestsId/:reqId?", async (req: Request, res: Response) => {
+withdrawRequest.get("/requestsId/:reqId?", verifyToken, async (req: Request, res: Response) => {
     const reqHeader: any = req.headers
     const contentType: any = reqHeader["content-type"]
-    const tokenkey: any = reqHeader["token-key"]
+    // const tokenkey: any = reqHeader["token-key"]
     const { reqId }: any = req.params
     console.log(reqId)
 
-    if (!tokenkey || !contentType) {
+    if (!contentType || contentType != "application/json") {
         const missingHeadersError: responseError = {
             code: "400",
             status: "Failed",
@@ -94,13 +97,13 @@ withdrawRequest.get("/requestsId/:reqId?", async (req: Request, res: Response) =
 })
 
 //Show list request ById appove
-withdrawRequest.post("/appoved", async (req: Request, res: Response) => {
+withdrawRequest.post("/appoved", verifyToken, async (req: Request, res: Response) => {
     const reqHeader: any = req.headers
     const contentType: any = reqHeader["content-type"]
-    const tokenkey: any = reqHeader["token-key"]
+    // const tokenkey: any = reqHeader["token-key"]
     const { reqId, empId }: any = req.body
 
-    if (!contentType || !tokenkey) {
+    if (!contentType || contentType != "application/json") {
         const errorHeaderToken: responseError = {
             code: "400",
             status: "Failed",
@@ -132,14 +135,14 @@ withdrawRequest.post("/appoved", async (req: Request, res: Response) => {
                         }
                     });
 
-                    const dbCancle = await enrollments.updateOne({
-                        empId: empId
+                    // const dbCancle = await enrollments.updateOne({
+                    //     empId: empId
 
-                    }, {
-                        $set: {
-                            status: "Cencle"
-                        }
-                    })
+                    // }, {
+                    //     $set: {
+                    //         status: "Cencle"
+                    //     }
+                    // })
                     res.status(200).json(dbAppove)
                 }
             } catch (error) {
@@ -156,13 +159,13 @@ withdrawRequest.post("/appoved", async (req: Request, res: Response) => {
 })
 
 // Show list request ById reject
-withdrawRequest.post("/denied", async (req: Request, res: Response) => {
+withdrawRequest.post("/denied", verifyToken, async (req: Request, res: Response) => {
     const reqHeader: any = req.headers
     const contentType: any = reqHeader["content-type"]
-    const tokenkey: any = reqHeader["token-key"]
+    // const tokenkey: any = reqHeader["token-key"]
     const { reqId }: any = req.body
 
-    if (!contentType || !tokenkey) {
+    if (!contentType || contentType != "application/json") {
         const errorHeaderToken: responseError = {
             code: "400",
             status: "Failed",

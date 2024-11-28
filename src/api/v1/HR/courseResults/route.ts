@@ -1,18 +1,19 @@
 import express, { Request, Response } from "express";
 import { responseData, responseError } from '../../interfaceRes/response';
+import { courseResults } from "../../Schema/courseResults"
+import { verifyToken } from "../../middleware/route";
+//1.2.14 API : HR - Show Courses Results
 
 export const courseResult = express();
-import { courseResults } from "../../Schema/courseResults"
 
-//1.2.14 API : HR - Show Courses Results
-courseResult.get("/results", async (req: Request, res: Response) => {
+courseResult.get("/results", verifyToken, async (req: Request, res: Response) => {
 
   const reqHeader: any = req.headers;
   const contentType: string = reqHeader["content-type"];
-  const tokenkey: string = reqHeader["token-key"];
+  // const tokenkey: string = reqHeader["token-key"];
 
 
-  if (!tokenkey || !contentType) {
+  if (!contentType || contentType != "application/json") {
     const missingHeaders: responseError = {
       code: "400",
       status: "Failed",
@@ -42,14 +43,14 @@ courseResult.get("/results", async (req: Request, res: Response) => {
 });
 
 //1.2.15 API : HR - Show Courses Results ById
-courseResult.get("/resultsId/:reqId?", async (req: Request, res: Response) => {
+courseResult.get("/resultsId/:reqId?", verifyToken, async (req: Request, res: Response) => {
 
   const reqHeader: any = req.headers;
   const contentType: any = reqHeader["content-type"];
-  const tokenkey: any = reqHeader["token-key"];
+  // const tokenkey: any = reqHeader["token-key"];
   const { reqId } = req.params
 
-  if (!tokenkey || !contentType) {
+  if (!contentType || contentType != "application/json") {
     const missingHeaders: responseError = {
       code: "500",
       status: "Failed",
@@ -100,13 +101,13 @@ courseResult.get("/resultsId/:reqId?", async (req: Request, res: Response) => {
 });
 
 //1.2.16 API : HR - Show Courses Results ById Update
-courseResult.post("/update", async (req: Request, res: Response) => {
+courseResult.post("/update", verifyToken, async (req: Request, res: Response) => {
   const reqHeader: any = req.headers;
   const contentType: string = reqHeader["content-type"];
-  const tokenkey: string = reqHeader["token-key"];
+  // const tokenkey: string = reqHeader["token-key"];
   const { reqId } = req.body
 
-  if (!tokenkey || !contentType) {
+  if (!contentType || contentType != "application/json") {
     const missingHeaders: responseError = {
       code: "400",
       status: "Failed",
@@ -135,7 +136,7 @@ courseResult.post("/update", async (req: Request, res: Response) => {
         } else {
           const updateData = await courseResults.updateOne({ reqId: reqId }, {
             $set: {
-              status : "complete"
+              status: "complete"
             }
           })
           res.status(200).json(updateData)

@@ -11,7 +11,7 @@ history.get("/course", async (req: Request, res: Response) => {
     const reqHeader: any = req.headers
     const contentType: any = reqHeader["content-type"]
     const tokenkey: any = reqHeader["token-key"]
-    if (!contentType || !tokenkey) {
+    if (!contentType || contentType != "application/json") {
         const errorHeaderToken: responseError = {
             code: "400",
             status: "Failed",
@@ -47,7 +47,7 @@ history.get("/results", async (req: Request, res: Response) => {
     const contentType: any = reqHeader["content-type"]
     const tokenkey: any = reqHeader["token-key"]
     const { status }: any = req.body
-    if (!contentType || !tokenkey) {
+    if (!contentType || contentType != "application/json") {
         const errorHeaderToken: responseError = {
             code: "400",
             status: "Failed",
@@ -80,8 +80,8 @@ history.get("/results", async (req: Request, res: Response) => {
 history.get("/reimbursement", async (req: Request, res: Response) => {
     const reqHeader: any = req.headers
     const contentType: any = reqHeader["content-type"]
-    const tokenkey: any = reqHeader["token-key"]
-    if (!contentType || !tokenkey) {
+    // const tokenkey: any = reqHeader["token-key"]
+    if (!contentType || contentType != "application/json") {
         const errorHeaderToken: responseError = {
             code: "400",
             status: "Failed",

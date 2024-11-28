@@ -3,6 +3,8 @@ import { responseData, responseError } from '../../interfaceRes/response';
 export const checkData = express();
 import { employees } from "../../Schema/emp"
 import { verifyToken } from "../../middleware/route";
+
+
 // Check Data EMP
 checkData.get("/checkEmp", verifyToken, async (req: Request, res: Response) => {
 
@@ -10,7 +12,7 @@ checkData.get("/checkEmp", verifyToken, async (req: Request, res: Response) => {
   const contentType: any = reqHeader["content-type"];
   // const tokenkey: any = reqHeader["token-key"];
   // if (!tokenkey || !contentType){}
-  if (!contentType) {
+  if (!contentType || contentType != "application/json") {
     const missingHeaders: responseError = {
       code: "400",
       status: "Failed",
@@ -40,13 +42,13 @@ checkData.get("/checkEmp", verifyToken, async (req: Request, res: Response) => {
 });
 
 // Check Data by Employee Id
-checkData.get("/checkEmpId/:empId?", async (req: Request, res: Response) => {
+checkData.get("/checkEmpId/:empId?", verifyToken,async (req: Request, res: Response) => {
   const reqHeader: any = req.headers;
   const contentType: any = reqHeader["content-type"];
-  const tokenkey: any = reqHeader["token-key"];
+  // const tokenkey: any = reqHeader["token-key"];
   const { empId } = req.params;
 
-  if (!tokenkey || !contentType) {
+  if (!contentType || contentType != "application/json") {
     const missingHeaders: responseError = {
       code: "400",
       status: "Failed",

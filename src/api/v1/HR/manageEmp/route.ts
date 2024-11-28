@@ -3,14 +3,16 @@ import { responseData, responseError } from '../../interfaceRes/response'
 import bcrypt from 'bcryptjs'
 import { employees } from "../../Schema/emp"
 import { users } from "../../Schema/users"
+import { verifyToken } from '../../middleware/route'
+
 export const manageData = express();
 
 //create-Emp
-manageData.post("/createEmp", async (req: Request, res: Response) => {
+manageData.post("/createEmp", verifyToken, async (req: Request, res: Response) => {
     // res headers
     const reqHeader: any = req.headers
     const contentType: any = reqHeader["content-type"]
-    const tokenkey: any = reqHeader["token-key"]
+    // const tokenkey: any = reqHeader["token-key"]
 
     const {
         empId,
@@ -23,7 +25,7 @@ manageData.post("/createEmp", async (req: Request, res: Response) => {
         status
     }: any = req.body
 
-    if (contentType !== 'application/json' || !tokenkey) {
+    if (!contentType || contentType != "application/json") {
         const missingHeadersError: responseError = {
             code: "400",
             status: "Failed",
@@ -110,10 +112,10 @@ manageData.post("/createEmp", async (req: Request, res: Response) => {
 )
 
 //edit-Emp
-manageData.post("/editEmp", async (req: Request, res: Response) => {
+manageData.post("/editEmp", verifyToken, async (req: Request, res: Response) => {
     const reqHeader: any = req.headers
     const contentType: any = reqHeader["content-type"]
-    const tokenkey: any = reqHeader["token-key"]
+    // const tokenkey: any = reqHeader["token-key"]
 
     const {
         empId,
@@ -137,7 +139,7 @@ manageData.post("/editEmp", async (req: Request, res: Response) => {
 
     console.log(req.body)
 
-    if (!contentType || !tokenkey) {
+    if (!contentType || contentType != "application/json") {
         const missingHeadersError: responseError = {
             code: "400",
             status: "Failed",
@@ -186,17 +188,17 @@ manageData.post("/editEmp", async (req: Request, res: Response) => {
 })
 
 //delete-Emp
-manageData.post("/removeEmp", async (req: Request, res: Response) => {
+manageData.post("/removeEmp", verifyToken, async (req: Request, res: Response) => {
     const reqHeader: any = req.headers
     const contentType: any = reqHeader["content-type"]
-    const tokenkey: any = reqHeader["token-key"]
+    // const tokenkey: any = reqHeader["token-key"]
 
     const {
         empId,
         status
     } = req.body
 
-    if (!contentType || !tokenkey) {
+    if (!contentType || contentType != "application/json") {
         const missingHeadersError: responseError = {
             code: "400",
             status: "Failed",
