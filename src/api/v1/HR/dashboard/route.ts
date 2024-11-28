@@ -8,15 +8,6 @@ import { course } from "../../Schema/course";
 import { verifyToken } from "../../middleware/route";
 import { SECRET_KEY } from "../../middleware/route";
 import jwt from "jsonwebtoken";
-// const tokenkey: any = reqHeader["authorization"];
-//     const decoded: any = jwt.verify(tokenkey, SECRET_KEY);
-// if (decoded.roles != "Hr") {
-//     const promis: responseError = {
-//       code: "400",
-//       status: "Failed",
-//       message: "Don't have promision",
-//     };
-//     res.status(400).json(promis);
 
 export const dashBoard = express();
 
