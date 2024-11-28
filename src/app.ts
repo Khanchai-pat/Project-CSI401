@@ -4,7 +4,7 @@ import cors from "cors";
 import helmet from "helmet";
 import morgan from "morgan"
 import mongoose from "mongoose";
-import { useSwagger } from "../miidleware/swagger";
+import { useSwagger } from "../swagger/swagger";
 // const morgan = require('morgan');
 
 //HR
@@ -16,7 +16,7 @@ import { courseResult } from "./api/v1/HR/courseResults/route";
 import { reimbursement } from "./api/v1/HR/reimbursement/route";
 import { history } from "./api/v1/HR/history/route";
 import { dashBoard } from "./api/v1/HR/dashboard/route";
-import { courses } from "./api/v1/HR/courseManage/route"
+import { courses } from "./api/v1/HR/manageCourse/route"
 
 // MEP
 import { checkdata } from "./api/v1/EMP/Checkdata/route";

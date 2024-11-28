@@ -8,7 +8,7 @@ import { users } from "../Schema/users";
 
 export const auth = express();
 const secretKey = process.env.SECRET_KEY || "defaultSecretKey";
-
+``
 /**
  * @swagger
  *  /auth/login:

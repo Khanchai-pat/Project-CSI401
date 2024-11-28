@@ -314,7 +314,7 @@ courses.post("/closeCourse", verifyToken, async (req: Request, res: Response) =>
                 };
                 res.status(404).json(missingId);
             } else {
-                const deleteCourse = await course.updateOne({ courseId: courseId }, {
+                const setCourse = await course.updateOne({ courseId: courseId }, {
                     $set: {
                         status: status
                     }
@@ -322,7 +322,7 @@ courses.post("/closeCourse", verifyToken, async (req: Request, res: Response) =>
                 const successData: responseData = {
                     code: "200",
                     status: "OK",
-                    data: deleteCourse
+                    data: setCourse
                 };
                 res.status(200).json(successData);
             }

@@ -60,7 +60,7 @@ manageData.post("/createEmp", verifyToken, async (req: Request, res: Response) =
                     ]
                 })
                 if (!cerrentData) {
-                    const addEmp = await employees.create({
+                    const addEmp = await employees.insertMany({
                         empId: empId,
                         empName: empName,
                         departMent: departMent,
@@ -75,7 +75,7 @@ manageData.post("/createEmp", verifyToken, async (req: Request, res: Response) =
                     const passwords = await bcrypt.hash(cardId, salt)
                     console.log(passwords)
 
-                    const addUser = await users.create({
+                    const addUser = await users.insertMany({
                         username: email,
                         password: passwords,
                         role: role || "EMP"
