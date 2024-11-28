@@ -85,7 +85,7 @@ auth.post("/login", async (req: Request, res: Response) => {
           const payload = {
             userId: userData?._id,
             username: userData?.username,
-            roles: userData?.role,
+            roles: userData?.roles,
             status: userData?.status
           };
 

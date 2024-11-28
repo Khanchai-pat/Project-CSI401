@@ -1,202 +1,243 @@
-import express, { Request, Response } from "express"
-import { enrollments } from "../../Schema/enrollment"
+import express, { Request, Response } from "express";
+import { enrollments } from "../../Schema/enrollment";
 import { responseData, responseError } from "../../interfaceRes/response";
 import { verifyToken } from "../../middleware/route";
+import { SECRET_KEY } from "../../middleware/route";
+import jwt from "jsonwebtoken";
 
-export const enrollment = express()
+export const enrollment = express();
 
-enrollment.get("/showEnrollment", verifyToken, async (req: Request, res: Response) => {
+enrollment.get(
+  "/showEnrollment",
+  verifyToken,
+  async (req: Request, res: Response) => {
     const reqHeader: any = req.headers;
     const contentType: any = reqHeader["content-type"];
-    // const tokenkey: any = reqHeader["token-key"];
+    const tokenkey: any = reqHeader["authorization"];
+    const decoded: any = jwt.verify(tokenkey, SECRET_KEY);
 
     if (!contentType || contentType != "application/json") {
-        const missingHeaders: responseError = {
-            code: "400",
-            status: "Failed",
-            message: "Bad Request: Missing required headers - 'Content-Type' and 'token-key' are needed for endpoint /checkEmp"
-        };
-        res.status(400).json(missingHeaders);
+      const missingHeaders: responseError = {
+        code: "400",
+        status: "Failed",
+        message:
+          "Bad Request: Missing required headers - 'Content-Type' and 'token-key' are needed for endpoint /checkEmp",
+      };
+      res.status(400).json(missingHeaders);
     } else {
+      if (decoded.roles != "Hr") {
+        const promis: responseError = {
+          code: "400",
+          status: "Failed",
+          message: "Don't have promision",
+        };
+        res.status(400).json(promis);
+      } else {
         try {
-            const enrollment = await enrollments.find({});
-            const currentEnrollments: responseData = {
-                code: "200",
-                status: "Employee data retrieved successfully",
-                data: enrollment,
-            };
-            res.status(200).json(currentEnrollments);
+          const enrollment = await enrollments.find({});
+          const currentEnrollments: responseData = {
+            code: "200",
+            status: "Employee data retrieved successfully",
+            data: enrollment,
+          };
+          res.status(200).json(currentEnrollments);
         } catch (error) {
-            console.log(error)
-            const serverError: responseError = {
-                code: "500",
-                status: "Failed",
-                message: "An error occurred while processing your request. Please try again later"
-            };
-            res.status(500).json(serverError);
+          console.log(error);
+          const serverError: responseError = {
+            code: "500",
+            status: "Failed",
+            message:
+              "An error occurred while processing your request. Please try again later",
+          };
+          res.status(500).json(serverError);
         }
+      }
     }
-});
+  }
+);
 
-
-enrollment.post("/approved", verifyToken, async (req: Request, res: Response) => {
+enrollment.post(
+  "/approved",
+  verifyToken,
+  async (req: Request, res: Response) => {
     const reqHeader: any = req.headers;
     const contentType: any = reqHeader["content-type"];
-    const tokenkey: any = reqHeader["token-key"];
-    const { empId, courseId, sessionId }: any = req.body
+    const tokenkey: any = reqHeader["authorization"];
+    const decoded: any = jwt.verify(tokenkey, SECRET_KEY);
+    const { empId, courseId, sessionId }: any = req.body;
 
     if (!contentType || contentType != "application/json") {
-        const missingHeaders: responseError = {
-            code: "400",
-            status: "Failed",
-            message: "Bad Request: Missing required headers - 'Content-Type' and 'token-key' are needed for endpoint /checkEmp"
-        };
-        res.status(400).json(missingHeaders);
+      const missingHeaders: responseError = {
+        code: "400",
+        status: "Failed",
+        message:
+          "Bad Request: Missing required headers - 'Content-Type' and 'token-key' are needed for endpoint /checkEmp",
+      };
+      res.status(400).json(missingHeaders);
     } else {
+      if (decoded.roles != "Hr") {
+        const promis: responseError = {
+          code: "400",
+          status: "Failed",
+          message: "Don't have promision",
+        };
+        res.status(400).json(promis);
+      } else {
         try {
-            const checkEnrollment = await enrollments
-                .findOne({ empId: empId });
-            if (!checkEnrollment) {
-                const missingId: responseError = {
+          const checkEnrollment = await enrollments.findOne({ empId: empId });
+          if (!checkEnrollment) {
+            const missingId: responseError = {
+              code: "404",
+              status: "Failed",
+              message: `The provided '${empId}' empId does not match any enrollment record in the database.`,
+            };
+            res.status(404).json(missingId);
+          } else {
+            if (!empId || !courseId || !sessionId) {
+              const incompleteData: responseError = {
+                code: "400",
+                status: "Failed",
+                message:
+                  "Incomplete data provided. Please ensure all required fields are filled in",
+              };
+              res.status(404).json(incompleteData);
+            } else {
+              if (checkEnrollment.courseId !== courseId) {
+                const missingCourseId: responseError = {
+                  code: "404",
+                  status: "Failed",
+                  message: `with Id '${courseId}' courseId  not found checkEnrollment`,
+                };
+                res.status(404).json(missingCourseId);
+              } else {
+                if (checkEnrollment.sessionId !== sessionId) {
+                  const missingSessionId: responseError = {
                     code: "404",
                     status: "Failed",
-                    message: `The provided '${empId}' empId does not match any enrollment record in the database.`
-
-                };
-                res.status(404).json(missingId);
-            } else {
-                if (!empId || !courseId || !sessionId) {
-                    const incompleteData: responseError = {
-                        code: "400",
-                        status: "Failed",
-                        message: "Incomplete data provided. Please ensure all required fields are filled in"
-                    };
-                    res.status(404).json(incompleteData);
+                    message: `with Id '${sessionId}' sessionId not found checkEnrollment`,
+                  };
+                  res.status(404).json(missingSessionId);
                 } else {
-                    if (checkEnrollment.courseId !== courseId) {
-                        const missingCourseId: responseError = {
-                            code: "404",
-                            status: "Failed",
-                            message: `with Id '${courseId}' courseId  not found checkEnrollment`,
-                        };
-                        res.status(404).json(missingCourseId);
-                    } else {
-                        if (checkEnrollment.sessionId !== sessionId) {
-                            const missingSessionId: responseError = {
-                                code: "404",
-                                status: "Failed",
-                                message: `with Id '${sessionId}' sessionId not found checkEnrollment`,
-                            };
-                            res.status(404).json(missingSessionId);
-                        } else {
-
-                            const updateStatus = await enrollments.updateOne({ empId: empId, courseId: courseId, sessionId: sessionId },
-                                {
-                                    $set: {
-                                        status: "approved"
-                                    }
-                                }
-                            )
-                            const currentEnrollments: responseData = {
-                                code: "200",
-                                status: "Employee data retrieved successfully",
-                                data: updateStatus,
-                            };
-                            res.status(200).json(currentEnrollments);
-                        }
+                  const updateStatus = await enrollments.updateOne(
+                    { empId: empId, courseId: courseId, sessionId: sessionId },
+                    {
+                      $set: {
+                        status: "approved",
+                      },
                     }
+                  );
+                  const currentEnrollments: responseData = {
+                    code: "200",
+                    status: "Employee data retrieved successfully",
+                    data: updateStatus,
+                  };
+                  res.status(200).json(currentEnrollments);
                 }
+              }
             }
+          }
         } catch (error) {
-            console.log(error)
-            const serverError: responseError = {
-                code: "500",
-                status: "Failed",
-                message: "An error occurred while processing your request. Please try again later"
-            };
-            res.status(500).json(serverError);
+          console.log(error);
+          const serverError: responseError = {
+            code: "500",
+            status: "Failed",
+            message:
+              "An error occurred while processing your request. Please try again later",
+          };
+          res.status(500).json(serverError);
         }
+      }
     }
-});
-
-
+  }
+);
 
 enrollment.post("/denied", verifyToken, async (req: Request, res: Response) => {
-    const reqHeader: any = req.headers;
-    const contentType: any = reqHeader["content-type"];
-    const tokenkey: any = reqHeader["token-key"];
-    const { empId, courseId, sessionId }: any = req.body
+  const reqHeader: any = req.headers;
+  const contentType: any = reqHeader["content-type"];
+  const tokenkey: any = reqHeader["authorization"];
+  const decoded: any = jwt.verify(tokenkey, SECRET_KEY);
+  const { empId, courseId, sessionId }: any = req.body;
 
-    if (!contentType || contentType != "application/json") {
-        const missingHeaders: responseError = {
-            code: "400",
-            status: "Failed",
-            message: "Bad Request: Missing required headers - 'Content-Type' and 'token-key' are needed for endpoint /checkEmp"
-        };
-        res.status(400).json(missingHeaders);
+  if (!contentType || contentType != "application/json") {
+    const missingHeaders: responseError = {
+      code: "400",
+      status: "Failed",
+      message:
+        "Bad Request: Missing required headers - 'Content-Type' and 'token-key' are needed for endpoint /checkEmp",
+    };
+    res.status(400).json(missingHeaders);
+  } else {
+    if (decoded.roles != "Hr") {
+      const promis: responseError = {
+        code: "400",
+        status: "Failed",
+        message: "Don't have promision",
+      };
+      res.status(400).json(promis);
     } else {
-        try {
-            const checkEnrollment = await enrollments
-                .findOne({ empId: empId });
-            if (!checkEnrollment) {
-                const missingId: responseError = {
-                    code: "404",
-                    status: "Failed",
-                    message: `The provided '${empId}' empId does not match any enrollment record in the database.`
-
-                };
-                res.status(404).json(missingId);
-            } else {
-                if (!empId || !courseId || !sessionId) {
-                    const incompleteData: responseError = {
-                        code: "400",
-                        status: "Failed",
-                        message: "Incomplete data provided. Please ensure all required fields are filled in"
-                    };
-                    res.status(404).json(incompleteData);
-                } else {
-                    if (checkEnrollment.courseId !== courseId) {
-                        const missingCourseId: responseError = {
-                            code: "404",
-                            status: "Failed",
-                            message: `with Id '${courseId}' courseId  not found checkEnrollment`,
-                        };
-                        res.status(404).json(missingCourseId);
-                    } else {
-                        if (checkEnrollment.sessionId !== sessionId) {
-                            const missingSessionId: responseError = {
-                                code: "404",
-                                status: "Failed",
-                                message: `with Id '${sessionId}' sessionId not found checkEnrollment`,
-                            };
-                            res.status(404).json(missingSessionId);
-                        } else {
-
-                            const updateStatus = await enrollments.updateOne({ empId: empId, courseId: courseId, sessionId: sessionId },
-                                {
-                                    $set: {
-                                        status: "denied"
-                                    }
-                                }
-                            )
-                            const currentEnrollments: responseData = {
-                                code: "200",
-                                status: "Employee data retrieved successfully",
-                                data: updateStatus,
-                            };
-                            res.status(200).json(currentEnrollments);
-                        }
-                    }
-                }
-            }
-        } catch (error) {
-            console.log(error)
-            const serverError: responseError = {
-                code: "500",
-                status: "Failed",
-                message: "An error occurred while processing your request. Please try again later"
+      try {
+        const checkEnrollment = await enrollments.findOne({ empId: empId });
+        if (!checkEnrollment) {
+          const missingId: responseError = {
+            code: "404",
+            status: "Failed",
+            message: `The provided '${empId}' empId does not match any enrollment record in the database.`,
+          };
+          res.status(404).json(missingId);
+        } else {
+          if (!empId || !courseId || !sessionId) {
+            const incompleteData: responseError = {
+              code: "400",
+              status: "Failed",
+              message:
+                "Incomplete data provided. Please ensure all required fields are filled in",
             };
-            res.status(500).json(serverError);
+            res.status(404).json(incompleteData);
+          } else {
+            if (checkEnrollment.courseId !== courseId) {
+              const missingCourseId: responseError = {
+                code: "404",
+                status: "Failed",
+                message: `with Id '${courseId}' courseId  not found checkEnrollment`,
+              };
+              res.status(404).json(missingCourseId);
+            } else {
+              if (checkEnrollment.sessionId !== sessionId) {
+                const missingSessionId: responseError = {
+                  code: "404",
+                  status: "Failed",
+                  message: `with Id '${sessionId}' sessionId not found checkEnrollment`,
+                };
+                res.status(404).json(missingSessionId);
+              } else {
+                const updateStatus = await enrollments.updateOne(
+                  { empId: empId, courseId: courseId, sessionId: sessionId },
+                  {
+                    $set: {
+                      status: "denied",
+                    },
+                  }
+                );
+                const currentEnrollments: responseData = {
+                  code: "200",
+                  status: "Employee data retrieved successfully",
+                  data: updateStatus,
+                };
+                res.status(200).json(currentEnrollments);
+              }
+            }
+          }
         }
+      } catch (error) {
+        console.log(error);
+        const serverError: responseError = {
+          code: "500",
+          status: "Failed",
+          message:
+            "An error occurred while processing your request. Please try again later",
+        };
+        res.status(500).json(serverError);
+      }
     }
+  }
 });

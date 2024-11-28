@@ -7,7 +7,7 @@ const empSchema = new mongoose.Schema({
     cardId: String,
     email: String,
     tel: String,
-    role: String,
+    roles: String,
     firstTrainingDate: Date,
     expiryDate: Date,
     nextExpiryDate: String,
