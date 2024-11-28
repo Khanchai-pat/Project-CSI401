@@ -1,10 +1,14 @@
 import mongoose from "mongoose";
 
-const userChemas = new mongoose.Schema({
+const userChemas = new mongoose.Schema(
+  {
     username: String,
-    password:  { type: String, required: true },
+    password: { type: String, required: true },
+    empId: String,
     roles: String,
-    status:String
-}, { timestamps: true })
+    status: String,
+  },
+  { timestamps: true }
+);
 
-export const users = mongoose.model("users", userChemas, "users")
+export const users = mongoose.model("users", userChemas, "users");

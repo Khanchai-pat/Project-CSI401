@@ -88,6 +88,7 @@ manageData.post(
               const addUser = await users.create({
                 username: email,
                 password: passwords,
+                empId: empId,
                 roles: roles || "Emp",
                 status: status || "avtive",
               });

@@ -100,8 +100,9 @@ auth.post("/login", async (req: Request, res: Response) => {
             status: "Success",
             data: {
               message: "login success",
-              username: username,
               token: token,
+              empId: userData?.empId,
+              roles: userData?.roles 
             },
           };
           res.status(200).json(response);

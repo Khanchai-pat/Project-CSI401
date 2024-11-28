@@ -2,7 +2,7 @@ import jwt, { JwtPayload } from "jsonwebtoken";
 import { Request, Response, NextFunction } from "express";
 
 // Secret Key สำหรับใช้ในการตรวจสอบ token
-export const SECRET_KEY = process.env.SECRET_KEY || "defaultSecretKey";
+export const SECRET_KEY = process.env.MY_SECRET_KEY || "defaultSecretKey";
 
 interface CustomRequest extends Request {
     user?: string | JwtPayload;

@@ -120,9 +120,6 @@ checkdata.post("/dashboard", async (req: Request, res: Response) => {
     });
   } else {
     // สร้างข้อมูล response
-    const empData = await employees.findOne({
-      empId: empId,
-    });
     const courseResult = await courseResults
       .find({ empId: empId })
       .sort({ _id: -1 });
@@ -130,7 +127,7 @@ checkdata.post("/dashboard", async (req: Request, res: Response) => {
     res.status(200).json({
       code: "200",
       status: "success",
-      data: { empData, courseResult },
+      data:  courseResult ,
     });
   }
 });
@@ -264,6 +261,39 @@ checkdata.post("/enrollments", async (req: Request, res: Response) => {
       code: "200",
       status: "success",
       data: courseData,
+    });
+  }
+});
+
+checkdata.post("/profile", async (req: Request, res: Response) => {
+  const reqHeader: any = req.headers;
+  const contentType: any = reqHeader["content-type"];
+  const tokenkey: any = reqHeader["authorization"];
+  const { empId } = req.body;
+
+  // ตรวจสอบการมี empId ในคำขอและเช็ค contentType
+  if (!contentType || contentType != "application/json") {
+    res.status(400).json({
+      code: "400",
+      status: "Bad Request",
+      message: reqHeader,
+    });
+  } else if (!empId) {
+    res.status(404).json({
+      code: "404",
+      status: "error",
+      message: "EmpID not found",
+    });
+  } else {
+    // สร้างข้อมูล response
+    const empData = await employees.findOne({
+      empId: empId,
+    });
+
+    res.status(200).json({
+      code: "200",
+      status: "success",
+      data: empData,
     });
   }
 });

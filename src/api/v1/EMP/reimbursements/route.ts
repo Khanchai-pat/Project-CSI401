@@ -4,7 +4,6 @@ import { reimbursements } from "../../Schema/reimbursement";
 
 export const empReimbursement = express.Router();
 
-
 empReimbursement.post("/requests", async (req: Request, res: Response) => {
   const reqHeader: any = req.headers;
   const contentType: any = reqHeader["content-type"];
@@ -33,7 +32,7 @@ empReimbursement.post("/requests", async (req: Request, res: Response) => {
       department: department,
       cardId: cardId,
       bankAccount: bankAccount,
-      MoneyAmout: moneyAmount,
+      moneyAmount: moneyAmount,
       status: "pending",
     });
     const resultsData: responseData = {
