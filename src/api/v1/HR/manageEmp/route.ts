@@ -56,7 +56,6 @@ manageData.post("/createEmp", verifyToken, async (req: Request, res: Response) =
                         { empId: empId },
                         { cardId: cardId },
                         { email: email },
-                        { tel: tel }
                     ]
                 })
                 if (!cerrentData) {
@@ -78,7 +77,8 @@ manageData.post("/createEmp", verifyToken, async (req: Request, res: Response) =
                     const addUser = await users.insertMany({
                         username: email,
                         password: passwords,
-                        role: role || "EMP"
+                        role: role || "EMP",
+                        status: status
                     })
                     const successData: responseData = {
                         code: "200",

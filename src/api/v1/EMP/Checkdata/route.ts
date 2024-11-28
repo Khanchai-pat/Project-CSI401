@@ -16,13 +16,13 @@ export const checkdata = express();
  *       - Checkdata
  *     parameters:
  *       - in: header
- *         name: Content-Type
+ *         name: content-type
  *         required: true
  *         schema:
  *           type: string
  *         description: Specify the content type, e.g., application/json
  *       - in: header
- *         name: Authorization
+ *         name: authorization
  *         required: true
  *         schema:
  *           type: string
