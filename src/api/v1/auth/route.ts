@@ -2,7 +2,9 @@ import express, { Request, Response } from "express";
 import { responseData, responseError } from "../interfaceRes/response";
 
 import jwt from "jsonwebtoken";
+import bcrypt from "bcryptjs"
 import { users } from "../Schema/users";
+
 
 export const auth = express();
 const secretKey = process.env.SECRET_KEY || "defaultSecretKey";
@@ -53,34 +55,56 @@ auth.post("/login", async (req: Request, res: Response) => {
       };
       res.status(400).json(error);
     } else {
+
       const userData = await users.findOne({ username: username });
-      if (userData?.password !== password) {
+      console.log("username:", userData);
+      console.log("Password:", userData ? userData.password : "No password found");
+
+      if (!userData) {
         const error: responseError = {
           code: "400",
           status: "Failed",
-          message: "invalid password",
+          message: "invalid user",
         };
         res.status(400).json(error);
       } else {
-        const payload = {
-          userId: userData?._id,
-          username: userData?.username,
-          roles: userData?.role,
-        };
-        
-        const options ={ expiresIn: "1h" }
+        // ถ้ามีให้ทำสิ่งนี้
+        const isMatch = await bcrypt.compare(password, userData.password)
+        console.log(isMatch)
 
-        const token = jwt.sign(payload, secretKey, options);
+        if (!isMatch) {
+          const error: responseError = {
+            code: "400",
+            status: "Failed",
+            message: "Invalid password",
+          };
+          res.status(400).json(error);
+        } else {
 
-        const response: responseData = {
-          code: "200",
-          status: "Success",
-          data: {
-            message: "login success",
-            token: token,
-          },
-        };
-        res.status(200).json(response);
+          //payload
+          const payload = {
+            userId: userData?._id,
+            username: userData?.username,
+            roles: userData?.role,
+          };
+
+          const options = { expiresIn: 30 }
+          // const options = { expiresIn: "1h" }/
+
+          //generate token
+          const token = jwt.sign(payload, secretKey, options);
+
+          const response: responseData = {
+            code: "200",
+            status: "Success",
+            data: {
+              message: "login success",
+              username: username,
+              token: token,
+            },
+          };
+          res.status(200).json(response);
+        }
       }
     }
   }

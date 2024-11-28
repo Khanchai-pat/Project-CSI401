@@ -2,15 +2,15 @@ import express, { Request, Response } from "express";
 import { responseData, responseError } from '../../interfaceRes/response';
 export const checkData = express();
 import { employees } from "../../Schema/emp"
-
+import { verifyToken } from "../../middleware/route";
 // Check Data EMP
-checkData.get("/checkEmp", async (req: Request, res: Response) => {
+checkData.get("/checkEmp", verifyToken, async (req: Request, res: Response) => {
 
   const reqHeader: any = req.headers;
   const contentType: any = reqHeader["content-type"];
-  const tokenkey: any = reqHeader["token-key"];
+  // const tokenkey: any = reqHeader["token-key"];
   // if (!tokenkey || !contentType){}
-  if (!tokenkey || !contentType) {
+  if (!contentType) {
     const missingHeaders: responseError = {
       code: "400",
       status: "Failed",

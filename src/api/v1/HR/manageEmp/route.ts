@@ -1,5 +1,6 @@
 import express, { Request, Response } from 'express'
 import { responseData, responseError } from '../../interfaceRes/response'
+import bcrypt from 'bcryptjs'
 import { employees } from "../../Schema/emp"
 import { users } from "../../Schema/users"
 export const manageData = express();
@@ -36,9 +37,9 @@ manageData.post("/createEmp", async (req: Request, res: Response) => {
             !departMent ||
             !cardId ||
             !email ||
-            !tel ||
+            !tel
             // !role ||
-            !status
+            // !status
         ) {
             const incompleteDataError: responseError = {
                 code: "400",
@@ -65,12 +66,17 @@ manageData.post("/createEmp", async (req: Request, res: Response) => {
                         email: email,
                         tel: tel,
                         role: role || "EMP",
-                        status: status
+                        status: status || "active"
                     })
+
+                    const salt = await bcrypt.genSalt(10)
+                    const passwords = await bcrypt.hash(cardId, salt)
+                    console.log(passwords)
+
                     const addUser = await users.create({
                         username: email,
-                        password: cardId,
-                        role: role
+                        password: passwords,
+                        role: role || "EMP"
                     })
                     const successData: responseData = {
                         code: "200",

@@ -8,6 +8,7 @@
     "dev": "ts-node-dev --pretty --respawn ./src/app.ts"
   },
   "dependencies": {
+    "@types/bcryptjs": "^2.4.6",
     "@types/cors": "^2.8.17",
     "@types/jsonwebtoken": "^9.0.7",
     "@types/morgan": "^1.9.9",
