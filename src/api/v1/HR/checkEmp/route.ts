@@ -14,7 +14,7 @@ import jwt from "jsonwebtoken";
  *   post:
  *     summary: Checkdata All Employee
  *     tags:
- *       - HR CheckData
+ *       - HR
  *     parameters:
  *       - in: header
  *         name: content-type
