@@ -6,6 +6,126 @@ import jwt from "jsonwebtoken";
 
 export const empReimbursement = express.Router();
 
+
+
+
+/**
+ * @swagger
+ * /reimbursements/requests:
+ *   post:
+ *     summary: Emp Registerations
+ *     tags:
+ *       - Reimbursement
+ *     parameters:
+ *       - in: header
+ *         name: content-type
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Specify the content type, e.g., application/json
+ *       - in: header
+ *         name: authorization
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Bearer token for authentication
+ *     requestBody:
+ *       description: Request body containing the employee ID
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               empId:
+ *                 type: string
+ *                 description: Employee ID to retrieve data for
+ *                 example: EMP001
+ *               courseId:
+ *                 type: string
+ *                 description: Course ID to retrieve data for
+ *                 example: C001
+ *               bankAccount:
+ *                 type: string
+ *                 description: BankAccount to retrieve data for
+ *                 example: 123123123
+ *     responses:
+ *       200:
+ *         description: Successfully Registeration
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 code:
+ *                   type: string
+ *                   example: "200"
+ *                 status:
+ *                   type: string
+ *                   example: "success"
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     reqId:
+ *                       type: string
+ *                       description: Request ID
+ *                     courseId:
+ *                       type: string
+ *                       description: Course ID
+ *                     empId:
+ *                       type: string
+ *                       description: Employee ID
+ *                     empName:
+ *                       type: string
+ *                       description: Employee Name
+ *                     department:
+ *                       type: string
+ *                       description: Department
+ *                     cardId:
+ *                       type: string
+ *                       description: Card ID
+ *                     bankAccount:
+ *                       type: string
+ *                       description: Bank Account
+ *                     moneyAmount:
+ *                       type: string
+ *                       description: Money Amount
+ *                     status:
+ *                       type: string
+ *                       description: Status
+ *       400:
+ *         description: Bad request - Missing Authorization or Content-Type
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 code:
+ *                   type: string
+ *                   example: "400"
+ *                 status:
+ *                   type: string
+ *                   example: "Bad Request"
+ *                 message:
+ *                   type: string
+ *                   example: "Cannot Show"
+ *       404:
+ *         description: EmpID/CourseID/SessionsID not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 code:
+ *                   type: string
+ *                   example: "404"
+ *                 status:
+ *                   type: string
+ *                   example: "error"
+ *                 message:
+ *                   type: string
+ *                   example: "EmpID/CourseID/bankAccount not found"
+ */
 empReimbursement.post("/requests", async (req: Request, res: Response) => {
   const reqHeader: any = req.headers;
   const contentType: any = reqHeader["content-type"];
