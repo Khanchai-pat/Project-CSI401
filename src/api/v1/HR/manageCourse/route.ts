@@ -460,11 +460,6 @@ courses.post(
             });
             console.log(employeesInSession);
 
-            const currentCourse = await course.find({
-              courseId: courseId,
-              "sessions.sessionId": sessionId,
-            });
-
             if (!employeesInSession) {
               const noEmployees: responseError = {
                 code: "404",
@@ -472,21 +467,20 @@ courses.post(
                 message: `No employees found for sessionId '${sessionId}'.`,
               };
               res.status(404).json(noEmployees);
-
             } else {
               const courseResultsData = employeesInSession.map((emp) => ({
-                reqId: `${sessionId}-${emp.empId}`, // reqId ที่ไม่ซ้ำ
+                reqId: `R${sessionId}-${emp.empId}`, // reqId ที่ไม่ซ้ำ
+                empId: emp.empId,
                 empName: emp.empName,
                 department: emp.department,
                 courseId: courseId,
-                sessionId : sessionId,
+                sessionId: sessionId,
                 courseName: emp.courseName || "Unknown",
                 completionDate: new Date(),
-                empId: emp.empId,
                 status: "Pending",
               }));
 
-              //save
+              // save
               const insertedResults = await courseResults.insertMany(
                 courseResultsData
               );
