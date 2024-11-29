@@ -1,9 +1,12 @@
 import express, { Response, Request } from "express";
 import { responseData, responseError } from "../../interfaceRes/response";
 import { course } from "../../Schema/course";
+import { courseResults } from "../../Schema/courseResults";
+import { employees } from "../../Schema/emp";
 import { verifyToken } from "../../middleware/route";
 import { SECRET_KEY } from "../../middleware/route";
 import jwt from "jsonwebtoken";
+import { enrollments } from "../../Schema/enrollment";
 
 export const courses = express();
 
@@ -12,6 +15,7 @@ courses.get("/showCourse", verifyToken, async (req: Request, res: Response) => {
   const contentType: any = reqHeader["content-type"];
   const tokenkey: any = reqHeader["authorization"];
   const decoded: any = jwt.verify(tokenkey, SECRET_KEY);
+  const { courseId, sessionId }: any = req.body;
 
   if (!contentType || contentType != "application/json") {
     const missingHeaders: responseError = {
@@ -33,10 +37,18 @@ courses.get("/showCourse", verifyToken, async (req: Request, res: Response) => {
       try {
         // Process
         const currentCourse = await course.find({});
+        const count = await enrollments.find({
+          courseId: courseId,
+          "session.sessionId": sessionId, // ค้นหา sessionId ที่ตรงกับค่าใน array sessions
+        });
+        console.log(count);
         const reqCheckData: responseData = {
           code: "200",
           status: "showCourse data retrieved successfully",
-          data: currentCourse,
+          data: {
+            currentCourse,
+            count,
+          },
         };
         res.status(200).json(reqCheckData);
       } catch (error) {
@@ -228,7 +240,6 @@ courses.post(
       periods,
       hours,
       courseLimit,
-      status,
     }: any = req.body;
 
     if (!contentType || contentType != "application/json") {
@@ -255,8 +266,7 @@ courses.post(
           !trainingLocation ||
           !periods ||
           !hours ||
-          !courseLimit ||
-          !status
+          !courseLimit
         ) {
           const incompleteDataError: responseError = {
             code: "400",
@@ -297,7 +307,7 @@ courses.post(
                   hours: hours,
                   courseLimit: courseLimit,
                   courseLeft: courseLimit,
-                  status: status,
+                  status: "active",
                 };
                 const updateData = await course.updateOne(
                   { courseId: courseId },
@@ -332,14 +342,14 @@ courses.post(
 );
 
 courses.post(
-  "/closeCourse",
+  "/startCourse",
   verifyToken,
   async (req: Request, res: Response) => {
     const reqHeader: any = req.headers;
     const contentType: any = reqHeader["content-type"];
     const tokenkey: any = reqHeader["authorization"];
     const decoded: any = jwt.verify(tokenkey, SECRET_KEY);
-    const { courseId, status }: any = req.body;
+    const { courseId, sessionId }: any = req.body;
 
     if (!contentType || contentType != "application/json") {
       const missingHeadersError: responseError = {
@@ -369,20 +379,124 @@ courses.post(
             };
             res.status(404).json(missingId);
           } else {
-            const setCourse = await course.updateOne(
-              { courseId: courseId },
+            const updateStatus = await course.updateOne(
+              {
+                courseId: courseId,
+                "sessions.sessionId": sessionId,
+              },
               {
                 $set: {
-                  status: status,
+                  "sessions.$.status": "ongoing",
                 },
+              },
+              {
+                courseName: 1,
+                "sessions.$": 1,
               }
             );
             const successData: responseData = {
               code: "200",
               status: "OK",
-              data: setCourse,
+              data: updateStatus,
             };
             res.status(200).json(successData);
+          }
+        } catch (error) {
+          console.log(error);
+          const serverError: responseError = {
+            code: "500",
+            status: "Failed",
+            message:
+              "An error occurred while processing your request. Please try again later",
+          };
+          res.status(500).json(serverError);
+        }
+      }
+    }
+  }
+);
+
+courses.post(
+  "/ongoingCourse",
+  verifyToken,
+  async (req: Request, res: Response) => {
+    const reqHeader: any = req.headers;
+    const contentType: any = reqHeader["content-type"];
+    const tokenkey: any = reqHeader["authorization"];
+    const decoded: any = jwt.verify(tokenkey, SECRET_KEY);
+    const { courseId, sessionId, empId }: any = req.body;
+
+    if (!contentType || contentType != "application/json") {
+      const missingHeadersError: responseError = {
+        code: "400",
+        status: "Failed",
+        message:
+          "Missing required headers: content-type and authorization token",
+      };
+      res.status(400).json(missingHeadersError);
+    } else {
+      if (decoded.roles != "Hr") {
+        const promis: responseError = {
+          code: "400",
+          status: "Failed",
+          message: "Don't have promision",
+        };
+        res.status(400).json(promis);
+      } else {
+        try {
+          const cerrenCourse = await course.findOne({ courseId: courseId });
+          // console.log(cerrenCourse)
+          if (!cerrenCourse) {
+            const missingId: responseError = {
+              code: "404",
+              status: "Failed",
+              message: `with Id '${courseId}' not found.`,
+            };
+            res.status(404).json(missingId);
+          } else {
+            const employeesInSession = await enrollments.find({
+              courseId: courseId,
+              sessionId: sessionId,
+            });
+            console.log(employeesInSession);
+
+            const currentCourse = await course.find({
+              courseId: courseId,
+              "sessions.sessionId": sessionId,
+            });
+
+            if (!employeesInSession) {
+              const noEmployees: responseError = {
+                code: "404",
+                status: "Failed",
+                message: `No employees found for sessionId '${sessionId}'.`,
+              };
+              res.status(404).json(noEmployees);
+
+            } else {
+              const courseResultsData = employeesInSession.map((emp) => ({
+                reqId: `${sessionId}-${emp.empId}`, // reqId ที่ไม่ซ้ำ
+                empName: emp.empName,
+                department: emp.department,
+                courseId: courseId,
+                sessionId : sessionId,
+                courseName: emp.courseName || "Unknown",
+                completionDate: new Date(),
+                empId: emp.empId,
+                status: "Pending",
+              }));
+
+              //save
+              const insertedResults = await courseResults.insertMany(
+                courseResultsData
+              );
+              const successData: responseData = {
+                code: "200",
+                status: "OK",
+                data: insertedResults,
+              };
+              res.status(200).json(successData);
+            }
           }
         } catch (error) {
           console.log(error);

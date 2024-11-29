@@ -132,7 +132,7 @@ reimbursement.get(
 
 //1.2.13 API : HR - Courses Fee Reimbursement System (FR5: ระบบเบิกค่าอบรม) Appove
 reimbursement.post(
-  "/appoved",
+  "/approve",
   verifyToken,
   async (req: Request, res: Response) => {
     const reqHeader: any = req.headers;
