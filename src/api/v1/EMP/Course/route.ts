@@ -28,18 +28,16 @@ Courses.post("/register", async (req: Request, res: Response) => {
       status: "Failed",
       message:
         "Bad Request: Missing required headers - 'Content-Type' and 'token-key' are needed for endpoint /checkEmp",
-    }; 
+    };
     res.status(400).json(missingHeaders);
-  }
-  else if (decoded.roles != "Emp") {
+  } else if (decoded.roles != "Emp") {
     const promis: responseError = {
       code: "400",
       status: "Failed",
       message: "Don't have promision",
     };
     res.status(400).json(promis);
-  }
-  else if (!empId || !courseId || !sessionId) {
+  } else if (!empId || !courseId || !sessionId) {
     res.status(404).json({
       code: "404",
       status: "error",
@@ -87,19 +85,19 @@ Courses.post("/register", async (req: Request, res: Response) => {
           message: "this course is unavailable",
         });
       } else {
-          const dbResults = await enrollments.create({
-            empId: empId,
-            courseId: courseId,
-            sessionId: sessionId,
-            trainingDate:trainingDate,
-            status: "registered",
-          });
+        const dbResults = await enrollments.create({
+          empId: empId,
+          courseId: courseId,
+          sessionId: sessionId,
+          trainingDate: trainingDate,
+          status: "registered",
+        });
 
-          const newCourseLeft: Number = courseLeft[0] - 1;
+        const newCourseLeft: Number = courseLeft[0] - 1;
 
-          const session = await course.updateOne(
-            { courseId: courseId, "sessions.sessionId": sessionId },
-            { $set: { "sessions.$.courseLeft": newCourseLeft } }
+        const session = await course.updateOne(
+          { courseId: courseId, "sessions.sessionId": sessionId },
+          { $set: { "sessions.$.courseLeft": newCourseLeft } }
         );
 
         const resultsData: responseData = {
@@ -178,7 +176,7 @@ Courses.post("/requests", async (req: Request, res: Response) => {
   }
 });
 
-Courses.get ("/browse", async (req:Request ,res : Response) => {
+Courses.get("/browse", async (req: Request, res: Response) => {
   const reqHeader: any = req.headers;
   const contentType: any = reqHeader["content-type"];
   const tokenkey: any = reqHeader["authorization"];
@@ -190,17 +188,22 @@ Courses.get ("/browse", async (req:Request ,res : Response) => {
       message: `Missing required headers: content-type and authorization token End-Point historyCourse`,
     };
     res.status(400).send(errorHeaderToken);
-  }
-  else if (decoded.roles != "Emp") {
+  } else if (decoded.roles != "Emp") {
     const promis: responseError = {
       code: "400",
       status: "Failed",
       message: "Don't have promision",
     };
     res.status(400).json(promis);
-  }
-  else {
-    const dbResults = await course.find({"session.status" : "active"});
+  } else {
+    const dbResults = await course.find(
+      { "sessions.status": "active" },
+      {
+        courseId:1,
+        courseName:1,
+        "sessions.$": 1,
+      }
+    );
     const resultsData: responseData = {
       code: "200",
       status: "OK",
@@ -208,4 +211,4 @@ Courses.get ("/browse", async (req:Request ,res : Response) => {
     };
     res.status(200).json(resultsData);
   }
-})
+});

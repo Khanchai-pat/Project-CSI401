@@ -256,6 +256,7 @@ checkdata.post("/enrollments", async (req: Request, res: Response) => {
         "sessions.sessionId": sid,
       },
       {
+        courseId:1,
         courseName: 1,
         "sessions.$": 1,
       }
