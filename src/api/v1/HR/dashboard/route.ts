@@ -48,16 +48,16 @@ export const dashBoard = express();
  *                   type: object
  *                   properties:
  *                     allEmp:
- *                       type: Number
+ *                       type: number
  *                       description: All employee in database
  *                     empInactives:
- *                       type: Number
+ *                       type: number
  *                       description: How many Employees inactives in total
  *                     empActives:
- *                       type: Number
+ *                       type: number
  *                       description: How many Employees actives in total
  *                     courseRequests:
- *                       type: Number
+ *                       type: number
  *                       description: How many courseRequest in system
  *                     courseResults:
  *                       type: string

@@ -30,7 +30,7 @@ export const enrollment = express();
  *         description: Bearer token for authentication
  *     responses:
  *       200:
- *         description: Successfully Update
+ *         description: Successfully Show Enrollment
  *         content:
  *           application/json:
  *             schema:
@@ -45,32 +45,35 @@ export const enrollment = express();
  *                 data:
  *                   type: object
  *                   properties:
- *                     allEmp:
- *                       type: Number
- *                       description: All employee in database
- *                     empInactives:
- *                       type: Number
- *                       description: How many Employees inactives in total
- *                     empActives:
- *                       type: Number
- *                       description: How many Employees actives in total
- *                     courseRequests:
- *                       type: Number
- *                       description: How many courseRequest in system
- *                     courseResults:
+ *                     empId:
  *                       type: string
- *                       description: How many courseResult in system
- *                     reimbursement:
+ *                       description: Employee ID
+ *                     empName:
  *                       type: string
- *                       description: How many reimbursement in system
- *                     coursesAdd:
+ *                       description: Employee Name
+ *                     department:
  *                       type: string
+ *                       description: Employee Department
+ *                     courseId:
+ *                       type: string
+ *                       description: Course ID
+ *                     courseName:
+ *                       type: string
+ *                       description: Name of a course
+ *                     sessionsId:
+ *                       type: string
+ *                       description: Sessions ID
+ *                     registrationDate:
+ *                       type: string
+ *                       format : date
  *                       description: Completion Date
- *                     roles:
+ *                     trainingDate:
  *                       type: string
+ *                       format : date
  *                       description: Employee Roles
- *                     status:
+ *                     completionDate:
  *                       type: string
+ *                       format : date
  *                       description: Status
  *       400:
  *         description: Course result not found
@@ -173,7 +176,7 @@ enrollment.get(
  * @swagger
  * /enrollment/approved:
  *   post:
- *     summary: Checkdata Update CourseResult
+ *     summary: Enrollment Approval
  *     tags:
  *       - HR Enrollment
  *     parameters:
@@ -230,21 +233,27 @@ enrollment.get(
  *                       description: Employee Name
  *                     department:
  *                       type: string
- *                       description: Department 
+ *                       description: Employee Department
  *                     courseId:
  *                       type: string
  *                       description: Course ID
  *                     courseName:
  *                       type: string
- *                       description: Course Name
+ *                       description: Name of a course
+ *                     sessionsId:
+ *                       type: string
+ *                       description: Sessions ID
+ *                     registrationDate:
+ *                       type: string
+ *                       format : date
+ *                       description: Completion Date
+ *                     trainingDate:
+ *                       type: string
+ *                       format : date
+ *                       description: Employee Roles
  *                     completionDate:
  *                       type: string
- *                       description: Completion Date
- *                     roles:
- *                       type: string
- *                       description: Employee Roles
- *                     status:
- *                       type: string
+ *                       format : date
  *                       description: Status
  *       400:
  *         description: Course result not found
@@ -466,21 +475,27 @@ enrollment.post(
  *                       description: Employee Name
  *                     department:
  *                       type: string
- *                       description: Department 
+ *                       description: Employee Department
  *                     courseId:
  *                       type: string
  *                       description: Course ID
  *                     courseName:
  *                       type: string
- *                       description: Course Name
+ *                       description: Name of a course
+ *                     sessionsId:
+ *                       type: string
+ *                       description: Sessions ID
+ *                     registrationDate:
+ *                       type: string
+ *                       format : date
+ *                       description: Completion Date
+ *                     trainingDate:
+ *                       type: string
+ *                       format : date
+ *                       description: Employee Roles
  *                     completionDate:
  *                       type: string
- *                       description: Completion Date
- *                     roles:
- *                       type: string
- *                       description: Employee Roles
- *                     status:
- *                       type: string
+ *                       format : date
  *                       description: Status
  *       400:
  *         description: Course result not found
