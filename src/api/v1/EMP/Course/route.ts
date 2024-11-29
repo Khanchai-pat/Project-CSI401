@@ -21,7 +21,7 @@ export const Courses = express();
  *   post:
  *     summary: Emp Registerations
  *     tags:
- *       - Course
+ *       - Emp Course
  *     parameters:
  *       - in: header
  *         name: content-type
@@ -221,10 +221,10 @@ Courses.post("/register", async (req: Request, res: Response) => {
 /**
  * @swagger
  * /courses/results:
- *   post:
+ *   get:
  *     summary: Emp Results Data
  *     tags:
- *       - Course
+ *       - Emp Course
  *     parameters:
  *       - in: header
  *         name: content-type
@@ -361,7 +361,7 @@ Courses.get("/results", async (req: Request, res: Response) => {
  *   post:
  *     summary: Emp Add/withdraw request
  *     tags:
- *       - Course
+ *       - Emp Course
  *     parameters:
  *       - in: header
  *         name: content-type
@@ -505,10 +505,10 @@ Courses.post("/requests", async (req: Request, res: Response) => {
 /**
  * @swagger
  * /courses/browse:
- *   post:
+ *   get:
  *     summary: Emp Course List
  *     tags:
- *       - Course
+ *       - Emp Course
  *     parameters:
  *       - in: header
  *         name: content-type

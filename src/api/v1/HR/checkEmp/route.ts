@@ -11,7 +11,7 @@ import jwt from "jsonwebtoken";
   /**
  * @swagger
  * /checkData/checkEmp:
- *   post:
+ *   get:
  *     summary: Checkdata All Employee
  *     tags:
  *       - HR Checkdata
@@ -160,7 +160,7 @@ checkData.get("/checkEmp", verifyToken, async (req: Request, res: Response) => {
   /**
  * @swagger
  * /checkData/checkEmpId/:empId?:
- *   post:
+ *   get:
  *     summary: Checkdata By EmpID
  *     tags:
  *       - HR Checkdata
@@ -177,18 +177,13 @@ checkData.get("/checkEmp", verifyToken, async (req: Request, res: Response) => {
  *         schema:
  *           type: string
  *         description: Bearer token for authentication
- *     requestBody:
- *       description: Request body containing the employee ID
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               empId:
- *                 type: string
- *                 description: Employee ID to retrieve data for
- *                 example: EMP001
+ *       - in: path
+ *         name: empId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Employee ID to retrieve data for
+ *         example: EMP001
  *     responses:
  *       200:
  *         description: Successfully CheckData

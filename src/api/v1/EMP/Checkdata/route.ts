@@ -15,7 +15,7 @@ export const checkdata = express();
  *   post:
  *     summary: Fetch employee data and course results
  *     tags:
- *       - Checkdata
+ *       - Emp Checkdata
  *     parameters:
  *       - in: header
  *         name: content-type
@@ -150,7 +150,7 @@ checkdata.post("/dashboard", async (req: Request, res: Response) => {
  *   post:
  *     summary: Fetch employee data and course List
  *     tags:
- *       - Checkdata
+ *       - Emp Checkdata
  *     parameters:
  *       - in: header
  *         name: content-type
@@ -296,7 +296,7 @@ checkdata.post("/enrollments", async (req: Request, res: Response) => {
  *   post:
  *     summary: Emp Profile
  *     tags:
- *       - Checkdata
+ *       - Emp Checkdata
  *     parameters:
  *       - in: header
  *         name: content-type

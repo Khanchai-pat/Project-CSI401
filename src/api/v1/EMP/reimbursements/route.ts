@@ -15,7 +15,7 @@ export const empReimbursement = express.Router();
  *   post:
  *     summary: Emp Reimbursement Request
  *     tags:
- *       - Reimbursement
+ *       - Emp Reimbursement
  *     parameters:
  *       - in: header
  *         name: content-type
