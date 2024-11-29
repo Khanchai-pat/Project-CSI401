@@ -15,6 +15,112 @@ export const Courses = express();
 //   return token === validToken;
 // };
 
+/**
+ * @swagger
+ * /courses/register:
+ *   post:
+ *     summary: Emp Registerations
+ *     tags:
+ *       - Emp Course
+ *     parameters:
+ *       - in: header
+ *         name: content-type
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Specify the content type, e.g., application/json
+ *       - in: header
+ *         name: authorization
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Bearer token for authentication
+ *     requestBody:
+ *       description: Request body containing the employee ID
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               empId:
+ *                 type: string
+ *                 description: Employee ID to retrieve data for
+ *                 example: EMP001
+ *               courseId:
+ *                 type: string
+ *                 description: Course ID to retrieve data for
+ *                 example: C001
+ *               sessionsId:
+ *                 type: string
+ *                 description: Sessions ID to retrieve data for
+ *                 example: S001
+ *     responses:
+ *       200:
+ *         description: Successfully Registeration
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 code:
+ *                   type: string
+ *                   example: "200"
+ *                 status:
+ *                   type: string
+ *                   example: "success"
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     empId:
+ *                       type: string
+ *                       description: Employee ID
+ *                     courseId:
+ *                       type: string
+ *                       description: Course ID
+ *                     sessionsId:
+ *                       type: string
+ *                       description: Session ID
+ *                     trainingDate:
+ *                       type: string
+ *                       format : date
+ *                       description: Training Date
+ *                     status:
+ *                       type: string
+ *                       description: Status
+ *       400:
+ *         description: Bad request - Missing Authorization or Content-Type
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 code:
+ *                   type: string
+ *                   example: "400"
+ *                 status:
+ *                   type: string
+ *                   example: "Bad Request"
+ *                 message:
+ *                   type: string
+ *                   example: "Cannot Show"
+ *       404:
+ *         description: EmpID/CourseID/SessionsID not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 code:
+ *                   type: string
+ *                   example: "404"
+ *                 status:
+ *                   type: string
+ *                   example: "error"
+ *                 message:
+ *                   type: string
+ *                   example: "EmpID/CourseID/SessionsID not found"
+ */
 Courses.post("/register", async (req: Request, res: Response) => {
   const reqHeader: any = req.headers;
   const contentType: any = reqHeader["content-type"];
@@ -51,7 +157,9 @@ Courses.post("/register", async (req: Request, res: Response) => {
 
     const enrollment = await enrollments.find({ empId: empId });
     const sameDate: any = enrollment.map((item) => item.trainingDate);
-
+    const courseName: any = courseData ? courseData.courseName : null;
+    const trainingLocation: any = courseData?.sessions.map((item) => item.trainingLocation);
+    const periods: any = courseData?.sessions.map((item) => item.periods);
     const status: any = courseData?.sessions.map((item) => item.status);
     const courseLeft: any = courseData?.sessions.map((item) => item.courseLeft);
     const courseLimit: any = courseData?.sessions.map(
@@ -72,15 +180,15 @@ Courses.post("/register", async (req: Request, res: Response) => {
       }
     }
     if (hasSameDateError) {
-      res.status(404).json({
-        code: "404",
+      res.status(403).json({
+        code: "403",
         status: "error",
         message: "same training date",
       });
     } else {
       if (status.toString() !== "active" || courseLimit - courseLeft === 0) {
-        res.status(404).json({
-          code: "404",
+        res.status(403).json({
+          code: "403",
           status: "error",
           message: "this course is unavailable",
         });
@@ -89,6 +197,9 @@ Courses.post("/register", async (req: Request, res: Response) => {
           empId: empId,
           courseId: courseId,
           sessionId: sessionId,
+          courseName:courseName,
+          trainingLocation:trainingLocation.toString(),
+          periods:periods.toString(),
           trainingDate: trainingDate,
           status: "registered",
         });
@@ -112,6 +223,103 @@ Courses.post("/register", async (req: Request, res: Response) => {
   }
 });
 
+/**
+ * @swagger
+ * /courses/results:
+ *   get:
+ *     summary: Emp Results Data
+ *     tags:
+ *       - Emp Course
+ *     parameters:
+ *       - in: header
+ *         name: content-type
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Specify the content type, e.g., application/json
+ *       - in: header
+ *         name: authorization
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Bearer token for authentication
+ *     requestBody:
+ *       description: Request body containing the employee ID
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               empId:
+ *                 type: string
+ *                 description: Employee ID to retrieve data for
+ *                 example: EMP001
+ *     responses:
+ *       200:
+ *         description: Successfully Get Data
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 code:
+ *                   type: string
+ *                   example: "200"
+ *                 status:
+ *                   type: string
+ *                   example: "success"
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     reqId:
+ *                       type: string                 
+ *                       description: Request ID
+ *                     empId:
+ *                       type: string
+ *                       description: Employee ID
+ *                     courseId:
+ *                       type: string
+ *                       description: Course ID
+ *                     sessionsId:
+ *                       type: string
+ *                       description: Session ID
+ *                     status:
+ *                       type: string
+ *                       description: Status
+ *       400:
+ *         description: Bad request - Missing Authorization or Content-Type
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 code:
+ *                   type: string
+ *                   example: "400"
+ *                 status:
+ *                   type: string
+ *                   example: "Bad Request"
+ *                 message:
+ *                   type: string
+ *                   example: "Cannot Show"
+ *       404:
+ *         description: EmpID/CourseID/SessionsID not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 code:
+ *                   type: string
+ *                   example: "404"
+ *                 status:
+ *                   type: string
+ *                   example: "error"
+ *                 message:
+ *                   type: string
+ *                   example: "EmpID not found"
+ */
 Courses.get("/results", async (req: Request, res: Response) => {
   const reqHeader: any = req.headers;
   const contentType: any = reqHeader["content-type"];
@@ -152,7 +360,107 @@ Courses.get("/results", async (req: Request, res: Response) => {
     res.status(200).json(resultsData);
   }
 });
-
+/**
+ * @swagger
+ * /courses/requests:
+ *   post:
+ *     summary: Emp Add/withdraw request
+ *     tags:
+ *       - Emp Course
+ *     parameters:
+ *       - in: header
+ *         name: content-type
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Specify the content type, e.g., application/json
+ *       - in: header
+ *         name: authorization
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Bearer token for authentication
+ *     requestBody:
+ *       description: Request body containing the employee ID
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               empId:
+ *                 type: string
+ *                 description: Employee ID to retrieve data for request
+ *                 example: EMP001
+ *               courseId:
+ *                 type: string
+ *                 description: course ID to retrieve data for request
+ *                 example: C001
+ *     responses:
+ *       200:
+ *         description: Successfully Request
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 code:
+ *                   type: string
+ *                   example: "200"
+ *                 status:
+ *                   type: string
+ *                   example: "success"
+ *                 data:
+ *                   type: object
+ *                   properties:          
+ *                     reqId:
+ *                       type: string                 
+ *                       description: Request ID
+ *                     empId:
+ *                       type: string
+ *                       description: Employee ID
+ *                     courseId:
+ *                       type: string
+ *                       description: Course ID
+ *                     sessionsId:
+ *                       type: string
+ *                       description: Session ID
+ *                     status:
+ *                       type: string
+ *                       description: Status
+ *       400:
+ *         description: Bad request - Missing Authorization or Content-Type
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 code:
+ *                   type: string
+ *                   example: "400"
+ *                 status:
+ *                   type: string
+ *                   example: "Bad Request"
+ *                 message:
+ *                   type: string
+ *                   example: "Cannot Show"
+ *       404:
+ *         description: EmpID/CourseID not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 code:
+ *                   type: string
+ *                   example: "404"
+ *                 status:
+ *                   type: string
+ *                   example: "error"
+ *                 message:
+ *                   type: string
+ *                   example: "EmpID/CourseID not found"
+ */
 Courses.post("/requests", async (req: Request, res: Response) => {
   const reqHeader: any = req.headers;
   const contentType: any = reqHeader["content-type"];
@@ -175,13 +483,14 @@ Courses.post("/requests", async (req: Request, res: Response) => {
       message: "Don't have promision",
     };
     res.status(400).json(promis);
-  } else if (!empId || !courseId) {
+  } else if (!empId || !courseId || !sessionId) {
     res.status(404).json({
       code: "404",
       status: "error",
-      message: "EmpId/courseId not found",
+      message: "empId or courseId or sessionId not found",
     });
   } else {
+    const enrollment = await enrollments.updateOne({empId:empId,courseId:courseId,sessionId:sessionId},{$set:{status:"pending"}})
     const findReq = await courseRequests.countDocuments({});
     const createReqid = "WR" + String(findReq + 1).padStart(3, "0");
     const dbResults = await courseRequests.create({
@@ -194,40 +503,122 @@ Courses.post("/requests", async (req: Request, res: Response) => {
     const resultsData: responseData = {
       code: "200",
       status: "OK",
-      data: dbResults,
+      data: {dbResults,enrollment}
     };
     res.status(200).json(resultsData);
   }
 });
-
+/**
+ * @swagger
+ * /courses/browse:
+ *   get:
+ *     summary: Emp Course List
+ *     tags:
+ *       - Emp Course
+ *     parameters:
+ *       - in: header
+ *         name: content-type
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Specify the content type, e.g., application/json
+ *       - in: header
+ *         name: authorization
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Bearer token for authentication
+ *     requestBody:
+ *       description: Request body containing the employee ID
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               empId:
+ *                 type: string
+ *                 description: Employee ID to retrieve data for
+ *                 example: EMP001
+ *     responses:
+ *       200:
+ *         description: Successfully Get Data
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 code:
+ *                   type: string
+ *                   example: "200"
+ *                 status:
+ *                   type: string
+ *                   example: "success"
+ *                 data:
+ *                   type: object
+ *                   properties:          
+ *                     courseId:
+ *                       type: string
+ *                       description: Course ID
+ *                     courseName:
+ *                       type: string
+ *                       description: Name of the course
+ *                     session:
+ *                       type: array
+ *                       items:
+ *                         type: object
+ *                         description: Course results for the employee
+ *       400:
+ *         description: Bad request - Missing Authorization or Content-Type
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 code:
+ *                   type: string
+ *                   example: "400"
+ *                 status:
+ *                   type: string
+ *                   example: "Bad Request"
+ *                 message:
+ *                   type: string
+ *                   example: "Cannot Show"   
+ */
 Courses.get("/browse", async (req: Request, res: Response) => {
   const reqHeader: any = req.headers;
   const contentType: any = reqHeader["content-type"];
   const tokenkey: any = reqHeader["authorization"];
   const decoded: any = jwt.verify(tokenkey, SECRET_KEY);
-  if (!contentType || contentType != "application/json") {
-    const errorHeaderToken: responseError = {
-      code: "400",
-      status: "Failed",
-      message: `Missing required headers: content-type and authorization token End-Point historyCourse`,
-    };
-    res.status(400).send(errorHeaderToken);
-  } else if (decoded.roles != "Emp") {
+   if (decoded.roles != "Emp") {
     const promis: responseError = {
       code: "400",
       status: "Failed",
-      message: "Don't have promision",
+      message: "Don't have permission",
     };
     res.status(400).json(promis);
   } else {
-    const dbResults = await course.find(
-      { "sessions.status": "active" },
+    const dbResults = await course.aggregate([
       {
-        courseId:1,
-        courseName:1,
-        "sessions.$": 1,
+        $project: {
+          _id: 1,
+          courseId: 1,
+          courseName: 1,
+          sessions: {
+            $filter: {
+              input: "$sessions",
+              as: "sessions",
+              cond: { $eq: ["$$sessions.status", "active"] }
+            }
+          },
+        }
+      },
+      {
+        $match: {
+          "sessions.0": { $exists: true }
+        }
       }
-    );
+    ]); 
     const resultsData: responseData = {
       code: "200",
       status: "OK",

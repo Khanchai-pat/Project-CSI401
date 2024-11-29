@@ -11,7 +11,7 @@ empReimbursement.post("/requests", async (req: Request, res: Response) => {
   const contentType: any = reqHeader["content-type"];
   const tokenkey: any = reqHeader["authorization"];
   const decoded: any = jwt.verify(tokenkey, SECRET_KEY);
-  const { empId, courseId, moneyAmount, bankAccount, empName, department, cardId } = req.body;
+  const { empId, courseId, amount, bankAccount, empName, department, cardId } = req.body;
   if (!tokenkey || !contentType) {
     const missingHeaders: responseError = {
       code: "400",
@@ -27,7 +27,7 @@ empReimbursement.post("/requests", async (req: Request, res: Response) => {
       message: "Don't have promision",
     };
     res.status(400).json(promis);
-  } else if (!empId || !courseId || !bankAccount) {
+  } else if (!empId || !courseId || !bankAccount || !amount) {
     res.status(404).json({
       code: "404",
       status: "error",
@@ -44,7 +44,7 @@ empReimbursement.post("/requests", async (req: Request, res: Response) => {
       department: department,
       cardId: cardId,
       bankAccount: bankAccount,
-      moneyAmount: moneyAmount,
+      amount: amount,
       status: "pending",
     });
     const resultsData: responseData = {
@@ -56,7 +56,44 @@ empReimbursement.post("/requests", async (req: Request, res: Response) => {
   }
 });
 
-
+empReimbursement.post("/details", async (req: Request, res: Response) => {
+  const reqHeader: any = req.headers;
+  const contentType: any = reqHeader["content-type"];
+  const tokenkey: any = reqHeader["authorization"];
+  const decoded: any = jwt.verify(tokenkey, SECRET_KEY);
+  const { empId } = req.body;
+  if (!tokenkey || !contentType) {
+    const missingHeaders: responseError = {
+      code: "400",
+      status: "Failed",
+      message:
+        "Bad Request: Missing required headers - 'Content-Type' and 'token-key' are needed for endpoint /checkEmp",
+    };
+    res.status(400).json(missingHeaders);
+  } else if (decoded.roles != "Emp") {
+    const promis: responseError = {
+      code: "400",
+      status: "Failed",
+      message: "Don't have promision",
+    };
+    res.status(400).json(promis);
+  } else if (!empId) {
+    res.status(404).json({
+      code: "404",
+      status: "error",
+      message: "empId / courseId not found",
+    });
+  } else {
+    const dbResults = await reimbursements.find({empId:empId
+    });
+    const resultsData: responseData = {
+      code: "200",
+      status: "OK",
+      data: dbResults,
+    };
+    res.status(200).json(resultsData);
+  }
+});
 // requests.post("/request", async (req: Request, res: Response) => {
 //     const { EmpId, courseId, DateReim, MoneyAmount }: ReimbursementRequest = req.body;
 

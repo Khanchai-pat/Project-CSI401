@@ -15,7 +15,7 @@ export const checkdata = express();
  *   post:
  *     summary: Fetch employee data and course results
  *     tags:
- *       - Checkdata
+ *       - Emp Checkdata
  *     parameters:
  *       - in: header
  *         name: content-type
@@ -148,9 +148,9 @@ checkdata.post("/dashboard", async (req: Request, res: Response) => {
  * @swagger
  * /checkdata/enrollments:
  *   post:
- *     summary: Fetch employee data and course results
+ *     summary: Fetch employee data and course List
  *     tags:
- *       - Checkdata
+ *       - Emp Checkdata
  *     parameters:
  *       - in: header
  *         name: content-type
@@ -262,35 +262,106 @@ checkdata.post("/enrollments", async (req: Request, res: Response) => {
     res.status(404).json({
       code: "404",
       status: "error",
-      message: "EmpID not found",
+      message: "EmpId not found",
     });
   } else {
-    // สร้างข้อมูล response
     const enrollment = await enrollments.find({
       empId: empId,
-      status: "registered",
+      status: { $in: ["registered", "pending"] },
     });
-    const courseId = enrollment.map((item) => item.courseId);
-    const sid = enrollment.map((item) => item.sessionId);
-    const courseData = await course.find(
-      {
-        courseId: courseId,
-        "sessions.sessionId": sid,
-      },
-      {
-        courseId:1,
-        courseName: 1,
-        "sessions.$": 1,
-      }
-    );
+
     res.status(200).json({
       code: "200",
       status: "success",
-      data: courseData,
+      data: enrollment
     });
   }
 });
-
+/**
+ * @swagger
+ * /checkdata/profile:
+ *   post:
+ *     summary: Emp Profile
+ *     tags:
+ *       - Emp Checkdata
+ *     parameters:
+ *       - in: header
+ *         name: content-type
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Specify the content type, e.g., application/json
+ *       - in: header
+ *         name: authorization
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Bearer token for authentication
+ *     requestBody:
+ *       description: Request body containing the employee ID
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               empId:
+ *                 type: string
+ *                 description: Employee ID to retrieve data for
+ *                 example: EMP001
+ *     responses:
+ *       200:
+ *         description: Successfully fetched employee data and course results
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 code:
+ *                   type: string
+ *                   example: "200"
+ *                 status:
+ *                   type: string
+ *                   example: "success"
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     empData:
+ *                       type: object
+ *                       description: Employee data      
+ *       400:
+ *         description: Bad request - Missing Authorization or Content-Type
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 code:
+ *                   type: string
+ *                   example: "400"
+ *                 status:
+ *                   type: string
+ *                   example: "Bad Request"
+ *                 message:
+ *                   type: string
+ *                   example: "Cannot Show"
+ *       404:
+ *         description: Employee ID not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 code:
+ *                   type: string
+ *                   example: "404"
+ *                 status:
+ *                   type: string
+ *                   example: "error"
+ *                 message:
+ *                   type: string
+ *                   example: "EmpID not found"
+ */
 checkdata.post("/profile", async (req: Request, res: Response) => {
   const reqHeader: any = req.headers;
   const contentType: any = reqHeader["content-type"];

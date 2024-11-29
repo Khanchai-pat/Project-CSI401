@@ -7,6 +7,120 @@ import jwt from "jsonwebtoken";
 
 export const enrollment = express();
 
+
+/**
+ * @swagger
+ * /enrollment/showEnrollment:
+ *   get:
+ *     summary: Show Enrollment
+ *     tags:
+ *       - HR Enrollment
+ *     parameters:
+ *       - in: header
+ *         name: content-type
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Specify the content type, e.g., application/json
+ *       - in: header
+ *         name: authorization
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Bearer token for authentication
+ *     responses:
+ *       200:
+ *         description: Successfully Update
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 code:
+ *                   type: string
+ *                   example: "200"
+ *                 status:
+ *                   type: string
+ *                   example: "success"
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     allEmp:
+ *                       type: Number
+ *                       description: All employee in database
+ *                     empInactives:
+ *                       type: Number
+ *                       description: How many Employees inactives in total
+ *                     empActives:
+ *                       type: Number
+ *                       description: How many Employees actives in total
+ *                     courseRequests:
+ *                       type: Number
+ *                       description: How many courseRequest in system
+ *                     courseResults:
+ *                       type: string
+ *                       description: How many courseResult in system
+ *                     reimbursement:
+ *                       type: string
+ *                       description: How many reimbursement in system
+ *                     coursesAdd:
+ *                       type: string
+ *                       description: Completion Date
+ *                     roles:
+ *                       type: string
+ *                       description: Employee Roles
+ *                     status:
+ *                       type: string
+ *                       description: Status
+ *       400:
+ *         description: Course result not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 code:
+ *                   type: string
+ *                   example: "400"
+ *                 status:
+ *                   type: string
+ *                   example: "Failed"
+ *                 message:
+ *                   type: string
+ *                   example: "Missing required headers: content-type and authorization token End-Point /requests ById HR - Show Courses update"
+ *       401:
+ *         description: Bad request - Missing Authorization or Content-Type
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 code:
+ *                   type: string
+ *                   example: "401"
+ *                 status:
+ *                   type: string
+ *                   example: "Unauthorized"
+ *                 message:
+ *                   type: string
+ *                   example: "Don't have promision"
+ *       500:
+ *         description: Course result not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 code:
+ *                   type: string
+ *                   example: "500"
+ *                 status:
+ *                   type: string
+ *                   example: "Failed"
+ *                 message:
+ *                   type: string
+ *                   example: "An error occurred while processing your request. Please try again later"
+ */
 enrollment.get(
   "/showEnrollment",
   verifyToken,
@@ -55,7 +169,148 @@ enrollment.get(
     }
   }
 );
-
+ /**
+ * @swagger
+ * /enrollment/approved:
+ *   post:
+ *     summary: Checkdata Update CourseResult
+ *     tags:
+ *       - HR Enrollment
+ *     parameters:
+ *       - in: header
+ *         name: content-type
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Specify the content type, e.g., application/json
+ *       - in: header
+ *         name: authorization
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Bearer token for authentication
+ *     requestBody:
+ *       description: Request body containing the employee ID
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               reqId:
+ *                 type: string
+ *                 description: Request ID to retrieve data for
+ *                 example: R001
+ *             
+ *     responses:
+ *       200:
+ *         description: Successfully Update
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 code:
+ *                   type: string
+ *                   example: "200"
+ *                 status:
+ *                   type: string
+ *                   example: "success"
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     reqId:
+ *                       type: string
+ *                       description: Request ID
+ *                     empId:
+ *                       type: string
+ *                       description: Employee ID
+ *                     empName:
+ *                       type: string
+ *                       description: Employee Name
+ *                     department:
+ *                       type: string
+ *                       description: Department 
+ *                     courseId:
+ *                       type: string
+ *                       description: Course ID
+ *                     courseName:
+ *                       type: string
+ *                       description: Course Name
+ *                     completionDate:
+ *                       type: string
+ *                       description: Completion Date
+ *                     roles:
+ *                       type: string
+ *                       description: Employee Roles
+ *                     status:
+ *                       type: string
+ *                       description: Status
+ *       400:
+ *         description: Course result not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 code:
+ *                   type: string
+ *                   example: "400"
+ *                 status:
+ *                   type: string
+ *                   example: "Failed"
+ *                 message:
+ *                   type: string
+ *                   example: "Missing required headers: content-type and authorization token End-Point /requests ById HR - Show Courses update"
+ *       401:
+ *         description: Bad request - Missing Authorization or Content-Type
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 code:
+ *                   type: string
+ *                   example: "401"
+ *                 status:
+ *                   type: string
+ *                   example: "Unauthorized"
+ *                 message:
+ *                   type: string
+ *                   example: "Don't have promision"
+*       404:
+ *         description: Course result not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 code:
+ *                   type: string
+ *                   example: "404"
+ *                 status:
+ *                   type: string
+ *                   example: "Failed"
+ *                 message:
+ *                   type: string
+ *                   example: "The provided '${empId}' empId does not match any enrollment record in the database"
+ *       500:
+ *         description: Course result not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 code:
+ *                   type: string
+ *                   example: "500"
+ *                 status:
+ *                   type: string
+ *                   example: "Failed"
+ *                 message:
+ *                   type: string
+ *                   example: "An error occurred while processing your request. Please try again later"
+ */
 enrollment.post(
   "/approved",
   verifyToken,
@@ -150,7 +405,148 @@ enrollment.post(
     }
   }
 );
-
+ /**
+ * @swagger
+ * /enrollment/denied:
+ *   post:
+ *     summary: Checkdata Update CourseResult
+ *     tags:
+ *       - HR Enrollment
+ *     parameters:
+ *       - in: header
+ *         name: content-type
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Specify the content type, e.g., application/json
+ *       - in: header
+ *         name: authorization
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Bearer token for authentication
+ *     requestBody:
+ *       description: Request body containing the employee ID
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               reqId:
+ *                 type: string
+ *                 description: EmpID to retrieve data for
+ *                 example: EMP001
+ *             
+ *     responses:
+ *       200:
+ *         description: Successfully Update
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 code:
+ *                   type: string
+ *                   example: "200"
+ *                 status:
+ *                   type: string
+ *                   example: "success"
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     reqId:
+ *                       type: string
+ *                       description: Request ID
+ *                     empId:
+ *                       type: string
+ *                       description: Employee ID
+ *                     empName:
+ *                       type: string
+ *                       description: Employee Name
+ *                     department:
+ *                       type: string
+ *                       description: Department 
+ *                     courseId:
+ *                       type: string
+ *                       description: Course ID
+ *                     courseName:
+ *                       type: string
+ *                       description: Course Name
+ *                     completionDate:
+ *                       type: string
+ *                       description: Completion Date
+ *                     roles:
+ *                       type: string
+ *                       description: Employee Roles
+ *                     status:
+ *                       type: string
+ *                       description: Status
+ *       400:
+ *         description: Course result not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 code:
+ *                   type: string
+ *                   example: "400"
+ *                 status:
+ *                   type: string
+ *                   example: "Failed"
+ *                 message:
+ *                   type: string
+ *                   example: "Missing required headers: content-type and authorization token End-Point /requests ById HR - Show Courses update"
+ *       401:
+ *         description: Bad request - Missing Authorization or Content-Type
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 code:
+ *                   type: string
+ *                   example: "401"
+ *                 status:
+ *                   type: string
+ *                   example: "Unauthorized"
+ *                 message:
+ *                   type: string
+ *                   example: "Don't have promision"
+*       404:
+ *         description: Course result not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 code:
+ *                   type: string
+ *                   example: "404"
+ *                 status:
+ *                   type: string
+ *                   example: "Failed"
+ *                 message:
+ *                   type: string
+ *                   example: "Id  ${reqId} : not found in the database."
+ *       500:
+ *         description: Course result not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 code:
+ *                   type: string
+ *                   example: "500"
+ *                 status:
+ *                   type: string
+ *                   example: "Failed"
+ *                 message:
+ *                   type: string
+ *                   example: "An error occurred while processing your request. Please try again later"
+ */
 enrollment.post("/denied", verifyToken, async (req: Request, res: Response) => {
   const reqHeader: any = req.headers;
   const contentType: any = reqHeader["content-type"];

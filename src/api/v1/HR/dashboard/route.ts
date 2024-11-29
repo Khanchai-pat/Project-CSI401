@@ -10,7 +10,119 @@ import { SECRET_KEY } from "../../middleware/route";
 import jwt from "jsonwebtoken";
 
 export const dashBoard = express();
-
+/**
+ * @swagger
+ * /dashBoard/dashBoard:
+ *   get:
+ *     summary: Checkdata Update CourseResult
+ *     tags:
+ *       - HR DashBoard
+ *     parameters:
+ *       - in: header
+ *         name: content-type
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Specify the content type, e.g., application/json
+ *       - in: header
+ *         name: authorization
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Bearer token for authentication      
+ *     responses:
+ *       200:
+ *         description: Successfully Update
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 code:
+ *                   type: string
+ *                   example: "200"
+ *                 status:
+ *                   type: string
+ *                   example: "success"
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     allEmp:
+ *                       type: Number
+ *                       description: All employee in database
+ *                     empInactives:
+ *                       type: Number
+ *                       description: How many Employees inactives in total
+ *                     empActives:
+ *                       type: Number
+ *                       description: How many Employees actives in total
+ *                     courseRequests:
+ *                       type: Number
+ *                       description: How many courseRequest in system
+ *                     courseResults:
+ *                       type: string
+ *                       description: How many courseResult in system
+ *                     reimbursement:
+ *                       type: string
+ *                       description: How many reimbursement in system
+ *                     coursesAdd:
+ *                       type: string
+ *                       description: Completion Date
+ *                     roles:
+ *                       type: string
+ *                       description: Employee Roles
+ *                     status:
+ *                       type: string
+ *                       description: Status
+ *       400:
+ *         description: Course result not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 code:
+ *                   type: string
+ *                   example: "400"
+ *                 status:
+ *                   type: string
+ *                   example: "Failed"
+ *                 message:
+ *                   type: string
+ *                   example: "Missing required headers: content-type and authorization token End-Point /requests ById HR - Show Courses update"
+ *       401:
+ *         description: Bad request - Missing Authorization or Content-Type
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 code:
+ *                   type: string
+ *                   example: "401"
+ *                 status:
+ *                   type: string
+ *                   example: "Unauthorized"
+ *                 message:
+ *                   type: string
+ *                   example: "Don't have promision"
+ *       500:
+ *         description: Course result not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 code:
+ *                   type: string
+ *                   example: "500"
+ *                 status:
+ *                   type: string
+ *                   example: "Failed"
+ *                 message:
+ *                   type: string
+ *                   example: "An error occurred while processing your request. Please try again later"
+ */
 dashBoard.get(
   "/dashBoard",
   verifyToken,
@@ -30,11 +142,11 @@ dashBoard.get(
     } else {
       if (decoded.roles != "Hr") {
         const promis: responseError = {
-          code: "400",
-          status: "Failed",
+          code: "401",
+          status: "Unauthorized",
           message: "Don't have promision",
         };
-        res.status(400).json(promis);
+        res.status(401).json(promis);
       } else {
         try {
           const courseRequest = await courseRequests.find({});
