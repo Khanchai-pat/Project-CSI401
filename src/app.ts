@@ -10,7 +10,7 @@ import { useSwagger } from "../swagger/swagger";
 //HR
 import { auth } from "./api/v1/auth/route";
 import { checkData } from "./api/v1/HR/checkEmp/route";
-import { manageData } from "./api/v1/HR/manageEmp/route";
+import { manageEmp } from "./api/v1/HR/manageEmp/route";
 import { withdrawRequest } from "./api/v1/HR/withdrawRequest/route";
 import { courseResult } from "./api/v1/HR/courseResults/route";
 import { reimbursement } from "./api/v1/HR/reimbursement/route";
@@ -45,7 +45,7 @@ app.use(morgan('dev'))
 
 app.use("/auth", auth)
 app.use("/checkData", checkData)
-app.use("/manageData", manageData)
+app.use("/manageEmp", manageEmp)
 app.use("/withdrawRequest", withdrawRequest)
 app.use("/courseResult", courseResult)
 app.use("/reimbursement", reimbursement)

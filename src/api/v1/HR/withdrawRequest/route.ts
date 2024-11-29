@@ -176,10 +176,17 @@ withdrawRequest.post(
                 { reqId: reqId },
                 {
                   $set: {
-                    status: "appove",
+                    status: "approved",
                   },
                 }
               );
+              const successData: responseData = {
+                code: "200",
+                status: "ok",
+                data: {
+                  dbAppove,
+                },
+              };
 
               // const dbCancle = await enrollments.updateOne({
               //     empId: empId
@@ -189,7 +196,7 @@ withdrawRequest.post(
               //         status: "Cencle"
               //     }
               // })
-              res.status(200).json(dbAppove);
+              res.status(200).json(successData);
             }
           } catch (error) {
             console.log(error);
@@ -243,7 +250,7 @@ withdrawRequest.post(
             };
             res.status(404).send(idNotFoundError);
           } else {
-            const dbAppove = await courseRequests.updateOne(
+            const dbDenied = await courseRequests.updateOne(
               { reqId: reqId },
               {
                 $set: {
@@ -251,7 +258,7 @@ withdrawRequest.post(
                 },
               }
             );
-            res.status(200).json(dbAppove);
+            res.status(200).json(dbDenied);
           }
         } catch (error) {
           console.log(error);
