@@ -1,5 +1,5 @@
 import express, { Request, Response } from "express";
-import { responseData,responseError } from "../../interfaceRes/response";
+import { responseData, responseError } from "../../interfaceRes/response";
 import { employees } from "../../Schema/emp";
 import { courseResults } from "../../Schema/courseResults";
 import { enrollments } from "../../Schema/enrollment";
@@ -127,7 +127,7 @@ checkdata.post("/dashboard", async (req: Request, res: Response) => {
     res.status(200).json({
       code: "200",
       status: "success",
-      data:  courseResult ,
+      data: courseResult,
     });
   }
 });
@@ -250,13 +250,16 @@ checkdata.post("/enrollments", async (req: Request, res: Response) => {
     });
     const courseId = enrollment.map((item) => item.courseId);
     const sid = enrollment.map((item) => item.sessionId);
-    const courseData = await course.find({ 
+    const courseData = await course.find(
+      {
         courseId: courseId,
-        "sessions.sessionId": sid
-    }, {
-        "courseName": 1,
-        "sessions.$": 1 
-    });
+        "sessions.sessionId": sid,
+      },
+      {
+        courseName: 1,
+        "sessions.$": 1,
+      }
+    );
     res.status(200).json({
       code: "200",
       status: "success",
