@@ -262,31 +262,18 @@ checkdata.post("/enrollments", async (req: Request, res: Response) => {
     res.status(404).json({
       code: "404",
       status: "error",
-      message: "EmpID not found",
+      message: "EmpId not found",
     });
   } else {
-    // สร้างข้อมูล response
     const enrollment = await enrollments.find({
       empId: empId,
-      status: "registered",
+      status: { $in: ["registered", "pending"] },
     });
-    const courseId = enrollment.map((item) => item.courseId);
-    const sid = enrollment.map((item) => item.sessionId);
-    const courseData = await course.find(
-      {
-        courseId: courseId,
-        "sessions.sessionId": sid,
-      },
-      {
-        courseId:1,
-        courseName: 1,
-        "sessions.$": 1,
-      }
-    );
+
     res.status(200).json({
       code: "200",
       status: "success",
-      data: courseData,
+      data: enrollment
     });
   }
 });

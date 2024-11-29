@@ -4,8 +4,10 @@ const enrollment = new mongoose.Schema({
     empId: String,
     courseId: String,
     sessionId: String,
-    registrationDate: Date,
+    courseName:String,
     trainingDate: Date,
+    periods:String,
+    trainingLocation:String,
     status: String
 })
 export const enrollments = mongoose.model("enrollment", enrollment, "enrollment")
