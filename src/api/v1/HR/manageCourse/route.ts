@@ -458,13 +458,17 @@ courses.post(
               courseId: courseId,
               sessionId: sessionId,
             });
-            console.log(employeesInSession);
+            // console.log(employeesInSession);
+            const registeredEmployees = employeesInSession.filter(
+              (employee) => employee.status === "registered"
+            );
+            // console.log(registeredEmployees);
 
-            if (!employeesInSession) {
+            if (!employeesInSession && !registeredEmployees.length) {
               const noEmployees: responseError = {
                 code: "404",
                 status: "Failed",
-                message: `No employees found for sessionId '${sessionId}'.`,
+                message: `No employees found and != registered :  for sessionId '${sessionId}'.`,
               };
               res.status(404).json(noEmployees);
             } else {
@@ -476,9 +480,26 @@ courses.post(
                 courseId: courseId,
                 sessionId: sessionId,
                 courseName: emp.courseName || "Unknown",
+                trainingDate: emp.trainingDate,
                 completionDate: new Date(),
-                status: "Pending",
+                periods: emp.periods,
+                trainingLocation: emp.trainingLocation,
+                hours: emp.hours,
+                status: "pending",
               }));
+
+              //update
+              await enrollments.updateMany(
+                {
+                  courseId: courseId,
+                  sessionId: sessionId,
+                },
+                {
+                  $set: {
+                    status: "pending",
+                  },
+                }
+              );
 
               // save
               const insertedResults = await courseResults.insertMany(
