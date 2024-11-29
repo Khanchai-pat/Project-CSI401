@@ -4,6 +4,8 @@ import { employees } from "../../Schema/emp";
 import { courseResults } from "../../Schema/courseResults";
 import { enrollments } from "../../Schema/enrollment";
 import { course } from "../../Schema/course";
+import { SECRET_KEY } from "../../middleware/route";
+import jwt from "jsonwebtoken";
 
 export const checkdata = express();
 
@@ -102,16 +104,26 @@ checkdata.post("/dashboard", async (req: Request, res: Response) => {
   const reqHeader: any = req.headers;
   const contentType: any = reqHeader["content-type"];
   const tokenkey: any = reqHeader["authorization"];
+  const decoded: any = jwt.verify(tokenkey, SECRET_KEY);
   // const empId = req.query.Empid as string;
   const { empId } = req.body;
 
   // ตรวจสอบการมี empId ในคำขอและเช็ค contentType
-  if (!tokenkey || !contentType || contentType != "application/json") {
-    res.status(400).json({
+  if (!tokenkey || !contentType) {
+    const missingHeaders: responseError = {
       code: "400",
-      status: "Bad Request",
-      message: "Cannot Show ",
-    });
+      status: "Failed",
+      message:
+        "Bad Request: Missing required headers - 'Content-Type' and 'token-key' are needed for endpoint /checkEmp",
+    };
+    res.status(400).json(missingHeaders);
+  } else if (decoded.roles != "Emp") {
+    const promis: responseError = {
+      code: "400",
+      status: "Failed",
+      message: "Don't have promision",
+    };
+    res.status(400).json(promis);
   } else if (!empId) {
     res.status(404).json({
       code: "404",
@@ -226,16 +238,26 @@ checkdata.post("/enrollments", async (req: Request, res: Response) => {
   const reqHeader: any = req.headers;
   const contentType: any = reqHeader["content-type"];
   const tokenkey: any = reqHeader["authorization"];
+  const decoded: any = jwt.verify(tokenkey, SECRET_KEY);
   // const empId = req.query.Empid as string;
   const { empId } = req.body;
 
   // ตรวจสอบการมี empId ในคำขอและเช็ค contentType
   if (!tokenkey || !contentType) {
-    res.status(400).json({
+    const missingHeaders: responseError = {
       code: "400",
-      status: "Bad Request",
-      message: "Cannot Show ",
-    });
+      status: "Failed",
+      message:
+        "Bad Request: Missing required headers - 'Content-Type' and 'token-key' are needed for endpoint /checkEmp",
+    };
+    res.status(400).json(missingHeaders);
+  } else if (decoded.roles != "Emp") {
+    const promis: responseError = {
+      code: "400",
+      status: "Failed",
+      message: "Don't have promision",
+    };
+    res.status(400).json(promis);
   } else if (!empId) {
     res.status(404).json({
       code: "404",
@@ -273,15 +295,25 @@ checkdata.post("/profile", async (req: Request, res: Response) => {
   const reqHeader: any = req.headers;
   const contentType: any = reqHeader["content-type"];
   const tokenkey: any = reqHeader["authorization"];
+  const decoded: any = jwt.verify(tokenkey, SECRET_KEY);
   const { empId } = req.body;
 
   // ตรวจสอบการมี empId ในคำขอและเช็ค contentType
-  if (!contentType || contentType != "application/json") {
-    res.status(400).json({
+  if (!tokenkey || !contentType) {
+    const missingHeaders: responseError = {
       code: "400",
-      status: "Bad Request",
-      message: reqHeader,
-    });
+      status: "Failed",
+      message:
+        "Bad Request: Missing required headers - 'Content-Type' and 'token-key' are needed for endpoint /checkEmp",
+    };
+    res.status(400).json(missingHeaders);
+  } else if (decoded.roles != "Emp") {
+    const promis: responseError = {
+      code: "400",
+      status: "Failed",
+      message: "Don't have promision",
+    };
+    res.status(400).json(promis);
   } else if (!empId) {
     res.status(404).json({
       code: "404",

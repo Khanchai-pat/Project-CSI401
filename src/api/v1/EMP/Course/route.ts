@@ -116,14 +116,27 @@ Courses.get("/results", async (req: Request, res: Response) => {
   const reqHeader: any = req.headers;
   const contentType: any = reqHeader["content-type"];
   const tokenkey: any = reqHeader["authorization"];
+  const decoded: any = jwt.verify(tokenkey, SECRET_KEY);
   const empId = req.params;
+  
   if (!tokenkey || !contentType) {
-    res.status(401).json({
-      code: "401",
-      status: "error",
-      message: "Unauthorized",
-    });
-  } else if (!empId) {
+    const missingHeaders: responseError = {
+      code: "400",
+      status: "Failed",
+      message:
+        "Bad Request: Missing required headers - 'Content-Type' and 'token-key' are needed for endpoint /checkEmp",
+    };
+    res.status(400).json(missingHeaders);
+  } 
+  else if (decoded.roles != "Emp") {
+    const promis: responseError = {
+      code: "400",
+      status: "Failed",
+      message: "Don't have promision",
+    };
+    res.status(400).json(promis);
+  } 
+  else if (!empId) {
     res.status(404).json({
       code: "404",
       status: "error",
@@ -144,13 +157,24 @@ Courses.post("/requests", async (req: Request, res: Response) => {
   const reqHeader: any = req.headers;
   const contentType: any = reqHeader["content-type"];
   const tokenkey: any = reqHeader["authorization"];
+  const decoded: any = jwt.verify(tokenkey, SECRET_KEY);
   const { empId, courseId, sessionId } = req.body;
   if (!tokenkey || !contentType) {
-    res.status(401).json({
-      code: "401",
-      status: "error",
-      message: "Unauthorized",
-    });
+    const missingHeaders: responseError = {
+      code: "400",
+      status: "Failed",
+      message:
+        "Bad Request: Missing required headers - 'Content-Type' and 'token-key' are needed for endpoint /checkEmp",
+    };
+    res.status(400).json(missingHeaders);
+  } 
+  else if (decoded.roles != "Emp") {
+    const promis: responseError = {
+      code: "400",
+      status: "Failed",
+      message: "Don't have promision",
+    };
+    res.status(400).json(promis);
   } else if (!empId || !courseId) {
     res.status(404).json({
       code: "404",
