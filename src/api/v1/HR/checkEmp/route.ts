@@ -8,6 +8,108 @@ import jwt from "jsonwebtoken";
 
 // const SECRET_KEY = process.env.JWT_SECRET_KEY || "defaultSecretKey";
 
+  /**
+ * @swagger
+ * /checkData/checkEmp:
+ *   post:
+ *     summary: Checkdata All Employee
+ *     tags:
+ *       - HR CheckData
+ *     parameters:
+ *       - in: header
+ *         name: content-type
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Specify the content type, e.g., application/json
+ *       - in: header
+ *         name: authorization
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Bearer token for authentication
+ *     requestBody:
+ *       description: Request body containing the employee ID
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             
+ *     responses:
+ *       200:
+ *         description: Successfully Registeration
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 code:
+ *                   type: string
+ *                   example: "200"
+ *                 status:
+ *                   type: string
+ *                   example: "success"
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     courseId:
+ *                       type: string
+ *                       description: Course ID
+ *                     empId:
+ *                       type: string
+ *                       description: Employee ID
+ *                     empName:
+ *                       type: string
+ *                       description: Employee Name
+ *                     department:
+ *                       type: string
+ *                       description: Department
+ *                     cardId:
+ *                       type: string
+ *                       description: Card ID
+ *                     tel:
+ *                       type: string
+ *                       description: Employee Telephone number
+ *                     roles:
+ *                       type: string
+ *                       description: Employee Roles
+ *                     status:
+ *                       type: string
+ *                       description: Status
+ *       401:
+ *         description: Bad request - Missing Authorization or Content-Type
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 code:
+ *                   type: string
+ *                   example: "400"
+ *                 status:
+ *                   type: string
+ *                   example: "Bad Request"
+ *                 message:
+ *                   type: string
+ *                   example: "Cannot Show"
+ *       500:
+ *         description: EmpID/CourseID/bankAccount not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 code:
+ *                   type: string
+ *                   example: "500"
+ *                 status:
+ *                   type: string
+ *                   example: "error"
+ *                 message:
+ *                   type: string
+ *                   example: "An error occurred while processing your request. Please try again later"
+ */
 // Check Data EMP
 checkData.get("/checkEmp", verifyToken, async (req: Request, res: Response) => {
   const reqHeader: any = req.headers;
