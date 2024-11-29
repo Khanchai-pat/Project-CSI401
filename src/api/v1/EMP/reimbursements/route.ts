@@ -13,7 +13,7 @@ export const empReimbursement = express.Router();
  * @swagger
  * /reimbursements/requests:
  *   post:
- *     summary: Emp Registerations
+ *     summary: Emp Reimbursement Request
  *     tags:
  *       - Reimbursement
  *     parameters:
@@ -110,7 +110,7 @@ export const empReimbursement = express.Router();
  *                   type: string
  *                   example: "Cannot Show"
  *       404:
- *         description: EmpID/CourseID/SessionsID not found
+ *         description: EmpID/CourseID/bankAccount not found
  *         content:
  *           application/json:
  *             schema:
