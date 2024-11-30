@@ -9,11 +9,11 @@ const enrollment = new mongoose.Schema({
   registrationDate: Date,
   trainingDate: Date,
   department: String,
+  periods:String,
+  trainingLocation:String,
   completionDate: Date,
   status: String,
-  trainingLocation: String,
   hours: Number,
-  periods: String,
 });
 export const enrollments = mongoose.model(
   "enrollment",

@@ -12,19 +12,8 @@ reimbursement.get(
   verifyToken,
   async (req: Request, res: Response) => {
     const reqHeader: any = req.headers;
-    const contentType: any = reqHeader["content-type"];
     const tokenkey: any = reqHeader["authorization"];
     const decoded: any = jwt.verify(tokenkey, SECRET_KEY);
-
-    if (!contentType || contentType != "application/json") {
-      const missingHeadersError: responseError = {
-        code: "400",
-        status: "Failed",
-        message:
-          "Missing required headers: content-type and authorization token",
-      };
-      res.status(400).json(missingHeadersError);
-    } else {
       if (decoded.roles != "Hr") {
         const promis: responseError = {
           code: "400",
@@ -54,21 +43,20 @@ reimbursement.get(
         }
       }
     }
-  }
 );
 
 ////1.2.12 API : HR - Courses Fee Reimbursement System (FR5: ระบบเบิกค่าอบรม) Show List byId
-reimbursement.get(
-  "/requestsId/:refId?",
+reimbursement.post(
+  "/requestsId/?",
   verifyToken,
   async (req: Request, res: Response) => {
     const reqHeader: any = req.headers;
     const contentType: any = reqHeader["content-type"];
     const tokenkey: any = reqHeader["authorization"];
     const decoded: any = jwt.verify(tokenkey, SECRET_KEY);
-    const { refId }: any = req.params;
+    const { reqId }: any = req.body;
 
-    if (!contentType || contentType != "application/json") {
+    if (!contentType || contentType !== "application/json") {
       const missingHeadersError: responseError = {
         code: "400",
         status: "Failed",
@@ -85,26 +73,26 @@ reimbursement.get(
         };
         res.status(400).json(promis);
       } else {
-        if (!refId) {
+        if (!reqId) {
           const missingRefIdError: responseError = {
             code: "400",
             status: "Failed",
-            message: `Missing required refId : parameter in the request`,
+            message: `Missing required reqId : parameter in the request`,
           };
           res.status(400).send(missingRefIdError);
         } else {
           try {
-            const checkId = await reimbursements.findOne({ refId: refId });
+            const checkId = await reimbursements.findOne({ reqId: reqId });
             if (!checkId) {
               const idNotFoundError: responseError = {
                 code: "404",
                 status: "Failed",
-                message: `The requested data with the provided Id '${refId}'could not be found`,
+                message: `The requested data with the provided Id '${reqId}'could not be found`,
               };
               res.status(404).send(idNotFoundError);
             } else {
               const refundRequestsById = await reimbursements.find({
-                refId: refId,
+                reqId: reqId,
               });
               // console.log(refundRequestsById)
               const successData: responseData = {
@@ -132,14 +120,14 @@ reimbursement.get(
 
 //1.2.13 API : HR - Courses Fee Reimbursement System (FR5: ระบบเบิกค่าอบรม) Appove
 reimbursement.post(
-  "/approve",
+  "/approved",
   verifyToken,
   async (req: Request, res: Response) => {
     const reqHeader: any = req.headers;
     const contentType: any = reqHeader["content-type"];
     const tokenkey: any = reqHeader["authorization"];
     const decoded: any = jwt.verify(tokenkey, SECRET_KEY);
-    const { refId, status }: any = req.body;
+    const { reqId, status }: any = req.body;
 
     if (!contentType || contentType != "application/json") {
       const missingHeadersError: responseError = {
@@ -158,29 +146,29 @@ reimbursement.post(
         };
         res.status(400).json(promis);
       } else {
-        if (!refId) {
+        if (!reqId) {
           const missingRefIdError: responseError = {
             code: "400",
             status: "Failed",
-            message: `Missing required refId : parameter in the request`,
+            message: `Missing required reqId : parameter in the request`,
           };
           res.status(400).send(missingRefIdError);
         } else {
           try {
-            const checkId = await reimbursements.findOne({ refId: refId });
+            const checkId = await reimbursements.findOne({ reqId: reqId });
             if (!checkId) {
               const idNotFoundError: responseError = {
                 code: "404",
                 status: "Failed",
-                message: `The requested data with the provided Id : ${refId} could not be found`,
+                message: `The requested data with the provided Id : ${reqId} could not be found`,
               };
               res.status(404).send(idNotFoundError);
             } else {
               const dbAppove = await reimbursements.updateOne(
-                { refId: refId },
+                { reqId: reqId },
                 {
                   $set: {
-                    status: "appoved",
+                    status: "approved",
                   },
                 }
               );
@@ -216,7 +204,7 @@ reimbursement.post(
     const contentType: any = reqHeader["content-type"];
     const tokenkey: any = reqHeader["authorization"];
     const decoded: any = jwt.verify(tokenkey, SECRET_KEY);
-    const { refId, status }: any = req.body;
+    const { reqId, remark }: any = req.body;
 
     if (!contentType || contentType != "application/json") {
       const missingHeadersError: responseError = {
@@ -235,28 +223,29 @@ reimbursement.post(
         };
         res.status(400).json(promis);
       } else {
-        if (!refId) {
+        if (!reqId) {
           const missingRefIdError: responseError = {
             code: "400",
             status: "Failed",
-            message: `Missing required refId : parameter in the request`,
+            message: `Missing required reqId : parameter in the request`,
           };
           res.status(400).send(missingRefIdError);
         } else {
           try {
-            const checkId = await reimbursements.findOne({ refId: refId });
+            const checkId = await reimbursements.findOne({ reqId: reqId });
             if (!checkId) {
               const idNotFoundError: responseError = {
                 code: "404",
                 status: "Failed",
-                message: `The requested data with the provided Id : ${refId} could not be found`,
+                message: `The requested data with the provided Id : ${reqId} could not be found`,
               };
               res.status(404).send(idNotFoundError);
             } else {
               const dbAppove = await reimbursements.updateOne(
-                { refId: refId },
+                { reqId: reqId },
                 {
                   $set: {
+                    remark:remark,
                     status: "denied",
                   },
                 }

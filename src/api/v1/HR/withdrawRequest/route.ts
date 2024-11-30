@@ -17,55 +17,55 @@ withdrawRequest.get(
     const tokenkey: any = reqHeader["authorization"];
     const decoded: any = jwt.verify(tokenkey, SECRET_KEY);
 
-    if (!contentType || contentType != "application/json") {
-      const missingHeadersError: responseError = {
+    // if (!contentType || contentType != "application/json") {
+    //   const missingHeadersError: responseError = {
+    //     code: "400",
+    //     status: "Failed",
+    //     message:
+    //       "Missing required headers: content-type and authorization token",
+    //   };
+    //   res.status(400).json(missingHeadersError);
+    // } else {
+    if (decoded.roles != "Hr") {
+      const promis: responseError = {
         code: "400",
         status: "Failed",
-        message:
-          "Missing required headers: content-type and authorization token",
+        message: "Don't have promision",
       };
-      res.status(400).json(missingHeadersError);
+      res.status(400).json(promis);
     } else {
-      if (decoded.roles != "Hr") {
-        const promis: responseError = {
-          code: "400",
-          status: "Failed",
-          message: "Don't have promision",
+      try {
+        const courseRequestData = await courseRequests.find({});
+        const successResponse: responseData = {
+          code: "200",
+          status: "OK",
+          data: courseRequestData,
         };
-        res.status(400).json(promis);
-      } else {
-        try {
-          const courseRequestData = await courseRequests.find({});
-          const successResponse: responseData = {
-            code: "200",
-            status: "OK",
-            data: courseRequestData,
-          };
-          res.status(200).json(successResponse);
-        } catch (error) {
-          console.error(error);
-          const databaseError: responseError = {
-            code: "500",
-            status: "Failed",
-            message: "Internal server error while retrieving course requests.",
-          };
-          res.status(500).json(databaseError);
-        }
+        res.status(200).json(successResponse);
+      } catch (error) {
+        console.error(error);
+        const databaseError: responseError = {
+          code: "500",
+          status: "Failed",
+          message: "Internal server error while retrieving course requests.",
+        };
+        res.status(500).json(databaseError);
       }
     }
+    // }
   }
 );
 
 ////Show list requests By Id
-withdrawRequest.get(
-  "/requestsId/:reqId?",
+withdrawRequest.post(
+  "/requestsId",
   verifyToken,
   async (req: Request, res: Response) => {
     const reqHeader: any = req.headers;
     const contentType: any = reqHeader["content-type"];
     const tokenkey: any = reqHeader["authorization"];
     const decoded: any = jwt.verify(tokenkey, SECRET_KEY);
-    const { reqId }: any = req.params;
+    const { reqId }: any = req.body;
     console.log(reqId);
 
     if (!contentType || contentType != "application/json") {
@@ -129,7 +129,7 @@ withdrawRequest.get(
 
 //Show list request ById appove
 withdrawRequest.post(
-  "/appoved",
+  "/approved",
   verifyToken,
   async (req: Request, res: Response) => {
     const reqHeader: any = req.headers;
@@ -222,7 +222,7 @@ withdrawRequest.post(
     const reqHeader: any = req.headers;
     const contentType: any = reqHeader["content-type"];
     // const tokenkey: any = reqHeader["token-key"]
-    const { reqId }: any = req.body;
+    const { reqId,remark }: any = req.body;
 
     if (!contentType || contentType != "application/json") {
       const errorHeaderToken: responseError = {
@@ -254,6 +254,7 @@ withdrawRequest.post(
               { reqId: reqId },
               {
                 $set: {
+                  remark:remark,
                   status: "denied",
                 },
               }
