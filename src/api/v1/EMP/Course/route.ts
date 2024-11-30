@@ -320,12 +320,12 @@ Courses.post("/register", async (req: Request, res: Response) => {
  *                   type: string
  *                   example: "EmpID not found"
  */
-Courses.get("/results", async (req: Request, res: Response) => {
+Courses.get("/results/:empId", async (req: Request, res: Response) => {
   const reqHeader: any = req.headers;
   const contentType: any = reqHeader["content-type"];
   const tokenkey: any = reqHeader["authorization"];
   const decoded: any = jwt.verify(tokenkey, SECRET_KEY);
-  const empId = req.params;
+  const {empId} = req.params;
   
   if (!tokenkey || !contentType) {
     const missingHeaders: responseError = {
@@ -351,7 +351,7 @@ Courses.get("/results", async (req: Request, res: Response) => {
       message: "EmpId not found",
     });
   } else {
-    const dbResults = await courseResults.find({ empId: empId });
+    const dbResults = await courseResults.find({empId: empId});
     const resultsData: responseData = {
       code: "200",
       status: "OK",
