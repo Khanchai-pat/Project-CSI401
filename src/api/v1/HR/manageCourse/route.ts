@@ -466,7 +466,7 @@ courses.post(
               const noEmployees: responseError = {
                 code: "404",
                 status: "Failed",
-                message: `No employees found and != registered :  for sessionId '${sessionId}'.`,
+                message: `No employees found or registered :  for sessionId '${sessionId}'.`,
               };
               res.status(404).json(noEmployees);
 
@@ -500,6 +500,22 @@ courses.post(
                   $set: {
                     status: "pending",
                   },
+                }
+              );
+
+               await course.updateOne(
+                {
+                  courseId: courseId,
+                  "sessions.sessionId": sessionId,
+                },
+                {
+                  $set: {
+                    "sessions.$.status": "complete",
+                  },
+                },
+                {
+                  courseName: 1,
+                  "sessions.$": 1,
                 }
               );
               // save
