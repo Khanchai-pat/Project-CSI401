@@ -416,6 +416,81 @@ courses.post(
   }
 );
 
+// courses.post(
+//   "/closeSession",
+//   verifyToken,
+//   async (req: Request, res: Response) => {
+//     const reqHeader: any = req.headers;
+//     const contentType: any = reqHeader["content-type"];
+//     const tokenkey: any = reqHeader["authorization"];
+//     const decoded: any = jwt.verify(tokenkey, SECRET_KEY);
+//     const { courseId, sessionId }: any = req.body;
+
+//     if (!contentType || contentType != "application/json") {
+//       const missingHeadersError: responseError = {
+//         code: "400",
+//         status: "Failed",
+//         message:
+//           "Missing required headers: content-type and authorization token",
+//       };
+//       res.status(400).json(missingHeadersError);
+//     } else {
+//       if (decoded.roles != "Hr") {
+//         const promis: responseError = {
+//           code: "400",
+//           status: "Failed",
+//           message: "Don't have promision",
+//         };
+//         res.status(400).json(promis);
+//       } else {
+//         try {
+//           const cerrenCourse = await course.findOne({ courseId: courseId });
+//           // console.log(cerrenCourse)
+//           if (!cerrenCourse) {
+//             const missingId: responseError = {
+//               code: "404",
+//               status: "Failed",
+//               message: `with Id '${courseId}' not found.`,
+//             };
+//             res.status(404).json(missingId);
+//           } else {
+//             const updateStatus = await course.updateOne(
+//               {
+//                 courseId: courseId,
+//                 "sessions.sessionId": sessionId,
+//               },
+//               {
+//                 $set: {
+//                   "sessions.$.status": "Close",
+//                 },
+//               },
+//               {
+//                 courseName: 1,
+//                 "sessions.$": 1,
+//               }
+//             );
+//             const successData: responseData = {
+//               code: "200",
+//               status: "OK",
+//               data: updateStatus,
+//             };
+//             res.status(200).json(successData);
+//           }
+//         } catch (error) {
+//           console.log(error);
+//           const serverError: responseError = {
+//             code: "500",
+//             status: "Failed",
+//             message:
+//               "An error occurred while processing your request. Please try again later",
+//           };
+//           res.status(500).json(serverError);
+//         }
+//       }
+//     }
+//   }
+// );
+
 courses.post(
   "/ongoingCourse",
   verifyToken,

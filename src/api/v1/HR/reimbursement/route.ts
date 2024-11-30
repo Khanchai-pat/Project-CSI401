@@ -139,7 +139,7 @@ reimbursement.post(
     const contentType: any = reqHeader["content-type"];
     const tokenkey: any = reqHeader["authorization"];
     const decoded: any = jwt.verify(tokenkey, SECRET_KEY);
-    const { refId, status }: any = req.body;
+    const { reqId, status }: any = req.body;
 
     if (!contentType || contentType != "application/json") {
       const missingHeadersError: responseError = {
@@ -158,7 +158,7 @@ reimbursement.post(
         };
         res.status(400).json(promis);
       } else {
-        if (!refId) {
+        if (!reqId) {
           const missingRefIdError: responseError = {
             code: "400",
             status: "Failed",
@@ -167,17 +167,17 @@ reimbursement.post(
           res.status(400).send(missingRefIdError);
         } else {
           try {
-            const checkId = await reimbursements.findOne({ refId: refId });
+            const checkId = await reimbursements.findOne({ reqId: reqId });
             if (!checkId) {
               const idNotFoundError: responseError = {
                 code: "404",
                 status: "Failed",
-                message: `The requested data with the provided Id : ${refId} could not be found`,
+                message: `The requested data with the provided Id : ${reqId} could not be found`,
               };
               res.status(404).send(idNotFoundError);
             } else {
               const dbAppove = await reimbursements.updateOne(
-                { refId: refId },
+                { reqId: reqId },
                 {
                   $set: {
                     status: "appoved",

@@ -2,13 +2,12 @@ import express, { Request, Response } from "express";
 import { responseData, responseError } from "../interfaceRes/response";
 
 import jwt from "jsonwebtoken";
-import bcrypt from "bcryptjs"
+import bcrypt from "bcryptjs";
 import { users } from "../Schema/users";
-
 
 export const auth = express();
 const secretKey = process.env.SECRET_KEY || "defaultSecretKey";
-``
+``;
 /**
  * @swagger
  *  /auth/login:
@@ -55,10 +54,12 @@ auth.post("/login", async (req: Request, res: Response) => {
       };
       res.status(400).json(error);
     } else {
-
       const userData = await users.findOne({ username: username });
       console.log("username:", userData);
-      console.log("Password:", userData ? userData.password : "No password found");
+      console.log(
+        "Password:",
+        userData ? userData.password : "No password found"
+      );
 
       if (!userData) {
         const error: responseError = {
@@ -69,8 +70,8 @@ auth.post("/login", async (req: Request, res: Response) => {
         res.status(400).json(error);
       } else {
         // ถ้ามีให้ทำสิ่งนี้
-        const isMatch = await bcrypt.compare(password, userData.password)
-        console.log(isMatch)
+        const isMatch = await bcrypt.compare(password, userData.password);
+        console.log(isMatch);
 
         if (!isMatch) {
           const error: responseError = {
@@ -80,17 +81,16 @@ auth.post("/login", async (req: Request, res: Response) => {
           };
           res.status(400).json(error);
         } else {
-
           //payload
           const payload = {
             userId: userData?._id,
             username: userData?.username,
             roles: userData?.roles,
-            status: userData?.status
+            status: userData?.status,
           };
 
           // const options = { expiresIn: 30 }
-          const options = { expiresIn: "10h" }
+          const options = { expiresIn: "10h" };
 
           //generate token
           const token = jwt.sign(payload, secretKey, options);
@@ -102,7 +102,7 @@ auth.post("/login", async (req: Request, res: Response) => {
               message: "login success",
               token: token,
               empId: userData?.empId,
-              roles: userData?.roles 
+              roles: userData?.roles,
             },
           };
           res.status(200).json(response);
