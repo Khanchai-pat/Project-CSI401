@@ -136,7 +136,7 @@ withdrawRequest.post(
     const contentType: any = reqHeader["content-type"];
     const tokenkey: any = reqHeader["authorization"];
     const decoded: any = jwt.verify(tokenkey, SECRET_KEY);
-    const { reqId, empId }: any = req.body;
+    const { reqId }: any = req.body;
 
     if (!contentType || contentType != "application/json") {
       const errorHeaderToken: responseError = {
@@ -173,13 +173,31 @@ withdrawRequest.post(
               res.status(404).send(idNotFoundError);
             } else {
               const dbAppove = await courseRequests.updateOne(
-                { reqId: reqId },
+                {
+                  reqId: reqId,
+                  status: "pending",
+                },
                 {
                   $set: {
                     status: "approved",
                   },
                 }
               );
+
+              const empId = checkId?.empId;
+
+              await enrollments.updateOne(
+                {
+                  empId: empId,
+                  status: "withdraw",
+                },
+                {
+                  $set: {
+                    status: "cancel",
+                  },
+                }
+              );
+
               const successData: responseData = {
                 code: "200",
                 status: "ok",
@@ -187,15 +205,6 @@ withdrawRequest.post(
                   dbAppove,
                 },
               };
-
-              // const dbCancle = await enrollments.updateOne({
-              //     empId: empId
-
-              // }, {
-              //     $set: {
-              //         status: "Cencle"
-              //     }
-              // })
               res.status(200).json(successData);
             }
           } catch (error) {
@@ -222,7 +231,7 @@ withdrawRequest.post(
     const reqHeader: any = req.headers;
     const contentType: any = reqHeader["content-type"];
     // const tokenkey: any = reqHeader["token-key"]
-    const { reqId,remark }: any = req.body;
+    const { reqId, remark }: any = req.body;
 
     if (!contentType || contentType != "application/json") {
       const errorHeaderToken: responseError = {
@@ -250,16 +259,44 @@ withdrawRequest.post(
             };
             res.status(404).send(idNotFoundError);
           } else {
-            const dbDenied = await courseRequests.updateOne(
-              { reqId: reqId },
+            const denied = await courseRequests.updateOne(
+              {
+                reqId: reqId,
+                status: "pending",
+              },
               {
                 $set: {
-                  remark:remark,
                   status: "denied",
                 },
               }
             );
-            res.status(200).json(dbDenied);
+
+            console.log(checkId);
+
+            const empId = checkId?.empId;
+
+            console.log(empId);
+
+            const e = await enrollments.updateOne(
+              {
+                empId: empId,
+                status: "withdraw",
+              },
+              {
+                $set: {
+                  status: "registered",
+                },
+              }
+            );
+
+            const successData: responseData = {
+              code: "200",
+              status: "ok",
+              data: {
+                denied,
+              },
+            };
+            res.status(200).json(e);
           }
         } catch (error) {
           console.log(error);

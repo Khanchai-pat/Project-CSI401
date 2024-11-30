@@ -470,10 +470,8 @@ courses.post(
               };
               res.status(404).json(noEmployees);
             } else {
-              const findRequestLenght = await courseResults.countDocuments({})
-              const createReq = 'R' + String(findRequestLenght + 1).padStart(3, "0");
               const courseResultsData = employeesInSession.map((emp) => ({
-                reqId: createReq,
+                reqId: `R${sessionId}-${emp.empId}`,
                 empId: emp.empId,
                 empName: emp.empName,
                 department: emp.department,

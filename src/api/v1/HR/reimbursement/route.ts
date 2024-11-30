@@ -14,35 +14,35 @@ reimbursement.get(
     const reqHeader: any = req.headers;
     const tokenkey: any = reqHeader["authorization"];
     const decoded: any = jwt.verify(tokenkey, SECRET_KEY);
-      if (decoded.roles != "Hr") {
-        const promis: responseError = {
-          code: "400",
-          status: "Failed",
-          message: "Don't have promision",
+    if (decoded.roles != "Hr") {
+      const promis: responseError = {
+        code: "400",
+        status: "Failed",
+        message: "Don't have promision",
+      };
+      res.status(400).json(promis);
+    } else {
+      try {
+        const dbrequests = await reimbursements.find({});
+        console.log(dbrequests);
+        const successData: responseData = {
+          code: "200",
+          status: "OK",
+          data: dbrequests,
         };
-        res.status(400).json(promis);
-      } else {
-        try {
-          const dbrequests = await reimbursements.find({});
-          console.log(dbrequests);
-          const successData: responseData = {
-            code: "200",
-            status: "OK",
-            data: dbrequests,
-          };
-          res.status(200).json(successData);
-        } catch (error) {
-          console.log(error);
-          const serverError: responseError = {
-            code: "500",
-            status: "Failed",
-            message:
-              "An error occurred while processing your request. Please try again later",
-          };
-          res.status(500).json(serverError);
-        }
+        res.status(200).json(successData);
+      } catch (error) {
+        console.log(error);
+        const serverError: responseError = {
+          code: "500",
+          status: "Failed",
+          message:
+            "An error occurred while processing your request. Please try again later",
+        };
+        res.status(500).json(serverError);
       }
     }
+  }
 );
 
 ////1.2.12 API : HR - Courses Fee Reimbursement System (FR5: ระบบเบิกค่าอบรม) Show List byId
@@ -155,7 +155,10 @@ reimbursement.post(
           res.status(400).send(missingRefIdError);
         } else {
           try {
-            const checkId = await reimbursements.findOne({ reqId: reqId });
+            const checkId = await reimbursements.findOne({
+              reqId: reqId,
+              status: "pending",
+            });
             if (!checkId) {
               const idNotFoundError: responseError = {
                 code: "404",
@@ -232,7 +235,10 @@ reimbursement.post(
           res.status(400).send(missingRefIdError);
         } else {
           try {
-            const checkId = await reimbursements.findOne({ reqId: reqId });
+            const checkId = await reimbursements.findOne({
+              reqId: reqId,
+              status: "pending",
+            });
             if (!checkId) {
               const idNotFoundError: responseError = {
                 code: "404",
@@ -245,7 +251,7 @@ reimbursement.post(
                 { reqId: reqId },
                 {
                   $set: {
-                    remark:remark,
+                    remark: remark,
                     status: "denied",
                   },
                 }
