@@ -469,9 +469,12 @@ courses.post(
                 message: `No employees found and != registered :  for sessionId '${sessionId}'.`,
               };
               res.status(404).json(noEmployees);
+
+              
             } else {
+              const findLenght = await courseResults.countDocuments({})
               const courseResultsData = employeesInSession.map((emp) => ({
-                reqId: `R${sessionId}-${emp.empId}`,
+                reqId: `R${findLenght}-${emp.sessionId}-${emp.empId}`,
                 empId: emp.empId,
                 empName: emp.empName,
                 department: emp.department,
@@ -499,11 +502,11 @@ courses.post(
                   },
                 }
               );
-
               // save
               const insertedResults = await courseResults.insertMany(
                 courseResultsData
               );
+
               const successData: responseData = {
                 code: "200",
                 status: "OK",

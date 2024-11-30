@@ -19,16 +19,8 @@ manageEmp.post(
     const tokenkey: any = reqHeader["authorization"];
     const decoded: any = jwt.verify(tokenkey, SECRET_KEY);
     console.log(decoded);
-    const {
-      empId,
-      empName,
-      department,
-      cardId,
-      email,
-      tel,
-      roles,
-      status,
-    }: any = req.body;
+    const { empName, department, cardId, email, tel, roles, status }: any =
+      req.body;
 
     if (!contentType || contentType != "application/json") {
       const missingHeadersError: responseError = {
@@ -43,20 +35,11 @@ manageEmp.post(
         const promis: responseError = {
           code: "400",
           status: "Failed",
-          message: "Don't have promision",
+          message: "Don't have permission",
         };
         res.status(400).json(promis);
       } else {
-        if (
-          !empId ||
-          !empName ||
-          !department ||
-          !cardId ||
-          !email ||
-          !tel
-          // !role ||
-          // !status
-        ) {
+        if (!cardId || !email) {
           const incompleteDataError: responseError = {
             code: "400",
             status: "Failed",
@@ -65,11 +48,13 @@ manageEmp.post(
           };
           res.status(400).json(incompleteDataError);
         } else {
+          const empLenght = await employees.countDocuments({});
+          const empId = "EMP" + (empLenght + 1).toString().padStart(3, "0");
           try {
-            const cerrentData = await employees.findOne({
+            const currentData = await employees.findOne({
               $or: [{ empId: empId }, { cardId: cardId }, { email: email }],
             });
-            if (!cerrentData) {
+            if (!currentData) {
               const addEmp = await employees.create({
                 empId: empId,
                 empName: empName,
@@ -127,98 +112,93 @@ manageEmp.post(
 );
 
 //edit-Emp
-manageEmp.post(
-  "/editEmp",
-  verifyToken,
-  async (req: Request, res: Response) => {
-    const reqHeader: any = req.headers;
-    const contentType: any = reqHeader["content-type"];
-    const tokenkey: any = reqHeader["authorization"];
-    const decoded: any = jwt.verify(tokenkey, SECRET_KEY);
+manageEmp.post("/editEmp", verifyToken, async (req: Request, res: Response) => {
+  const reqHeader: any = req.headers;
+  const contentType: any = reqHeader["content-type"];
+  const tokenkey: any = reqHeader["authorization"];
+  const decoded: any = jwt.verify(tokenkey, SECRET_KEY);
 
-    const {
-      empId,
-      empName,
-      departMent,
-      cardId,
-      email,
-      tel,
-      role,
-      status,
-    }: // firstTrainingDate,
-    // trainingDate,
-    // courseId,
-    // courseName,
-    // trainingLocation,
-    // trainingHours,
-    // nextExpiryDate
+  const {
+    empId,
+    empName,
+    departMent,
+    cardId,
+    email,
+    tel,
+    role,
+    status,
+  }: // firstTrainingDate,
+  // trainingDate,
+  // courseId,
+  // courseName,
+  // trainingLocation,
+  // trainingHours,
+  // nextExpiryDate
 
-    any = req.body;
+  any = req.body;
 
-    console.log(req.body);
+  console.log(req.body);
 
-    if (!contentType || contentType != "application/json") {
-      const missingHeadersError: responseError = {
+  if (!contentType || contentType != "application/json") {
+    const missingHeadersError: responseError = {
+      code: "400",
+      status: "Failed",
+      message: "Missing required headers: content-type and authorization token",
+    };
+    res.status(400).json(missingHeadersError);
+  } else {
+    if (decoded.roles != "Hr") {
+      const promis: responseError = {
         code: "400",
         status: "Failed",
-        message:
-          "Missing required headers: content-type and authorization token",
+        message: "Don't have permission",
       };
-      res.status(400).json(missingHeadersError);
+      res.status(400).json(promis);
     } else {
-      if (decoded.roles != "Hr") {
-        const promis: responseError = {
+      if (!empId) {
+        const reqError: responseError = {
           code: "400",
           status: "Failed",
-          message: "Don't have promision",
+          message:
+            "Employee Id is required and the employee status must be 'Active' Route: manageEmp, Method: editEmp",
         };
-        res.status(400).json(promis);
+        res.status(400).json(reqError);
       } else {
-        if (!empId || status !== "active") {
-          const reqError: responseError = {
-            code: "400",
+        const checkData = await employees.findOne({ empId: empId });
+        if (!checkData) {
+          const employeeNotFoundError: responseError = {
+            code: "404",
             status: "Failed",
-            message:
-              "Employee Id is required and the employee status must be 'Active' Route: manageEmp, Method: editEmp",
+            message: `Employee Id '${empId}' not found Route: manageEmp, Method: editEmp`,
           };
-          res.status(400).json(reqError);
+          res.status(404).json(employeeNotFoundError);
         } else {
-          const checkData = await employees.findOne({ empId: empId });
-          if (!checkData) {
-            const employeeNotFoundError: responseError = {
-              code: "404",
-              status: "Failed",
-              message: `Employee Id '${empId}' not found Route: manageEmp, Method: editEmp`,
+          try {
+            const updateData = await employees.updateOne(
+              { empId: empId },
+              req.body
+            );
+            const updateEmployeeResponse: responseData = {
+              code: "200",
+              status: "OK",
+              data: updateData,
             };
-            res.status(404).json(employeeNotFoundError);
-          } else {
-            try {
-              const updateData = await employees.updateOne(
-                { empId: empId },
-                req.body
-              );
-              const updateEmployeeResponse: responseData = {
-                code: "200",
-                status: "OK",
-                data: updateData,
-              };
-              res.status(200).json(updateEmployeeResponse);
-            } catch (error) {
-              console.log(error);
-              const serverError: responseError = {
-                code: "500",
-                status: "Failed",
-                message:
-                  "An error occurred while processing your request. Please try again later",
-              };
-              res.status(500).json(serverError);
-            }
+            res.status(200).json(updateEmployeeResponse);
+          } catch (error) {
+            console.log(error);
+            const serverError: responseError = {
+              code: "500",
+              status: "Failed",
+              message:
+                "An error occurred while processing your request. Please try again later",
+            };
+            res.status(500).json(serverError);
           }
         }
       }
     }
   }
-);
+});
 
 //delete-Emp
 manageEmp.post(
@@ -245,7 +225,7 @@ manageEmp.post(
         const promis: responseError = {
           code: "400",
           status: "Failed",
-          message: "Don't have promision",
+          message: "Don't have permission",
         };
         res.status(400).json(promis);
       } else {
@@ -273,7 +253,16 @@ manageEmp.post(
                 {
                   $set: {
                     // status: "Inactive"
-                    status: "Inactive",
+                    status: "inactive",
+                  },
+                }
+              );
+
+              await users.updateOne(
+                { empId: empId, status: "active" },
+                {
+                  $set: {
+                    status: "inactive",
                   },
                 }
               );

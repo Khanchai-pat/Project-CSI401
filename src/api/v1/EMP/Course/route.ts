@@ -156,6 +156,9 @@ Courses.post("/register", async (req: Request, res: Response) => {
       { courseName: 1, "sessions.$": 1 }
     );
 
+    const empData =  await employees.findOne({empId:empId}) 
+    const empName = empData?.empName
+    const department = empData?.department
     const enrollment = await enrollments.find({ empId: empId,status:"registered" });
     const sameDate: any = enrollment.map((item) => item.trainingDate);
     const courseName: any = courseData ? courseData.courseName : null;
@@ -200,6 +203,8 @@ Courses.post("/register", async (req: Request, res: Response) => {
           empId: empId,
           courseId: courseId,
           sessionId: sessionId,
+          empName:empName,
+          department:department,
           courseName: courseName,
           trainingLocation: trainingLocation.toString(),
           periods: periods.toString(),
