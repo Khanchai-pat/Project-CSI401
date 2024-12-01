@@ -4,9 +4,10 @@ import { courseResults } from "../../Schema/courseResults";
 import { verifyToken } from "../../middleware/route";
 import { SECRET_KEY } from "../../middleware/route";
 import jwt from "jsonwebtoken";
+import { enrollments } from "../../Schema/enrollment";
 
 export const courseResult = express();
-  /**
+/**
  * @swagger
  * /courseResult/results:
  *   post:
@@ -33,7 +34,7 @@ export const courseResult = express();
  *         application/json:
  *           schema:
  *             type: object
- *             
+ *
  *     responses:
  *       200:
  *         description: Successfully Request Data
@@ -62,7 +63,7 @@ export const courseResult = express();
  *                       description: Employee Name
  *                     department:
  *                       type: string
- *                       description: Department 
+ *                       description: Department
  *                     courseId:
  *                       type: string
  *                       description: Course ID
@@ -78,7 +79,7 @@ export const courseResult = express();
  *                     status:
  *                       type: string
  *                       description: Status
- * 
+ *
  *       400:
  *         description: Bad request - Missing Authorization or Content-Type
  *         content:
@@ -94,7 +95,7 @@ export const courseResult = express();
  *                   example: "Bad Request"
  *                 message:
  *                   type: string
- *                   example: "Missing required headers: content-type and authorization token End-Point courseUpdate HR - Show Courses results"   
+ *                   example: "Missing required headers: content-type and authorization token End-Point courseUpdate HR - Show Courses results"
  *       401:
  *         description: Bad request - Missing Authorization or Content-Type
  *         content:
@@ -133,50 +134,39 @@ courseResult.get(
   verifyToken,
   async (req: Request, res: Response) => {
     const reqHeader: any = req.headers;
-    const contentType: string = reqHeader["content-type"];
     const tokenkey: any = reqHeader["authorization"];
     const decoded: any = jwt.verify(tokenkey, SECRET_KEY);
 
-    if (!contentType || contentType != "application/json") {
-      const missingHeaders: responseError = {
-        code: "400",
-        status: "Failed",
-        message:
-          "Missing required headers: content-type and authorization token End-Point courseUpdate HR - Show Courses results",
+    if (decoded.roles != "Hr") {
+      const permission: responseError = {
+        code: "401",
+        status: "Unauthorized",
+        message: "Don't have permission",
       };
-      res.status(400).json(missingHeaders);
+      res.status(401).json(permission);
     } else {
-      if (decoded.roles != "Hr") {
-        const promis: responseError = {
-          code: "401",
-          status: "Unauthorized",
-          message: "Don't have promision",
+      try {
+        const dbResults = await courseResults.find({});
+        const resultsData: responseData = {
+          code: "200",
+          status: "OK",
+          data: dbResults,
         };
-        res.status(401).json(promis);
-      } else {
-        try {
-          const dbResults = await courseResults.find({});
-          const resultsData: responseData = {
-            code: "200",
-            status: "OK",
-            data: dbResults,
-          };
-          res.status(200).json(resultsData);
-        } catch (error) {
-          console.log(error);
-          const serverError: responseError = {
-            code: "500",
-            status: "Failed",
-            message:
-              "An error occurred while processing your request. Please try again later",
-          };
-          res.status(500).json(serverError);
-        }
+        res.status(200).json(resultsData);
+      } catch (error) {
+        console.log(error);
+        const serverError: responseError = {
+          code: "500",
+          status: "Failed",
+          message:
+            "An error occurred while processing your request. Please try again later",
+        };
+        res.status(500).json(serverError);
       }
     }
   }
 );
-  /**
+/**
  * @swagger
  * /courseResult/resultsId/:reqId?:
  *   post:
@@ -208,7 +198,7 @@ courseResult.get(
  *                 type: string
  *                 description: Request ID to retrieve data for
  *                 example: R001
- *             
+ *
  *     responses:
  *       200:
  *         description: Successfully Request
@@ -237,7 +227,7 @@ courseResult.get(
  *                       description: Employee Name
  *                     department:
  *                       type: string
- *                       description: Department 
+ *                       description: Department
  *                     courseId:
  *                       type: string
  *                       description: Course ID
@@ -284,8 +274,8 @@ courseResult.get(
  *                   example: "Unauthorized"
  *                 message:
  *                   type: string
- *                   example: "Don't have promision"
-*       404:
+ *                   example: "Don't have permission"
+ *       404:
  *         description: Course result not found
  *         content:
  *           application/json:
@@ -319,32 +309,31 @@ courseResult.get(
  *                   example: "An error occurred while processing your request. Please try again later"
  */
 //1.2.15 API : HR - Show Courses Results ById
-courseResult.get(
-  "/resultsId/:reqId?",
+courseResult.post(
+  "/resultsId/",
   verifyToken,
   async (req: Request, res: Response) => {
     const reqHeader: any = req.headers;
-    const contentType: any = reqHeader["content-type"];
     const tokenkey: any = reqHeader["authorization"];
+    const contentType: any = reqHeader["content-type"]
     const decoded: any = jwt.verify(tokenkey, SECRET_KEY);
-    const { reqId } = req.params;
-
+    const { reqId } = req.body;
     if (!contentType || contentType != "application/json") {
       const missingHeaders: responseError = {
-        code: "500",
+        code: "400",
         status: "Failed",
         message:
-          "Missing required headers: content-type and authorization token End-Point /requests ById HR - Show Courses Results ById ",
+          "Missing required headers: content-type and authorization token End-Point /requests ById HR - Show Courses update",
       };
       res.status(400).json(missingHeaders);
     } else {
       if (decoded.roles != "Hr") {
-        const promis: responseError = {
+        const permission: responseError = {
           code: "401",
           status: "Unauthorized",
-          message: "Don't have promision",
+          message: "Don't have permission",
         };
-        res.status(401).json(promis);
+        res.status(401).json(permission);
       } else {
         if (!reqId) {
           const missingId: responseError = {
@@ -387,7 +376,7 @@ courseResult.get(
     }
   }
 );
-  /**
+/**
  * @swagger
  * /courseResult/update:
  *   post:
@@ -419,7 +408,7 @@ courseResult.get(
  *                 type: string
  *                 description: Request ID to retrieve data for
  *                 example: R001
- *             
+ *
  *     responses:
  *       200:
  *         description: Successfully Update
@@ -448,7 +437,7 @@ courseResult.get(
  *                       description: Employee Name
  *                     department:
  *                       type: string
- *                       description: Department 
+ *                       description: Department
  *                     courseId:
  *                       type: string
  *                       description: Course ID
@@ -495,8 +484,8 @@ courseResult.get(
  *                   example: "Unauthorized"
  *                 message:
  *                   type: string
- *                   example: "Don't have promision"
-*       404:
+ *                   example: "Don't have permission"
+ *       404:
  *         description: Course result not found
  *         content:
  *           application/json:
@@ -530,73 +519,172 @@ courseResult.get(
  *                   example: "An error occurred while processing your request. Please try again later"
  */
 //1.2.16 API : HR - Show Courses Results ById Update
-courseResult.post(
-  "/update",
-  verifyToken,
-  async (req: Request, res: Response) => {
-    const reqHeader: any = req.headers;
-    const contentType: string = reqHeader["content-type"];
-    const tokenkey: any = reqHeader["authorization"];
-    const decoded: any = jwt.verify(tokenkey, SECRET_KEY);
-    const { reqId } = req.body;
+courseResult.post("/pass", verifyToken, async (req: Request, res: Response) => {
+  const reqHeader: any = req.headers;
+  const contentType: string = reqHeader["content-type"];
+  const tokenkey: any = reqHeader["authorization"];
+  const decoded: any = jwt.verify(tokenkey, SECRET_KEY);
+  const { reqId } = req.body;
 
-    if (!contentType || contentType != "application/json") {
-      const missingHeaders: responseError = {
-        code: "400",
-        status: "Failed",
-        message:
-          "Missing required headers: content-type and authorization token End-Point /requests ById HR - Show Courses update",
+  if (!contentType || contentType != "application/json") {
+    const missingHeaders: responseError = {
+      code: "400",
+      status: "Failed",
+      message:
+        "Missing required headers: content-type and authorization token End-Point /requests ById HR - Show Courses update",
+    };
+    res.status(400).json(missingHeaders);
+  } else {
+    if (decoded.roles != "Hr") {
+      const permission: responseError = {
+        code: "401",
+        status: "Unauthorized",
+        message: "Don't have permission",
       };
-      res.status(400).json(missingHeaders);
+      res.status(401).json(permission);
     } else {
-      if (decoded.roles != "Hr") {
-        const promis: responseError = {
-          code: "401",
-          status: "Unauthorized",
-          message: "Don't have promision",
+      if (!reqId) {
+        const missingId: responseError = {
+          code: "400",
+          status: "Failed",
+          message: `Missing 'reqId' : req.body. No Id sent in request.`,
         };
-        res.status(401).json(promis);
+        res.status(400).json(missingId);
       } else {
-        if (!reqId) {
-          const missingId: responseError = {
-            code: "400",
-            status: "Failed",
-            message: `Missing 'reqId' : req.body. No Id sent in request.`,
-          };
-          res.status(400).json(missingId);
-        } else {
-          try {
-            const cerrenId = await courseResults.findOne({ reqId: reqId });
-            if (!cerrenId) {
-              const notFoundError: responseError = {
-                code: "404",
-                status: "Failed",
-                message: `Id  ${reqId} : not found in the database.`,
-              };
-              res.status(404).json(notFoundError);
-            } else {
-              const updateData = await courseResults.updateOne(
-                { reqId: reqId },
-                {
-                  $set: {
-                    status: "complete",
-                  },
-                }
-              );
-              res.status(200).json(updateData);
-            }
-          } catch (error) {
-            console.log(error);
-            const serverError: responseError = {
-              code: "500",
+        try {
+          const currrentId = await courseResults.findOne({ reqId: reqId });
+          if (!currrentId) {
+            const notFoundError: responseError = {
+              code: "404",
               status: "Failed",
-              message:
-                "An error occurred while processing your request. Please try again later",
+              message: `Id  ${reqId} : not found in the database.`,
             };
-            res.status(500).json(serverError);
+            res.status(404).json(notFoundError);
+          } else {
+            const updateData = await courseResults.updateOne(
+              { reqId: reqId },
+              {
+                $set: {
+                  status: "pass",
+                },
+              }
+            );
+            const empId = currrentId?.empId;
+            const updateEnrollment = await enrollments.updateOne(
+              {
+                empId: empId,
+              },
+              {
+                $set: {
+                  status: "pass",
+                },
+              }
+            );
+
+            const resData: responseData = {
+              code: "200",
+              status: "OK",
+              data: { updateData, updateEnrollment },
+            };
+
+            res.status(200).json(resData);
           }
+        } catch (error) {
+          console.log(error);
+          const serverError: responseError = {
+            code: "500",
+            status: "Failed",
+            message:
+              "An error occurred while processing your request. Please try again later",
+          };
+          res.status(500).json(serverError);
         }
       }
     }
   }
-);
+});
+
+courseResult.post("/fail", verifyToken, async (req: Request, res: Response) => {
+  const reqHeader: any = req.headers;
+  const contentType: string = reqHeader["content-type"];
+  const tokenkey: any = reqHeader["authorization"];
+  const decoded: any = jwt.verify(tokenkey, SECRET_KEY);
+  const { reqId } = req.body;
+
+  if (!contentType || contentType != "application/json") {
+    const missingHeaders: responseError = {
+      code: "400",
+      status: "Failed",
+      message:
+        "Missing required headers: content-type and authorization token End-Point /requests ById HR - Show Courses update",
+    };
+    res.status(400).json(missingHeaders);
+  } else {
+    if (decoded.roles != "Hr") {
+      const permission: responseError = {
+        code: "401",
+        status: "Unauthorized",
+        message: "Don't have permission",
+      };
+      res.status(401).json(permission);
+    } else {
+      if (!reqId) {
+        const missingId: responseError = {
+          code: "400",
+          status: "Failed",
+          message: `Missing 'reqId' : req.body. No Id sent in request.`,
+        };
+        res.status(400).json(missingId);
+      } else {
+        try {
+          const currrentId = await courseResults.findOne({ reqId: reqId });
+          if (!currrentId) {
+            const notFoundError: responseError = {
+              code: "404",
+              status: "Failed",
+              message: `Id  ${reqId} : not found in the database.`,
+            };
+            res.status(404).json(notFoundError);
+          } else {
+            const updateData = await courseResults.updateOne(
+              { reqId: reqId },
+              {
+                $set: {
+                  status: "fail",
+                },
+              }
+            );
+            const empId = currrentId?.empId;
+            const updateEnrollment = await enrollments.updateOne(
+              {
+                empId: empId,
+              },
+              {
+                $set: {
+                  status: "fail",
+                },
+              }
+            );
+
+            const resData: responseData = {
+              code: "200",
+              status: "OK",
+              data: { updateData, updateEnrollment },
+            };
+
+            res.status(200).json(resData);
+          }
+        } catch (error) {
+          console.log(error);
+          const serverError: responseError = {
+            code: "500",
+            status: "Failed",
+            message:
+              "An error occurred while processing your request. Please try again later",
+          };
+          res.status(500).json(serverError);
+        }
+      }
+    }
+  }
+});

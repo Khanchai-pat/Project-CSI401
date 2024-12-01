@@ -1,9 +1,9 @@
 import express, { Request, Response } from "express";
 import { responseData, responseError } from "../interfaceRes/response";
-
 import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
 import { users } from "../Schema/users";
+import { SECRET_KEY } from "../middleware/route";
 
 export const auth = express();
 const secretKey = process.env.SECRET_KEY || "defaultSecretKey";
@@ -93,7 +93,7 @@ auth.post("/login", async (req: Request, res: Response) => {
           const options = { expiresIn: "10h" };
 
           //generate token
-          const token = jwt.sign(payload, secretKey, options);
+          const token = jwt.sign(payload, SECRET_KEY, options);
 
           const response: responseData = {
             code: "200",

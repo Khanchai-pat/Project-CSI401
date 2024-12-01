@@ -251,7 +251,7 @@ checkdata.post("/enrollments", async (req: Request, res: Response) => {
         "Bad Request: Missing required headers - 'Content-Type' and 'token-key' are needed for endpoint /checkEmp",
     };
     res.status(400).json(missingHeaders);
-  } else if (decoded.roles != "Emp") {
+  } else if (decoded.roles != "Emp" && decoded.roles != "Hr") {
     const promis: responseError = {
       code: "400",
       status: "Failed",
@@ -267,7 +267,7 @@ checkdata.post("/enrollments", async (req: Request, res: Response) => {
   } else {
     const enrollment = await enrollments.find({
       empId: empId,
-      status: { $in: ["registered", "pending"] },
+      status: { $in: ["registered", "withdraw"] },
     });
 
     res.status(200).json({
@@ -378,7 +378,7 @@ checkdata.post("/profile", async (req: Request, res: Response) => {
         "Bad Request: Missing required headers - 'Content-Type' and 'token-key' are needed for endpoint /checkEmp",
     };
     res.status(400).json(missingHeaders);
-  } else if (decoded.roles != "Emp") {
+  } else if (decoded.roles === "Emp" && decoded.roles === "Hr") {
     const promis: responseError = {
       code: "400",
       status: "Failed",
@@ -401,6 +401,51 @@ checkdata.post("/profile", async (req: Request, res: Response) => {
       code: "200",
       status: "success",
       data: empData,
+    });
+  }
+});
+
+checkdata.post("/enrollment/id", async (req: Request, res: Response) => {
+  const reqHeader: any = req.headers;
+  const contentType: any = reqHeader["content-type"];
+  const tokenkey: any = reqHeader["authorization"];
+  const decoded: any = jwt.verify(tokenkey, SECRET_KEY);
+  // const empId = req.query.Empid as string;
+  const { courseId,sessionId } = req.body;
+
+  // ตรวจสอบการมี empId ในคำขอและเช็ค contentType
+  if (!tokenkey || !contentType) {
+    const missingHeaders: responseError = {
+      code: "400",
+      status: "Failed",
+      message:
+        "Bad Request: Missing required headers - 'Content-Type' and 'token-key' are needed for endpoint /checkEmp",
+    };
+    res.status(400).json(missingHeaders);
+  } else if (decoded.roles != "Emp") {
+    const promis: responseError = {
+      code: "400",
+      status: "Failed",
+      message: "Don't have promision",
+    };
+    res.status(400).json(promis);
+  } else if (!courseId || !sessionId) {
+    res.status(404).json({
+      code: "404",
+      status: "error",
+      message: "courseId or sessionId not found",
+    });
+  } else {
+    const enrollment = await enrollments.findOne({
+      courseId: courseId,
+      sessionId: sessionId,
+      status: { $in: ["registered", "withdraw"] },
+    });
+
+    res.status(200).json({
+      code: "200",
+      status: "success",
+      data: enrollment
     });
   }
 });

@@ -3,6 +3,7 @@ import { responseData, responseError } from "../../interfaceRes/response";
 import { reimbursements } from "../../Schema/reimbursement";
 import { SECRET_KEY } from "../../middleware/route";
 import jwt from "jsonwebtoken";
+import { employees } from "../../Schema/emp";
 
 export const empReimbursement = express.Router();
 
@@ -11,7 +12,7 @@ empReimbursement.post("/requests", async (req: Request, res: Response) => {
   const contentType: any = reqHeader["content-type"];
   const tokenkey: any = reqHeader["authorization"];
   const decoded: any = jwt.verify(tokenkey, SECRET_KEY);
-  const { empId, courseId, amount, bankAccount, empName, department, cardId } = req.body;
+  const { empId, courseId, amount, bankAccount, cardId } = req.body;
   if (!tokenkey || !contentType) {
     const missingHeaders: responseError = {
       code: "400",
@@ -34,14 +35,17 @@ empReimbursement.post("/requests", async (req: Request, res: Response) => {
       message: "EmpId/courseId not found",
     });
   } else {
+    const empData = await employees.find({empId:empId})
+    const empName =  empData.map((item)=>item.empName)
+    const department = empData.map((item)=>item.department)
     const findReq = await reimbursements.countDocuments({});
     const createReqid = "R" + String(findReq + 1).padStart(3, "0");
     const dbResults = await reimbursements.create({
       reqId: createReqid,
       courseId: courseId,
       empId: empId,
-      empName: empName,
-      department: department,
+      empName: empName.toString(),
+      department: department.toString(),
       cardId: cardId,
       bankAccount: bankAccount,
       amount: amount,

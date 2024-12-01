@@ -8,6 +8,7 @@ import { enrollment } from "../../HR/enrollment/route";
 import { verifyToken } from "../../middleware/route";
 import { SECRET_KEY } from "../../middleware/route";
 import jwt from "jsonwebtoken";
+import { employees } from "../../Schema/emp";
 export const Courses = express();
 
 // const verifyToken = (token: string | undefined): boolean => {
@@ -155,10 +156,12 @@ Courses.post("/register", async (req: Request, res: Response) => {
       { courseName: 1, "sessions.$": 1 }
     );
 
-    const enrollment = await enrollments.find({ empId: empId });
+    const enrollment = await enrollments.find({ empId: empId,status:"registered" });
     const sameDate: any = enrollment.map((item) => item.trainingDate);
     const courseName: any = courseData ? courseData.courseName : null;
-    const trainingLocation: any = courseData?.sessions.map((item) => item.trainingLocation);
+    const trainingLocation: any = courseData?.sessions.map(
+      (item) => item.trainingLocation
+    );
     const periods: any = courseData?.sessions.map((item) => item.periods);
     const status: any = courseData?.sessions.map((item) => item.status);
     const courseLeft: any = courseData?.sessions.map((item) => item.courseLeft);
@@ -197,9 +200,9 @@ Courses.post("/register", async (req: Request, res: Response) => {
           empId: empId,
           courseId: courseId,
           sessionId: sessionId,
-          courseName:courseName,
-          trainingLocation:trainingLocation.toString(),
-          periods:periods.toString(),
+          courseName: courseName,
+          trainingLocation: trainingLocation.toString(),
+          periods: periods.toString(),
           trainingDate: trainingDate,
           status: "registered",
         });
@@ -226,7 +229,7 @@ Courses.post("/register", async (req: Request, res: Response) => {
 /**
  * @swagger
  * /courses/results:
- *   get:
+ *   post:
  *     summary: Emp Results Data
  *     tags:
  *       - Emp Course
@@ -273,7 +276,7 @@ Courses.post("/register", async (req: Request, res: Response) => {
  *                   type: object
  *                   properties:
  *                     reqId:
- *                       type: string                 
+ *                       type: string
  *                       description: Request ID
  *                     empId:
  *                       type: string
@@ -320,13 +323,13 @@ Courses.post("/register", async (req: Request, res: Response) => {
  *                   type: string
  *                   example: "EmpID not found"
  */
-Courses.get("/results/:empId", async (req: Request, res: Response) => {
+Courses.post("/results", async (req: Request, res: Response) => {
   const reqHeader: any = req.headers;
   const contentType: any = reqHeader["content-type"];
   const tokenkey: any = reqHeader["authorization"];
   const decoded: any = jwt.verify(tokenkey, SECRET_KEY);
-  const {empId} = req.params;
-  
+  const {empId} = req.body;
+
   if (!tokenkey || !contentType) {
     const missingHeaders: responseError = {
       code: "400",
@@ -335,16 +338,14 @@ Courses.get("/results/:empId", async (req: Request, res: Response) => {
         "Bad Request: Missing required headers - 'Content-Type' and 'token-key' are needed for endpoint /checkEmp",
     };
     res.status(400).json(missingHeaders);
-  } 
-  else if (decoded.roles != "Emp") {
+  } else if (decoded.roles != "Emp") {
     const promis: responseError = {
       code: "400",
       status: "Failed",
       message: "Don't have promision",
     };
     res.status(400).json(promis);
-  } 
-  else if (!empId) {
+  } else if (!empId) {
     res.status(404).json({
       code: "404",
       status: "error",
@@ -412,9 +413,9 @@ Courses.get("/results/:empId", async (req: Request, res: Response) => {
  *                   example: "success"
  *                 data:
  *                   type: object
- *                   properties:          
+ *                   properties:
  *                     reqId:
- *                       type: string                 
+ *                       type: string
  *                       description: Request ID
  *                     empId:
  *                       type: string
@@ -475,8 +476,7 @@ Courses.post("/requests", async (req: Request, res: Response) => {
         "Bad Request: Missing required headers - 'Content-Type' and 'token-key' are needed for endpoint /checkEmp",
     };
     res.status(400).json(missingHeaders);
-  } 
-  else if (decoded.roles != "Emp") {
+  } else if (decoded.roles != "Emp") {
     const promis: responseError = {
       code: "400",
       status: "Failed",
@@ -490,12 +490,20 @@ Courses.post("/requests", async (req: Request, res: Response) => {
       message: "empId or courseId or sessionId not found",
     });
   } else {
-    const enrollment = await enrollments.updateOne({empId:empId,courseId:courseId,sessionId:sessionId},{$set:{status:"pending"}})
+    const empData = await employees.find({empId:empId})
+    const empName = empData.map((item)=>item.empName)
+    const department = empData.map((item)=>item.department)
+    const enrollment = await enrollments.updateOne(
+      { empId: empId, courseId: courseId, sessionId: sessionId },
+      { $set: { status: "withdraw" } }
+    );
     const findReq = await courseRequests.countDocuments({});
     const createReqid = "WR" + String(findReq + 1).padStart(3, "0");
     const dbResults = await courseRequests.create({
       reqId: createReqid,
       empId: empId,
+      empName: empName.toString(),
+      department:department.toString(),
       courseId: courseId,
       sessionId: sessionId,
       status: "pending",
@@ -503,7 +511,7 @@ Courses.post("/requests", async (req: Request, res: Response) => {
     const resultsData: responseData = {
       code: "200",
       status: "OK",
-      data: {dbResults,enrollment}
+      data: { dbResults, enrollment },
     };
     res.status(200).json(resultsData);
   }
@@ -556,7 +564,7 @@ Courses.post("/requests", async (req: Request, res: Response) => {
  *                   example: "success"
  *                 data:
  *                   type: object
- *                   properties:          
+ *                   properties:
  *                     courseId:
  *                       type: string
  *                       description: Course ID
@@ -583,14 +591,14 @@ Courses.post("/requests", async (req: Request, res: Response) => {
  *                   example: "Bad Request"
  *                 message:
  *                   type: string
- *                   example: "Cannot Show"   
+ *                   example: "Cannot Show"
  */
 Courses.get("/browse", async (req: Request, res: Response) => {
   const reqHeader: any = req.headers;
   const contentType: any = reqHeader["content-type"];
   const tokenkey: any = reqHeader["authorization"];
   const decoded: any = jwt.verify(tokenkey, SECRET_KEY);
-   if (decoded.roles != "Emp") {
+  if (decoded.roles != "Emp") {
     const promis: responseError = {
       code: "400",
       status: "Failed",
@@ -605,20 +613,59 @@ Courses.get("/browse", async (req: Request, res: Response) => {
           courseId: 1,
           courseName: 1,
           sessions: {
-            $filter: {
+            $filter: {  
               input: "$sessions",
               as: "sessions",
-              cond: { $eq: ["$$sessions.status", "active"] }
-            }
+              cond: { $eq: ["$$sessions.status", "active"] },
+            },
           },
-        }
+        },
       },
       {
         $match: {
-          "sessions.0": { $exists: true }
-        }
-      }
-    ]); 
+          "sessions.0": { $exists: true },
+        },
+      },
+    ]);
+    const resultsData: responseData = {
+      code: "200",
+      status: "OK",
+      data: dbResults,
+    };
+    res.status(200).json(resultsData);
+  }
+});
+
+Courses.post("/result/id", async (req: Request, res: Response) => {
+  const reqHeader: any = req.headers;
+  const contentType: any = reqHeader["content-type"];
+  const tokenkey: any = reqHeader["authorization"];
+  const decoded: any = jwt.verify(tokenkey, SECRET_KEY);
+  const {reqId} = req.body;
+
+  if (!tokenkey || !contentType) {
+    const missingHeaders: responseError = {
+      code: "400",
+      status: "Failed",
+      message:
+        "Bad Request: Missing required headers - 'Content-Type' and 'token-key' are needed for endpoint /checkEmp",
+    };
+    res.status(400).json(missingHeaders);
+  } else if (decoded.roles != "Emp") {
+    const promis: responseError = {
+      code: "400",
+      status: "Failed",
+      message: "Don't have promision",
+    };
+    res.status(400).json(promis);
+  } else if (!reqId) {
+    res.status(404).json({
+      code: "404",
+      status: "error",
+      message: "reqId not found",
+    });
+  } else {
+    const dbResults:any = await courseResults.findOne({ reqId: reqId });
     const resultsData: responseData = {
       code: "200",
       status: "OK",

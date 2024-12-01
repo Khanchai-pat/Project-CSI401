@@ -10,6 +10,7 @@ const refundSchema = new mongoose.Schema({
     cardId: String,
     bankAccount:String,
     amount:Number,
+    remark:String,
     status: String
 }, { timestamps: true });
 

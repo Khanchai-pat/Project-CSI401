@@ -3,12 +3,12 @@ import { responseData, responseError } from "../../interfaceRes/response";
 export const checkData = express();
 import { employees } from "../../Schema/emp";
 import { verifyToken } from "../../middleware/route";
-import { SECRET_KEY } from '../../middleware/route'
+import { SECRET_KEY } from "../../middleware/route";
 import jwt from "jsonwebtoken";
 
 // const SECRET_KEY = process.env.JWT_SECRET_KEY || "defaultSecretKey";
 
-  /**
+/**
  * @swagger
  * /checkData/checkEmp:
  *   get:
@@ -35,7 +35,7 @@ import jwt from "jsonwebtoken";
  *         application/json:
  *           schema:
  *             type: object
- *             
+ *
  *     responses:
  *       200:
  *         description: Successfully Registeration
@@ -111,53 +111,42 @@ import jwt from "jsonwebtoken";
  *                   example: "An error occurred while processing your request. Please try again later"
  */
 // Check Data EMP
-checkData.get("/checkEmp", verifyToken, async (req: Request, res: Response) => {
+checkData.get("/checkEmp", async (req: Request, res: Response) => {
   const reqHeader: any = req.headers;
-  const contentType: any = reqHeader["content-type"];
   const tokenkey: any = reqHeader["authorization"];
   const decoded: any = jwt.verify(tokenkey, SECRET_KEY);
 
-  if (!contentType || contentType != "application/json") {
-    const missingHeaders: responseError = {
-      code: "400",
-      status: "Failed",
-      message:
-        "Bad Request: Missing required headers - 'Content-Type' and 'token-key' are needed for endpoint /checkEmp.",
+  if (decoded.roles !== "Hr") {
+    const promis: responseError = {
+      code: "401",
+      status: "Unauthorized",
+      message: "Don't have promision",
     };
-    res.status(400).json(missingHeaders);
+    res.status(401).json(promis);
   } else {
-    if (decoded.roles != "Hr") {
-      const promis: responseError = {
-        code: "401",
-        status: "Unauthorized",
-        message: "Don't have promision",
+    try {
+      // Process
+      const dbResponse = await employees.find({});
+      const reqCheckData: responseData = {
+        code: "200",
+        status: "Employee data retrieved successfully",
+        data: dbResponse,
       };
-      res.status(401).json(promis);
-    } else {
-      try {
-        // Process
-        const dbResponse = await employees.find({});
-        const reqCheckData: responseData = {
-          code: "200",
-          status: "Employee data retrieved successfully",
-          data: dbResponse,
-        };
-        res.status(200).json(reqCheckData);
-      } catch (error) {
-        console.log(error);
-        const serverError: responseError = {
-          code: "500",
-          status: "Failed",
-          message:
-            "An error occurred while processing your request. Please try again later",
-        };
-        res.status(500).json(serverError);
-      }
+      res.status(200).json(reqCheckData);
+    } catch (error) {
+      console.log(error);
+      const serverError: responseError = {
+        code: "500",
+        status: "Failed",
+        message:
+          "An error occurred while processing your request. Please try again later",
+      };
+      res.status(500).json(serverError);
     }
   }
 });
 
-  /**
+/**
  * @swagger
  * /checkData/checkEmpId/:empId?:
  *   get:
@@ -259,19 +248,18 @@ checkData.get("/checkEmp", verifyToken, async (req: Request, res: Response) => {
  *                   example: "An error occurred while processing your request. Please try again later"
  */
 // Check Data by Employee Id
-checkData.get(
-  "/checkEmpId/:empId?",
+checkData.post(
+  "/checkEmpId?",
   verifyToken,
   async (req: Request, res: Response) => {
     const reqHeader: any = req.headers;
-    const contentType: any = reqHeader["content-type"];
     const tokenkey: any = reqHeader["authorization"];
+    const contentType : any = reqHeader["content-type"]
     const decode: any = jwt.verify(tokenkey, SECRET_KEY);
-    console.log(decode);
+    
+    const { empId } = req.body;
 
-    const { empId } = req.params;
-
-    if (!contentType || contentType != "application/json") {
+    if (!contentType || contentType !== "application/json") {
       const missingHeaders: responseError = {
         code: "400",
         status: "Failed",
