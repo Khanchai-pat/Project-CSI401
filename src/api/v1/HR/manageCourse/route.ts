@@ -232,7 +232,6 @@ courses.post(
     const decoded: any = jwt.verify(tokenkey, SECRET_KEY);
     const {
       courseId,
-      sessionId,
       trainingDate,
       trainingLocation,
       periods,
@@ -259,7 +258,6 @@ courses.post(
       } else {
         if (
           !courseId ||
-          !sessionId ||
           !trainingDate ||
           !trainingLocation ||
           !periods ||
@@ -285,6 +283,8 @@ courses.post(
               };
               res.status(404).json(missingId);
             } else {
+              const sessionLenght = currentCourse.sessions.length
+              const sessionId = "S"+ (sessionLenght + 1).toString().padStart(3,"0");
               const isDuplicateSession = currentCourse.sessions.some(
                 (session: any) => session.sessionId === sessionId
               );
@@ -541,18 +541,21 @@ courses.post(
               const noEmployees: responseError = {
                 code: "404",
                 status: "Failed",
-                message: `No employees found and != registered :  for sessionId '${sessionId}'.`,
+                message: `No employees found or registered :  for sessionId '${sessionId}'.`,
               };
               res.status(404).json(noEmployees);
+
+              
             } else {
+              const findLenght = await courseResults.countDocuments({})
               const courseResultsData = employeesInSession.map((emp) => ({
-                reqId: `R${sessionId}-${emp.empId}`,
+                reqId: `R${findLenght}-${emp.sessionId}-${emp.empId}`,
                 empId: emp.empId,
                 empName: emp.empName,
                 department: emp.department,
                 courseId: courseId,
                 sessionId: sessionId,
-                courseName: emp.courseName || "Unknown",
+                courseName: emp.courseName,
                 trainingDate: emp.trainingDate,
                 completionDate: new Date(),
                 periods: emp.periods,
@@ -591,10 +594,26 @@ courses.post(
                 }
               );
 
+               await course.updateOne(
+                {
+                  courseId: courseId,
+                  "sessions.sessionId": sessionId,
+                },
+                {
+                  $set: {
+                    "sessions.$.status": "complete",
+                  },
+                },
+                {
+                  courseName: 1,
+                  "sessions.$": 1,
+                }
+              );
               // save
               const insertedResults = await courseResults.insertMany(
                 courseResultsData
               );
+
               const successData: responseData = {
                 code: "200",
                 status: "OK",
@@ -618,7 +637,7 @@ courses.post(
   }
 );
 
-courses.post("/editCouse", verifyToken, async (req: Request, res: Response) => {
+courses.post("/editCourse", verifyToken, async (req: Request, res: Response) => {
   const reqHeader: any = req.headers;
   const contentType: any = reqHeader["content-type"];
   const tokenkey: any = reqHeader["authorization"];
@@ -631,8 +650,6 @@ courses.post("/editCouse", verifyToken, async (req: Request, res: Response) => {
     periods,
     hours,
     courseLimit,
-    courseLeft,
-    status,
   }: any = req.body;
 
   if (!contentType || contentType != "application/json") {
@@ -685,8 +702,6 @@ courses.post("/editCouse", verifyToken, async (req: Request, res: Response) => {
                   "sessions.$.periods": periods,
                   "sessions.$.hours": hours,
                   "sessions.$.courseLimit": courseLimit,
-                  "sessions.$.courseLeft": courseLeft,
-                  "sessions.$.status": status,
                 },
               }
             );

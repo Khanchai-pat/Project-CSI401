@@ -5,6 +5,7 @@ import { verifyToken } from "../../middleware/route";
 import { SECRET_KEY } from "../../middleware/route";
 import jwt from "jsonwebtoken";
 import { enrollments } from "../../Schema/enrollment";
+import { employees } from "../../Schema/emp";
 
 export const courseResult = express();
 /**
@@ -561,6 +562,9 @@ courseResult.post("/pass", verifyToken, async (req: Request, res: Response) => {
             };
             res.status(404).json(notFoundError);
           } else {
+
+            const empId = currrentId?.empId;
+
             const updateData = await courseResults.updateOne(
               { reqId: reqId },
               {
@@ -569,7 +573,23 @@ courseResult.post("/pass", verifyToken, async (req: Request, res: Response) => {
                 },
               }
             );
-            const empId = currrentId?.empId;
+
+            const empData:any = await employees.findOne({empId : empId})
+            const firstTrainingDate = empData.firstTrainingDate
+            
+            console.log(firstTrainingDate);
+            
+
+            if(!firstTrainingDate){
+              await employees.updateOne({empId:empId},{$set:{
+                firstTrainingDate: new Date
+              }})
+            }
+
+            const updateEmp = await employees.updateOne({empId:empId},{$set:{
+              expiryDate: new Date(new Date().setFullYear(new Date().getFullYear() + 1))
+            }})
+
             const updateEnrollment = await enrollments.updateOne(
               {
                 empId: empId,

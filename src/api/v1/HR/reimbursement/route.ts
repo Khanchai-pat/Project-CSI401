@@ -47,7 +47,7 @@ reimbursement.get(
 
 ////1.2.12 API : HR - Courses Fee Reimbursement System (FR5: ระบบเบิกค่าอบรม) Show List byId
 reimbursement.post(
-  "/requestsId/?",
+  "/requestsId/",
   verifyToken,
   async (req: Request, res: Response) => {
     const reqHeader: any = req.headers;

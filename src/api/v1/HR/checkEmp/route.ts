@@ -249,7 +249,7 @@ checkData.get("/checkEmp", async (req: Request, res: Response) => {
  */
 // Check Data by Employee Id
 checkData.post(
-  "/checkEmpId?",
+  "/checkEmpId",
   verifyToken,
   async (req: Request, res: Response) => {
     const reqHeader: any = req.headers;

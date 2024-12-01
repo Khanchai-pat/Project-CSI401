@@ -156,6 +156,9 @@ Courses.post("/register", async (req: Request, res: Response) => {
       { courseName: 1, "sessions.$": 1 }
     );
 
+    const empData =  await employees.findOne({empId:empId}) 
+    const empName = empData?.empName
+    const department = empData?.department
     const enrollment = await enrollments.find({ empId: empId,status:"registered" });
     const sameDate: any = enrollment.map((item) => item.trainingDate);
     const courseName: any = courseData ? courseData.courseName : null;
@@ -187,19 +190,25 @@ Courses.post("/register", async (req: Request, res: Response) => {
         code: "403",
         status: "error",
         message: "same training date",
+        
       });
-    } else {
-      if (status.toString() !== "active" || courseLimit - courseLeft === 0) {
+    } 
+    else {
+      if (status.toString() !== "active" || courseLeft === 0) {
+        
         res.status(403).json({
           code: "403",
           status: "error",
           message: "this course is unavailable",
         });
+        
       } else {
         const dbResults = await enrollments.create({
           empId: empId,
           courseId: courseId,
           sessionId: sessionId,
+          empName:empName,
+          department:department,
           courseName: courseName,
           trainingLocation: trainingLocation.toString(),
           periods: periods.toString(),
