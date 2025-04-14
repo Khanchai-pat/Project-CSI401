@@ -202,7 +202,7 @@ courses.post(
                 code: "400",
                 status: "Failed",
                 message:
-                  "Duplicate data found. The provided employee information already exists in the system",
+                  "Duplicate data found.This CourseIdalready exists in the system",
               };
               res.status(400).json(duplicateDataError);
             }
@@ -283,8 +283,9 @@ courses.post(
               };
               res.status(404).json(missingId);
             } else {
-              const sessionLenght = currentCourse.sessions.length
-              const sessionId = "S"+ (sessionLenght + 1).toString().padStart(3,"0");
+              const sessionLenght = currentCourse.sessions.length;
+              const sessionId =
+                "S" + (sessionLenght + 1).toString().padStart(3, "0");
               const isDuplicateSession = currentCourse.sessions.some(
                 (session: any) => session.sessionId === sessionId
               );
@@ -368,7 +369,10 @@ courses.post(
       } else {
         try {
           const currentCourse = await course.findOne({ courseId: courseId });
-          // console.log(currentCourse)
+          const targetSession = currentCourse?.sessions.find(
+            (s: any) => s.sessionId === sessionId
+          );
+
           if (!currentCourse) {
             const missingId: responseError = {
               code: "404",
@@ -376,6 +380,13 @@ courses.post(
               message: `with Id '${courseId}' not found.`,
             };
             res.status(404).json(missingId);
+          } else if (targetSession?.status === "complete") {
+            const completedCourseError: responseError = {
+              code: "400",
+              status: "Failed",
+              message: `Session '${sessionId}' in course '${courseId}' is already completed and cannot be modified.`,
+            };
+            res.status(400).json(completedCourseError);
           } else {
             const updateStatus = await course.updateOne(
               {
@@ -518,6 +529,9 @@ courses.post(
       } else {
         try {
           const currentCourse = await course.findOne({ courseId: courseId });
+          const targetSession = currentCourse?.sessions.find(
+            (s: any) => s.sessionId === sessionId
+          );
           // console.log(currentCourse)
           if (!currentCourse) {
             const missingId: responseError = {
@@ -526,7 +540,14 @@ courses.post(
               message: `with Id '${courseId}' not found.`,
             };
             res.status(404).json(missingId);
-          } else {
+          }else if (targetSession?.status === "complete") {
+            const completedCourseError: responseError = {
+              code: "400",
+              status: "Failed",
+              message: `Session '${sessionId}' in course '${courseId}' is already completed and cannot be modified.`,
+            };
+            res.status(400).json(completedCourseError);
+          }  else {
             const employeesInSession = await enrollments.find({
               courseId: courseId,
               sessionId: sessionId,
@@ -544,10 +565,8 @@ courses.post(
                 message: `No employees found or registered :  for sessionId '${sessionId}'.`,
               };
               res.status(404).json(noEmployees);
-
-              
             } else {
-              const findLenght = await courseResults.countDocuments({})
+              const findLenght = await courseResults.countDocuments({});
               const courseResultsData = employeesInSession.map((emp) => ({
                 reqId: `R${findLenght}-${emp.sessionId}-${emp.empId}`,
                 empId: emp.empId,
@@ -577,7 +596,7 @@ courses.post(
                   },
                 }
               );
-              
+
               await course.updateOne(
                 {
                   courseId: courseId,
@@ -594,7 +613,7 @@ courses.post(
                 }
               );
 
-               await course.updateOne(
+              await course.updateOne(
                 {
                   courseId: courseId,
                   "sessions.sessionId": sessionId,
@@ -637,95 +656,109 @@ courses.post(
   }
 );
 
-courses.post("/editCourse", verifyToken, async (req: Request, res: Response) => {
-  const reqHeader: any = req.headers;
-  const contentType: any = reqHeader["content-type"];
-  const tokenkey: any = reqHeader["authorization"];
-  const decoded: any = jwt.verify(tokenkey, SECRET_KEY);
-  const {
-    courseId,
-    sessionId,
-    trainingDate,
-    trainingLocation,
-    periods,
-    hours,
-    courseLimit,
-  }: any = req.body;
+courses.post(
+  "/editCourse",
+  verifyToken,
+  async (req: Request, res: Response) => {
+    const reqHeader: any = req.headers;
+    const contentType: any = reqHeader["content-type"];
+    const tokenkey: any = reqHeader["authorization"];
+    const decoded: any = jwt.verify(tokenkey, SECRET_KEY);
+    const {
+      courseId,
+      sessionId,
+      trainingDate,
+      trainingLocation,
+      periods,
+      hours,
+      courseLimit,
+    }: any = req.body;
 
-  if (!contentType || contentType != "application/json") {
-    const missingHeadersError: responseError = {
-      code: "400",
-      status: "Failed",
-      message: "Missing required headers: content-type and authorization token",
-    };
-    res.status(400).json(missingHeadersError);
-  } else {
-    if (decoded.roles != "Hr") {
-      const promis: responseError = {
+    if (!contentType || contentType != "application/json") {
+      const missingHeadersError: responseError = {
         code: "400",
         status: "Failed",
-        message: "Don't have promision",
+        message:
+          "Missing required headers: content-type and authorization token",
       };
-      res.status(400).json(promis);
+      res.status(400).json(missingHeadersError);
     } else {
-      try {
-        const currentCourse = await course.findOne({ courseId: courseId });
-        // console.log(currentCourse)
-        if (!currentCourse) {
-          const missingId: responseError = {
-            code: "404",
-            status: "Failed",
-            message: `with Id '${courseId}' courseId not found.`,
-          };
-          res.status(404).json(missingId);
-        } else {
-          const curSessionsid = currentCourse.sessions.some(
-            (session: any) => session.sessionId === sessionId
-          );
-          if (!curSessionsid) {
+      if (decoded.roles != "Hr") {
+        const promis: responseError = {
+          code: "400",
+          status: "Failed",
+          message: "Don't have promision",
+        };
+        res.status(400).json(promis);
+      } else {
+        try {
+          const currentCourse = await course.findOne({ courseId: courseId });
+          const targetSession = currentCourse?.sessions.find(
+            (s: any) => s.sessionId === sessionId
+          );          // console.log(currentCourse)
+          if (!currentCourse) {
             const missingId: responseError = {
               code: "404",
               status: "Failed",
-              message: `with Id '${sessionId}' sessionId not found.`,
+              message: `with Id '${courseId}' courseId not found.`,
             };
             res.status(404).json(missingId);
-          } else {
-            const updateSesion = await course.updateOne(
-              {
-                courseId: courseId,
-                "sessions.sessionId": sessionId,
-              },
-              {
-                $set: {
-                  "sessions.$.trainingDate": trainingDate,
-                  "sessions.$.trainingLocation": trainingLocation,
-                  "sessions.$.periods": periods,
-                  "sessions.$.hours": hours,
-                  "sessions.$.courseLimit": courseLimit,
-                },
-              }
-            );
-            const successData: responseData = {
-              code: "200",
-              status: "OK",
-              data: updateSesion,
+          }else if (targetSession?.status === "complete") {
+            const completedCourseError: responseError = {
+              code: "400",
+              status: "Failed",
+              message: `Session '${sessionId}' in course '${courseId}' is already completed and cannot be modified.`,
             };
-            res.status(200).json(successData);
+            res.status(400).json(completedCourseError);
+          }  else {
+            const curSessionsid = currentCourse.sessions.some(
+              (session: any) => session.sessionId === sessionId
+            );
+            if (!curSessionsid) {
+              const missingId: responseError = {
+                code: "404",
+                status: "Failed",
+                message: `with Id '${sessionId}' sessionId not found.`,
+              };
+              res.status(404).json(missingId);
+            } else {
+              const updateSesion = await course.updateOne(
+                {
+                  courseId: courseId,
+                  "sessions.sessionId": sessionId,
+                },
+                {
+                  $set: {
+                    "sessions.$.trainingDate": trainingDate,
+                    "sessions.$.trainingLocation": trainingLocation,
+                    "sessions.$.periods": periods,
+                    "sessions.$.hours": hours,
+                    "sessions.$.courseLimit": courseLimit,
+                  },
+                }
+              );
+              const successData: responseData = {
+                code: "200",
+                status: "OK",
+                data: updateSesion,
+              };
+              res.status(200).json(successData);
+            }
           }
+        } catch (error) {
+          console.log(error);
+          const serverError: responseError = {
+            code: "500",
+            status: "Failed",
+            message:
+              "An error occurred while processing your request. Please try again later",
+          };
+          res.status(500).json(serverError);
         }
-      } catch (error) {
-        console.log(error);
-        const serverError: responseError = {
-          code: "500",
-          status: "Failed",
-          message:
-            "An error occurred while processing your request. Please try again later",
-        };
-        res.status(500).json(serverError);
       }
     }
   }
-});
+);
 
 courses.post(
   "/closecourse",
@@ -756,6 +789,9 @@ courses.post(
       } else {
         try {
           const currentCourse = await course.findOne({ courseId: courseId });
+          const targetSession = currentCourse?.sessions.find(
+            (s: any) => s.sessionId === sessionId
+          );
           // console.log(currentCourse)
           if (!currentCourse) {
             const missingId: responseError = {
@@ -764,7 +800,14 @@ courses.post(
               message: `with Id '${courseId}' not found.`,
             };
             res.status(404).json(missingId);
-          } else {
+          }else if (targetSession?.status === "complete") {
+            const completedCourseError: responseError = {
+              code: "400",
+              status: "Failed",
+              message: `Session '${sessionId}' in course '${courseId}' is already completed and cannot be modified.`,
+            };
+            res.status(400).json(completedCourseError);
+          }  else {
             const updateStatus = await course.updateOne(
               {
                 courseId: courseId,
@@ -831,6 +874,9 @@ courses.post(
       } else {
         try {
           const currentCourse = await course.findOne({ courseId: courseId });
+          const targetSession = currentCourse?.sessions.find(
+            (s: any) => s.sessionId === sessionId
+          );
           // console.log(currentCourse)
           if (!currentCourse) {
             const missingId: responseError = {
@@ -839,7 +885,14 @@ courses.post(
               message: `with Id '${courseId}' not found.`,
             };
             res.status(404).json(missingId);
-          } else {
+          }else if (targetSession?.status === "complete") {
+            const completedCourseError: responseError = {
+              code: "400",
+              status: "Failed",
+              message: `Session '${sessionId}' in course '${courseId}' is already completed and cannot be modified.`,
+            };
+            res.status(400).json(completedCourseError);
+          }  else {
             const updateStatus = await course.updateOne(
               {
                 courseId: courseId,

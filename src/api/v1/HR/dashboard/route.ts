@@ -126,90 +126,76 @@ dashBoard.get("/dashboard", async (req: Request, res: Response) => {
   const reqHeader: any = req.headers;
   const contentType: string = reqHeader["content-type"];
   const tokenkey: any = reqHeader["authorization"];
-  const decoded: any = jwt.verify(tokenkey, SECRET_KEY);
 
-  // if (!contentType || contentType != "application/json") {
-  //   const verifyError: responseError = {
-  //     code: "400",
-  //     status: "Failed",
-  //     message: "missing quried header : contentType And tokenKey",
-  //   };
-  //   res.status(400).json(verifyError);
-  // } else {
-  if (decoded.roles !== "Hr") {
-    const promis: responseError = {
-      code: "401",
-      status: "Unauthorized",
-      message: "Don't have promision",
+  if (!tokenkey ) {
+    const verifyError: responseError = {
+      code: "400",
+      status: "Failed",
+      message: "Missing or invalid headers: content-type and authorization are required.",
     };
-    res.status(401).json(promis);
+    res.status(400).json(verifyError);
   } else {
+    let decoded: any;
     try {
-      const courseRequest = await courseRequests.find({});
-      let allCourseRequest: any = 0;
-      for (let i = 0; i <= courseRequest.length; i++) {
-        allCourseRequest = i;
-      }
-
-      let allCourseResult: any = 0;
-      const courseResult = await courseResults.find({});
-      for (let i = 0; i <= courseResult.length; i++) {
-        allCourseResult = i;
-      }
-
-      let allreimbursement: any = 0;
-      const reimbursement = await reimbursements.find({});
-      for (let i = 0; i <= reimbursement.length; i++) {
-        allreimbursement = i;
-      }
-
-      let allEmp: any = 0;
-      const employee = await employees.find({});
-      for (let i = 0; i <= employee.length; i++) {
-        allEmp = i;
-      }
-
-      const empInactive = await employees.find({ status: "inactive" });
-      let inactives: any = 0;
-      for (let i = 0; i <= empInactive.length; i++) {
-        inactives = i;
-      }
-
-      const empActive = await employees.find({ status: "active" });
-      let Actives: any = 0;
-      for (let i = 0; i <= empActive.length; i++) {
-        Actives = i;
-      }
-      const courses = await course.find({});
-      let allCourse: any = 0;
-      for (let i = 0; i <= courses.length; i++) {
-        allCourse = i;
-      }
-      const showDashboard: {} = {
-        allEmps: allEmp,
-        empInactives: inactives,
-        empActives: Actives,
-        courseRequests: allCourseRequest,
-        courseResults: allCourseResult,
-        refunds: allreimbursement,
-        courses: allCourse,
+      decoded = jwt.verify(tokenkey, SECRET_KEY);
+    } catch (err) {
+      const invalidToken: responseError = {
+        code: "401",
+        status: "Unauthorized",
+        message: "Invalid token.",
       };
-      const successData: responseData = {
-        code: "200",
-        status: "OK",
-        data: showDashboard,
+      res.status(401).json(invalidToken);
+      return;
+    }
+
+    if (decoded.roles !== "Hr") {
+      const permissionError: responseError = {
+        code: "403",
+        status: "Unauthorized",
+        message: "Don't have permission",
       };
-      res.status(200).json(successData);
-    } catch (error) {
-      console.log(error);
-      const serverError: responseError = {
-        code: "500",
-        status: "Failed",
-        message:
-          "An error occurred while processing your request. Please try again later",
-      };
-      res.status(500).json(serverError);
+      res.status(403).json(permissionError);
+    } else {
+      try {
+        const [courseRequest, courseResult, reimbursement, employee, empInactive, empActive, courses] =
+          await Promise.all([
+            courseRequests.find({}),
+            courseResults.find({}),
+            reimbursements.find({}),
+            employees.find({}),
+            employees.find({ status: "inactive" }),
+            employees.find({ status: "active" }),
+            course.find({}),
+          ]);
+
+        const showDashboard: {} = {
+          allEmps: employee.length,
+          empInactives: empInactive.length,
+          empActives: empActive.length,
+          courseRequests: courseRequest.length,
+          courseResults: courseResult.length,
+          refunds: reimbursement.length,
+          courses: courses.length,
+        };
+
+        const successData: responseData = {
+          code: "200",
+          status: "OK",
+          data: showDashboard,
+        };
+
+        res.status(200).json(successData);
+      } catch (error) {
+        console.log(error);
+        const serverError: responseError = {
+          code: "500",
+          status: "Failed",
+          message:
+            "An error occurred while processing your request. Please try again later",
+        };
+        res.status(500).json(serverError);
+      }
     }
   }
-  // }
 });
+

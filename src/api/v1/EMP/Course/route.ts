@@ -156,6 +156,8 @@ Courses.post("/register", async (req: Request, res: Response) => {
       { courseName: 1, "sessions.$": 1 }
     );
 
+    const alreadyEnrolled = await enrollments.find({ empId, status:"pass" }, { courseId: 1, _id: 0 });
+
     const empData =  await employees.findOne({empId:empId}) 
     const empName = empData?.empName
     const department = empData?.department
@@ -201,8 +203,16 @@ Courses.post("/register", async (req: Request, res: Response) => {
           status: "error",
           message: "this course is unavailable",
         });
-        
-      } else {
+
+      } 
+      if (alreadyEnrolled.some((enrollment) => enrollment.courseId === courseId)) {
+        res.status(403).json({
+          code: "403",
+          status: "error",
+          message: "You have already passed this course",
+        });
+      }
+      else {
         const dbResults = await enrollments.create({
           empId: empId,
           courseId: courseId,
@@ -475,8 +485,7 @@ Courses.post("/requests", async (req: Request, res: Response) => {
   const reqHeader: any = req.headers;
   const contentType: any = reqHeader["content-type"];
   const tokenkey: any = reqHeader["authorization"];
-  const decoded: any = jwt.verify(tokenkey, SECRET_KEY);
-  const { empId, courseId, sessionId } = req.body;
+
   if (!tokenkey || !contentType) {
     const missingHeaders: responseError = {
       code: "400",
@@ -485,46 +494,80 @@ Courses.post("/requests", async (req: Request, res: Response) => {
         "Bad Request: Missing required headers - 'Content-Type' and 'token-key' are needed for endpoint /checkEmp",
     };
     res.status(400).json(missingHeaders);
-  } else if (decoded.roles != "Emp") {
-    const promis: responseError = {
-      code: "400",
-      status: "Failed",
-      message: "Don't have promision",
-    };
-    res.status(400).json(promis);
-  } else if (!empId || !courseId || !sessionId) {
-    res.status(404).json({
-      code: "404",
-      status: "error",
-      message: "empId or courseId or sessionId not found",
-    });
   } else {
-    const empData = await employees.find({empId:empId})
-    const empName = empData.map((item)=>item.empName)
-    const department = empData.map((item)=>item.department)
-    const enrollment = await enrollments.updateOne(
-      { empId: empId, courseId: courseId, sessionId: sessionId },
-      { $set: { status: "withdraw" } }
-    );
-    const findReq = await courseRequests.countDocuments({});
-    const createReqid = "WR" + String(findReq + 1).padStart(3, "0");
-    const dbResults = await courseRequests.create({
-      reqId: createReqid,
-      empId: empId,
-      empName: empName.toString(),
-      department:department.toString(),
-      courseId: courseId,
-      sessionId: sessionId,
-      status: "pending",
-    });
-    const resultsData: responseData = {
-      code: "200",
-      status: "OK",
-      data: { dbResults, enrollment },
-    };
-    res.status(200).json(resultsData);
+    let decoded: any;
+    try {
+      decoded = jwt.verify(tokenkey, SECRET_KEY);
+    } catch (err) {
+      const unauthorizedError: responseError = {
+        code: "401",
+        status: "Unauthorized",
+        message: "Invalid token",
+      };
+      res.status(401).json(unauthorizedError);
+    }
+
+    if (decoded.roles !== "Emp") {
+      const noPermission: responseError = {
+        code: "403",
+        status: "Failed",
+        message: "Don't have permission",
+      };
+      res.status(403).json(noPermission);
+    } else {
+      const { empId, courseId, sessionId } = req.body;
+
+      if (!empId || !courseId || !sessionId) {
+        res.status(400).json({
+          code: "400",
+          status: "error",
+          message: "empId or courseId or sessionId not found",
+        });
+      } else {
+        const existingRequest = await courseRequests.findOne({ empId, courseId, sessionId });
+
+        if (existingRequest) {
+          res.status(409).json({
+            code: "409",
+            status: "error",
+            message: "Request already exists for this course and session",
+          });
+        } else {
+          const empData = await employees.find({ empId });
+          const empName = empData.map((item) => item.empName).toString();
+          const department = empData.map((item) => item.department).toString();
+
+          const enrollment = await enrollments.updateOne(
+            { empId, courseId, sessionId },
+            { $set: { status: "withdraw" } }
+          );
+
+          const findReq = await courseRequests.countDocuments({});
+          const createReqid = "WR" + String(findReq + 1).padStart(3, "0");
+
+          const dbResults = await courseRequests.create({
+            reqId: createReqid,
+            empId,
+            empName,
+            department,
+            courseId,
+            sessionId,
+            status: "pending",
+          });
+
+          const resultsData: responseData = {
+            code: "200",
+            status: "OK",
+            data: { dbResults, enrollment },
+          };
+
+          res.status(200).json(resultsData);
+        }
+      }
+    }
   }
 });
+
 /**
  * @swagger
  * /courses/browse:
@@ -606,44 +649,69 @@ Courses.get("/browse", async (req: Request, res: Response) => {
   const reqHeader: any = req.headers;
   const contentType: any = reqHeader["content-type"];
   const tokenkey: any = reqHeader["authorization"];
-  const decoded: any = jwt.verify(tokenkey, SECRET_KEY);
-  if (decoded.roles != "Emp") {
-    const promis: responseError = {
+
+  if (!tokenkey || !contentType || !contentType.includes("application/json")) {
+    const missingHeaders: responseError = {
       code: "400",
       status: "Failed",
-      message: "Don't have permission",
+      message:
+        "Bad Request: Missing or invalid headers - 'Content-Type: application/json' and 'Authorization' are required",
     };
-    res.status(400).json(promis);
+    res.status(400).json(missingHeaders);
   } else {
-    const dbResults = await course.aggregate([
-      {
-        $project: {
-          _id: 1,
-          courseId: 1,
-          courseName: 1,
-          sessions: {
-            $filter: {  
-              input: "$sessions",
-              as: "sessions",
-              cond: { $eq: ["$$sessions.status", "active"] },
+    let decoded: any;
+    try {
+      decoded = jwt.verify(tokenkey, SECRET_KEY);
+    } catch (err) {
+      const unauthorized: responseError = {
+        code: "401",
+        status: "Unauthorized",
+        message: "Invalid token",
+      };
+      res.status(401).json(unauthorized);
+      return;
+    }
+
+    if (decoded.roles !== "Emp") {
+      const permissionError: responseError = {
+        code: "403",
+        status: "Failed",
+        message: "Don't have permission",
+      };
+      res.status(403).json(permissionError);
+    } else {
+      const dbResults = await course.aggregate([
+        {
+          $project: {
+            _id: 1,
+            courseId: 1,
+            courseName: 1,
+            sessions: {
+              $filter: {
+                input: "$sessions",
+                as: "sessions",
+                cond: { $eq: ["$$sessions.status", "active"] },
+              },
             },
           },
         },
-      },
-      {
-        $match: {
-          "sessions.0": { $exists: true },
+        {
+          $match: {
+            "sessions.0": { $exists: true },
+          },
         },
-      },
-    ]);
-    const resultsData: responseData = {
-      code: "200",
-      status: "OK",
-      data: dbResults,
-    };
-    res.status(200).json(resultsData);
+      ]);
+
+      const resultsData: responseData = {
+        code: "200",
+        status: "OK",
+        data: dbResults,
+      };
+      res.status(200).json(resultsData);
+    }
   }
 });
+
 
 Courses.post("/result/id", async (req: Request, res: Response) => {
   const reqHeader: any = req.headers;

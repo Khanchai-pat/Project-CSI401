@@ -316,7 +316,7 @@ courseResult.post(
   async (req: Request, res: Response) => {
     const reqHeader: any = req.headers;
     const tokenkey: any = reqHeader["authorization"];
-    const contentType: any = reqHeader["content-type"]
+    const contentType: any = reqHeader["content-type"];
     const decoded: any = jwt.verify(tokenkey, SECRET_KEY);
     const { reqId } = req.body;
     if (!contentType || contentType != "application/json") {
@@ -527,7 +527,7 @@ courseResult.post("/pass", verifyToken, async (req: Request, res: Response) => {
   const decoded: any = jwt.verify(tokenkey, SECRET_KEY);
   const { reqId } = req.body;
 
-  if (!contentType || contentType != "application/json") {
+  if (!contentType || contentType !== "application/json") {
     const missingHeaders: responseError = {
       code: "400",
       status: "Failed",
@@ -536,7 +536,7 @@ courseResult.post("/pass", verifyToken, async (req: Request, res: Response) => {
     };
     res.status(400).json(missingHeaders);
   } else {
-    if (decoded.roles != "Hr") {
+    if (decoded.roles !== "Hr") {
       const permission: responseError = {
         code: "401",
         status: "Unauthorized",
@@ -554,6 +554,7 @@ courseResult.post("/pass", verifyToken, async (req: Request, res: Response) => {
       } else {
         try {
           const currrentId = await courseResults.findOne({ reqId: reqId });
+
           if (!currrentId) {
             const notFoundError: responseError = {
               code: "404",
@@ -561,12 +562,20 @@ courseResult.post("/pass", verifyToken, async (req: Request, res: Response) => {
               message: `Id  ${reqId} : not found in the database.`,
             };
             res.status(404).json(notFoundError);
+          } else if (
+            currrentId.status !== "pending"
+          ) {
+            const notEditableError: responseError = {
+              code: "403",
+              status: "Failed",
+              message: `Cannot modify request. This request has already been finalized.`,
+            };
+            res.status(403).json(notEditableError);
           } else {
-
-            const empId = currrentId?.empId;
+            const empId = currrentId.empId;
 
             const updateData = await courseResults.updateOne(
-              { reqId: reqId },
+              { reqId: reqId, status: "pending" },
               {
                 $set: {
                   status: "pass",
@@ -574,21 +583,30 @@ courseResult.post("/pass", verifyToken, async (req: Request, res: Response) => {
               }
             );
 
-            const empData:any = await employees.findOne({empId : empId})
-            const firstTrainingDate = empData.firstTrainingDate
-            
-            console.log(firstTrainingDate);
-            
+            const empData: any = await employees.findOne({ empId: empId });
+            const firstTrainingDate = empData.firstTrainingDate;
 
-            if(!firstTrainingDate){
-              await employees.updateOne({empId:empId},{$set:{
-                firstTrainingDate: new Date
-              }})
+            if (!firstTrainingDate) {
+              await employees.updateOne(
+                { empId: empId },
+                {
+                  $set: {
+                    firstTrainingDate: new Date(),
+                  },
+                }
+              );
             }
 
-            const updateEmp = await employees.updateOne({empId:empId},{$set:{
-              expiryDate: new Date(new Date().setFullYear(new Date().getFullYear() + 1))
-            }})
+            const updateEmp = await employees.updateOne(
+              { empId: empId },
+              {
+                $set: {
+                  expiryDate: new Date(
+                    new Date().setFullYear(new Date().getFullYear() + 1)
+                  ),
+                },
+              }
+            );
 
             const updateEnrollment = await enrollments.updateOne(
               {
@@ -623,6 +641,7 @@ courseResult.post("/pass", verifyToken, async (req: Request, res: Response) => {
     }
   }
 });
+
 
 courseResult.post("/fail", verifyToken, async (req: Request, res: Response) => {
   const reqHeader: any = req.headers;
@@ -631,7 +650,7 @@ courseResult.post("/fail", verifyToken, async (req: Request, res: Response) => {
   const decoded: any = jwt.verify(tokenkey, SECRET_KEY);
   const { reqId } = req.body;
 
-  if (!contentType || contentType != "application/json") {
+  if (!contentType || contentType !== "application/json") {
     const missingHeaders: responseError = {
       code: "400",
       status: "Failed",
@@ -640,7 +659,7 @@ courseResult.post("/fail", verifyToken, async (req: Request, res: Response) => {
     };
     res.status(400).json(missingHeaders);
   } else {
-    if (decoded.roles != "Hr") {
+    if (decoded.roles !== "Hr") {
       const permission: responseError = {
         code: "401",
         status: "Unauthorized",
@@ -658,13 +677,23 @@ courseResult.post("/fail", verifyToken, async (req: Request, res: Response) => {
       } else {
         try {
           const currrentId = await courseResults.findOne({ reqId: reqId });
+
           if (!currrentId) {
             const notFoundError: responseError = {
               code: "404",
               status: "Failed",
-              message: `Id  ${reqId} : not found in the database.`,
+              message: `Id ${reqId} : not found in the database.`,
             };
             res.status(404).json(notFoundError);
+          } else if (
+            currrentId.status !== "pending"
+          ) {
+            const notEditableError: responseError = {
+              code: "403",
+              status: "Failed",
+              message: `Cannot modify request. This request has already been finalized.`,
+            };
+            res.status(403).json(notEditableError);
           } else {
             const updateData = await courseResults.updateOne(
               { reqId: reqId },
@@ -674,7 +703,8 @@ courseResult.post("/fail", verifyToken, async (req: Request, res: Response) => {
                 },
               }
             );
-            const empId = currrentId?.empId;
+
+            const empId = currrentId.empId;
             const updateEnrollment = await enrollments.updateOne(
               {
                 empId: empId,
@@ -708,3 +738,4 @@ courseResult.post("/fail", verifyToken, async (req: Request, res: Response) => {
     }
   }
 });
+
