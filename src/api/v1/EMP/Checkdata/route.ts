@@ -6,6 +6,7 @@ import { enrollments } from "../../Schema/enrollment";
 import { course } from "../../Schema/course";
 import { SECRET_KEY } from "../../middleware/route";
 import jwt from "jsonwebtoken";
+import { getDiffAsText } from "../../utils/dateUtils";
 
 export const checkdata = express();
 
@@ -392,15 +393,17 @@ checkdata.post("/profile", async (req: Request, res: Response) => {
     });
   } else {
     // สร้างข้อมูล response
-    const employee:any = await employees.findOne({ empId: empId });
+    const employee: any = await employees.findOne({ empId: empId });
 
-    const expiryDate:any = new Date(employee?.expiryDate); 
-    const today:any = new Date();
+    const expiry = employee?.expiryDate;
+    const today = new Date();
 
-    const nextExpiryTime = expiryDate - today;
-    const nextExpiryDate:any = Math.ceil(nextExpiryTime / (1000 * 60 * 60 * 24));
+    const nextExpiryDate = getDiffAsText(today, expiry);
 
-    const empData = {...employee.toObject(), nextExpiryDate}
+    const empData = {
+      ...employee.toObject(),
+      nextExpiryDate,
+    };
 
     res.status(200).json({
       code: "200",

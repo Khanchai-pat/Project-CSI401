@@ -13,6 +13,7 @@ const reqsSchema = new mongoose.Schema(
     periods: String,
     trainingHours: Number,
     trainingLocation: String,
+    vertifier:String,
     status: String,
   },
   { timestamps: true }

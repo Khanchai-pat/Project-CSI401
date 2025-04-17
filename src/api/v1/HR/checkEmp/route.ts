@@ -5,6 +5,8 @@ import { employees } from "../../Schema/emp";
 import { verifyToken } from "../../middleware/route";
 import { SECRET_KEY } from "../../middleware/route";
 import jwt from "jsonwebtoken";
+import { getDiffAsText, getTrainingDuration } from "../../utils/dateUtils";
+import { courseResults } from "../../Schema/courseResults";
 
 // const SECRET_KEY = process.env.JWT_SECRET_KEY || "defaultSecretKey";
 
@@ -251,72 +253,82 @@ checkData.get("/checkEmp", async (req: Request, res: Response) => {
 checkData.post(
   "/checkEmpId",
   verifyToken,
-  async (req: Request, res: Response) => {
+  async (req: Request, res: Response): Promise<any> => {
     const reqHeader: any = req.headers;
     const tokenkey: any = reqHeader["authorization"];
-    const contentType : any = reqHeader["content-type"]
+    const contentType: any = reqHeader["content-type"];
     const decode: any = jwt.verify(tokenkey, SECRET_KEY);
-    
     const { empId } = req.body;
 
     if (!contentType || contentType !== "application/json") {
-      const missingHeaders: responseError = {
+      return res.status(400).json({
         code: "400",
         status: "Failed",
         message:
           "Bad Request: Missing required headers - 'Content-Type' and 'token-key' are needed for endpoint /checkEmpId.",
-      };
-      res.status(400).json(missingHeaders);
-    } else {
-      if (decode.roles !== "Hr") {
-        const missingHeaders: responseError = {
-          code: "401",
-          status: "Unauthorized",
-          message: "Don't have permission",
-        };
-        res.status(400).json(missingHeaders);
-      } else {
-        if (!empId) {
-          // กรณีไม่มีการส่ง empId มาใน request
-          const missingParamError: responseError = {
-            code: "400",
-            status: "Failed",
-            message:
-              "Bad Request: Missing 'empId' parameter for endpoint /checkempId.",
-          };
-          res.status(400).json(missingParamError);
-        } else {
-          try {
-            // Process การ query ข้อมูลพนักงานจากฐานข้อมูลโดยใช้ empId
-            const dbResponse = await employees.find({ empId: empId });
-            if (dbResponse.length === 0) {
-              // กรณีไม่มีข้อมูลที่ตรงกับ empId
-              const noDataError: responseError = {
-                code: "404",
-                status: "Not Found",
-                message: `Employee with Id '${empId}' not found.`,
-              };
-              res.status(404).json(noDataError);
-            }
+      });
+    }
 
-            const checkempId: responseData = {
-              code: "200",
-              status: "Success",
-              data: dbResponse,
-            };
-            res.status(200).json(checkempId);
-          } catch (error) {
-            console.log(error);
-            const serverError: responseError = {
-              code: "500",
-              status: "Failed",
-              message:
-                "An error occurred while processing your request. Please try again later",
-            };
-            res.status(500).json(serverError);
-          }
-        }
+    if (decode.roles !== "Hr") {
+      return res.status(401).json({
+        code: "401",
+        status: "Unauthorized",
+        message: "Don't have permission",
+      });
+    }
+
+    if (!empId) {
+      return res.status(400).json({
+        code: "400",
+        status: "Failed",
+        message:
+          "Bad Request: Missing 'empId' parameter for endpoint /checkempId.",
+      });
+    }
+
+    try {
+      const employee: any = await employees.findOne({ empId });
+      if (!employee) {
+        return res.status(404).json({
+          code: "404",
+          status: "Not Found",
+          message: `Employee with Id '${empId}' not found.`,
+        });
       }
+
+      const courseResult: any = await courseResults
+        .findOne({ empId })
+        .sort({ _id: -1 });
+
+      const trainingDate = courseResult?.trainingDate || null;
+      const trainingDuration = trainingDate
+        ? getTrainingDuration(trainingDate)
+        : "ไม่มีข้อมูล";
+
+      const expiry = employee?.expiryDate;
+      const today = new Date();
+
+      const nextExpiryDate = getDiffAsText(today, expiry);
+
+      const empData = {
+        ...employee.toObject(),
+        nextExpiryDate,
+        trainingDuration,
+      };
+
+      return res.status(200).json({
+        code: "200",
+        status: "success",
+        data: empData,
+      });
+    } catch (error) {
+      console.error(error);
+      return res.status(500).json({
+        code: "500",
+        status: "Failed",
+        message:
+          "An error occurred while processing your request. Please try again later",
+      });
     }
   }
 );

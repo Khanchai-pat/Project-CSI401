@@ -573,11 +573,12 @@ courseResult.post("/pass", verifyToken, async (req: Request, res: Response) => {
             res.status(403).json(notEditableError);
           } else {
             const empId = currrentId.empId;
-
+            
             const updateData = await courseResults.updateOne(
               { reqId: reqId, status: "pending" },
               {
                 $set: {
+                  vertifier:decoded.username,
                   status: "pass",
                 },
               }

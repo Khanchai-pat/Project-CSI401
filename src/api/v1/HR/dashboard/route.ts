@@ -182,8 +182,7 @@ dashBoard.get("/dashboard", async (req: Request, res: Response) => {
           code: "200",
           status: "OK",
           data: showDashboard,
-        };
-
+        };        
         res.status(200).json(successData);
       } catch (error) {
         console.log(error);

@@ -650,7 +650,7 @@ Courses.get("/browse", async (req: Request, res: Response) => {
   const contentType: any = reqHeader["content-type"];
   const tokenkey: any = reqHeader["authorization"];
 
-  if (!tokenkey || !contentType || !contentType.includes("application/json")) {
+  if (!tokenkey) {
     const missingHeaders: responseError = {
       code: "400",
       status: "Failed",
