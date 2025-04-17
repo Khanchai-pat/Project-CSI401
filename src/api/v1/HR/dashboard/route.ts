@@ -159,9 +159,9 @@ dashBoard.get("/dashboard", async (req: Request, res: Response) => {
       try {
         const [courseRequest, courseResult, reimbursement, employee, empInactive, empActive, courses] =
           await Promise.all([
-            courseRequests.find({}),
-            courseResults.find({}),
-            reimbursements.find({}),
+            courseRequests.find({status:"pending"}),
+            courseResults.find({status:"pending"}),
+            reimbursements.find({status:"pending"}),
             employees.find({}),
             employees.find({ status: "inactive" }),
             employees.find({ status: "active" }),
