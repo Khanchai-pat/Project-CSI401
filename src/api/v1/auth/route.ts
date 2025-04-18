@@ -90,7 +90,7 @@ auth.post("/login", async (req: Request, res: Response) => {
           };
 
           // const options = { expiresIn: 30 }
-          const options = { expiresIn: "10h" };
+          const options = { expiresIn: "7d" };
 
           //generate token
           const token = jwt.sign(payload, SECRET_KEY, options);

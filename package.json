@@ -21,6 +21,7 @@
     "@types/swagger-ui-express": "^4.1.7",
     "bcryptjs": "^2.4.3",
     "cors": "^2.8.5",
+    "dayjs": "^1.11.13",
     "dotenv": "^16.4.5",
     "express": "^4.21.1",
     "helmet": "^8.0.0",
@@ -36,6 +37,10 @@
     "uuid": "^10.0.0"
   },
   "devDependencies": {
+<<<<<<< HEAD
+=======
+    "@babel/preset-typescript": "^7.27.0",
+>>>>>>> 0a330867f972d65f36b0f258e642ccc6ec5b61e6
     "@types/express": "^5.0.0",
     "jest": "^29.7.0"
   }

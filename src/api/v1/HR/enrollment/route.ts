@@ -7,7 +7,6 @@ import jwt from "jsonwebtoken";
 
 export const enrollment = express();
 
-
 /**
  * @swagger
  * /enrollment/showEnrollment:
@@ -42,7 +41,7 @@ export const enrollment = express();
  *                 status:
  *                   type: string
  *                   example: "success"
- *                 data:  
+ *                 data:
  *                   type: object
  *                   properties:
  *                     empId:
@@ -172,7 +171,7 @@ enrollment.get(
     }
   }
 );
- /**
+/**
  * @swagger
  * /enrollment/approved:
  *   post:
@@ -204,7 +203,7 @@ enrollment.get(
  *                 type: string
  *                 description: Request ID to retrieve data for
  *                 example: R001
- *             
+ *
  *     responses:
  *       200:
  *         description: Successfully Update
@@ -287,7 +286,7 @@ enrollment.get(
  *                 message:
  *                   type: string
  *                   example: "Don't have promision"
-*       404:
+ *       404:
  *         description: Course result not found
  *         content:
  *           application/json:
@@ -330,7 +329,7 @@ enrollment.post(
     const decoded: any = jwt.verify(tokenkey, SECRET_KEY);
     const { empId, courseId, sessionId }: any = req.body;
 
-    if (!contentType || contentType != "application/json") {
+    if (!contentType || contentType !== "application/json") {
       const missingHeaders: responseError = {
         code: "400",
         status: "Failed",
@@ -339,65 +338,61 @@ enrollment.post(
       };
       res.status(400).json(missingHeaders);
     } else {
-      if (decoded.roles != "Hr") {
+      if (decoded.roles !== "Hr") {
         const promis: responseError = {
-          code: "400",
+          code: "403",
           status: "Failed",
-          message: "Don't have promision",
+          message: "Don't have permission",
         };
-        res.status(400).json(promis);
+        res.status(403).json(promis);
       } else {
         try {
-          const checkEnrollment = await enrollments.findOne({ empId: empId });
-          if (!checkEnrollment) {
-            const missingId: responseError = {
-              code: "404",
+          if (!empId || !courseId || !sessionId) {
+            const incompleteData: responseError = {
+              code: "400",
               status: "Failed",
-              message: `The provided '${empId}' empId does not match any enrollment record in the database.`,
+              message:
+                "Incomplete data provided. Please ensure all required fields are filled in",
             };
-            res.status(404).json(missingId);
+            res.status(400).json(incompleteData);
           } else {
-            if (!empId || !courseId || !sessionId) {
-              const incompleteData: responseError = {
-                code: "400",
+            const checkEnrollment = await enrollments.findOne({
+              empId,
+              courseId,
+              sessionId,
+            });
+
+            if (!checkEnrollment) {
+              const notFound: responseError = {
+                code: "404",
                 status: "Failed",
-                message:
-                  "Incomplete data provided. Please ensure all required fields are filled in",
+                message: `No enrollment found for empId '${empId}', courseId '${courseId}', and sessionId '${sessionId}'`,
               };
-              res.status(404).json(incompleteData);
+              res.status(404).json(notFound);
+            } else if (checkEnrollment.status !== "pending") {
+              const notAllowed: responseError = {
+                code: "403",
+                status: "Failed",
+                message: `Cannot approve enrollment. Only 'pending' status can be approved.`,
+              };
+              res.status(403).json(notAllowed);
             } else {
-              if (checkEnrollment.courseId !== courseId) {
-                const missingCourseId: responseError = {
-                  code: "404",
-                  status: "Failed",
-                  message: `with Id '${courseId}' courseId  not found checkEnrollment`,
-                };
-                res.status(404).json(missingCourseId);
-              } else {
-                if (checkEnrollment.sessionId !== sessionId) {
-                  const missingSessionId: responseError = {
-                    code: "404",
-                    status: "Failed",
-                    message: `with Id '${sessionId}' sessionId not found checkEnrollment`,
-                  };
-                  res.status(404).json(missingSessionId);
-                } else {
-                  const updateStatus = await enrollments.updateOne(
-                    { empId: empId, courseId: courseId, sessionId: sessionId },
-                    {
-                      $set: {
-                        status: "approved",
-                      },
-                    }
-                  );
-                  const currentEnrollments: responseData = {
-                    code: "200",
-                    status: "Employee data retrieved successfully",
-                    data: updateStatus,
-                  };
-                  res.status(200).json(currentEnrollments);
+              const updateStatus = await enrollments.updateOne(
+                { empId, courseId, sessionId },
+                {
+                  $set: {
+                    status: "approved",
+                  },
                 }
-              }
+              );
+
+              const currentEnrollments: responseData = {
+                code: "200",
+                status: "Employee data retrieved successfully",
+                data: updateStatus,
+              };
+
+              res.status(200).json(currentEnrollments);
             }
           }
         } catch (error) {
@@ -414,7 +409,8 @@ enrollment.post(
     }
   }
 );
- /**
+
+/**
  * @swagger
  * /enrollment/denied:
  *   post:
@@ -446,7 +442,7 @@ enrollment.post(
  *                 type: string
  *                 description: EmpID to retrieve data for
  *                 example: EMP001
- *             
+ *
  *     responses:
  *       200:
  *         description: Successfully Update
@@ -529,7 +525,7 @@ enrollment.post(
  *                 message:
  *                   type: string
  *                   example: "Don't have promision"
-*       404:
+ *       404:
  *         description: Course result not found
  *         content:
  *           application/json:
@@ -595,6 +591,13 @@ enrollment.post("/denied", verifyToken, async (req: Request, res: Response) => {
             message: `The provided '${empId}' empId does not match any enrollment record in the database.`,
           };
           res.status(404).json(missingId);
+        } else if (checkEnrollment.status !== "pending") {
+          const notAllowed: responseError = {
+            code: "403",
+            status: "Failed",
+            message: `Cannot denied enrollment. Only 'pending' status can be approved.`,
+          };
+          res.status(403).json(notAllowed);
         } else {
           if (!empId || !courseId || !sessionId) {
             const incompleteData: responseError = {

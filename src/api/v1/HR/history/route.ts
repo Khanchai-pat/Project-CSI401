@@ -67,7 +67,6 @@ history.get("/results", verifyToken, async (req: Request, res: Response) => {
   const contentType: any = reqHeader["content-type"];
   const tokenkey: any = reqHeader["authorization"];
   const decoded: any = jwt.verify(tokenkey, SECRET_KEY);
-  const { status }: any = req.body;
   if (!contentType || contentType != "application/json") {
     const errorHeaderToken: responseError = {
       code: "400",

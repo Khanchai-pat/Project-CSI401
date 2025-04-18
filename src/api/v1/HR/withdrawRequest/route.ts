@@ -163,7 +163,7 @@ withdrawRequest.post(
           res.status(400).json(missingParamsError);
         } else {
           try {
-            const checkId = await courseRequests.findOne({ reqId: reqId });
+            const checkId = await courseRequests.findOne({ reqId: reqId ,status:"pending"});
             if (!checkId) {
               const idNotFoundError: responseError = {
                 code: "404",
@@ -250,7 +250,7 @@ withdrawRequest.post(
         res.status(400).json(missingParamsError);
       } else {
         try {
-          const checkId = await courseRequests.findOne({ reqId: reqId });
+          const checkId = await courseRequests.findOne({ reqId: reqId,status:"pending" });
           if (!checkId) {
             const idNotFoundError: responseError = {
               code: "404",

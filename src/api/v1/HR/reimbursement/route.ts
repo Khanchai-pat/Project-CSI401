@@ -47,7 +47,7 @@ reimbursement.get(
 
 ////1.2.12 API : HR - Courses Fee Reimbursement System (FR5: ระบบเบิกค่าอบรม) Show List byId
 reimbursement.post(
-  "/requestsId/",
+  "/requestsId",
   verifyToken,
   async (req: Request, res: Response) => {
     const reqHeader: any = req.headers;
@@ -155,7 +155,7 @@ reimbursement.post(
           res.status(400).send(missingRefIdError);
         } else {
           try {
-            const checkId = await reimbursements.findOne({ reqId: reqId });
+            const checkId = await reimbursements.findOne({ reqId: reqId ,status:"pending" });
             if (!checkId) {
               const idNotFoundError: responseError = {
                 code: "404",
