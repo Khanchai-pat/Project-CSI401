@@ -304,12 +304,16 @@ checkData.post(
       const trainingDuration = trainingDate
         ? getTrainingDuration(trainingDate)
         : "ไม่มีข้อมูล";
+      
+      
 
       const expiry = employee?.expiryDate;
       const today = new Date();
 
-      const nextExpiryDate = getDiffAsText(today, expiry);
-
+      const nextExpiryDate = expiry
+      ? getDiffAsText(today, expiry)
+      : "ไม่มีข้อมูล";
+      
       const empData = {
         ...employee.toObject(),
         nextExpiryDate,
