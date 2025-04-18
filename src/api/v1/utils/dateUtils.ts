@@ -30,7 +30,7 @@ export function getDiffAsText(startDate: string | Date, endDate: string | Date):
 }
 
 export function getTrainingDuration(startDate: string): string {
-    const start = dayjs(startDate);
+    const start = dayjs(startDate);    
     const now = dayjs();
   
     const diffYears = now.diff(start, "year");
