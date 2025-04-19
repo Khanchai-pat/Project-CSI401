@@ -1,0 +1,27 @@
+pipeline {
+    agent any
+    stages {
+        stage('Checkout') {
+            steps {
+                echo 'Checkout backend'
+                checkout([
+                    $class: 'GitSCM',
+                    branches: [[name: '*/main']],
+                    userRemoteConfigs: [[
+                        credentialsId: 'jirawatchn',
+                        url: 'https://github.com/Khanchai-pat/Project-CSI401.git'
+                    ]]
+                ])
+            }
+        }
+        stage('Build') {
+            steps {
+                bat "docker build -t ecmsbackend ."
+                bat "docker rm -f ecmsbackendrun || true"
+                bat "docker run -d --name ecmsbackendrun -p 9999:9999 ecmsbackend:latest"
+                echo 'Docker is running'
+            }
+        }
+    }
+    
+}
