@@ -122,7 +122,7 @@ export const Courses = express();
  *                   type: string
  *                   example: "EmpID/CourseID/SessionsID not found"
  */
-Courses.post("/register", async (req: Request, res: Response) => {
+Courses.post("/register", verifyToken, async (req: Request, res: Response) => {
   const reqHeader: any = req.headers;
   const contentType: any = reqHeader["content-type"];
   const tokenkey: any = reqHeader["authorization"];
@@ -156,12 +156,18 @@ Courses.post("/register", async (req: Request, res: Response) => {
       { courseName: 1, "sessions.$": 1 }
     );
 
-    const alreadyEnrolled = await enrollments.find({ empId, status:"pass" }, { courseId: 1, _id: 0 });
+    const alreadyEnrolled = await enrollments.find(
+      { empId, status: "pass" },
+      { courseId: 1, _id: 0 }
+    );
 
-    const empData =  await employees.findOne({empId:empId}) 
-    const empName = empData?.empName
-    const department = empData?.department
-    const enrollment = await enrollments.find({ empId: empId,status:"registered" });
+    const empData = await employees.findOne({ empId: empId });
+    const empName = empData?.empName;
+    const department = empData?.department;
+    const enrollment = await enrollments.find({
+      empId: empId,
+      status: "registered",
+    });
     const sameDate: any = enrollment.map((item) => item.trainingDate);
     const courseName: any = courseData ? courseData.courseName : null;
     const trainingLocation: any = courseData?.sessions.map(
@@ -192,33 +198,30 @@ Courses.post("/register", async (req: Request, res: Response) => {
         code: "403",
         status: "error",
         message: "same training date",
-        
       });
-    } 
-    else {
+    } else {
       if (status.toString() !== "active" || courseLeft === 0) {
-        
         res.status(403).json({
           code: "403",
           status: "error",
           message: "this course is unavailable",
         });
-
-      } 
-      if (alreadyEnrolled.some((enrollment) => enrollment.courseId === courseId)) {
+      }
+      if (
+        alreadyEnrolled.some((enrollment) => enrollment.courseId === courseId)
+      ) {
         res.status(403).json({
           code: "403",
           status: "error",
           message: "You have already passed this course",
         });
-      }
-      else {
+      } else {
         const dbResults = await enrollments.create({
           empId: empId,
           courseId: courseId,
           sessionId: sessionId,
-          empName:empName,
-          department:department,
+          empName: empName,
+          department: department,
           courseName: courseName,
           trainingLocation: trainingLocation.toString(),
           periods: periods.toString(),
@@ -342,12 +345,12 @@ Courses.post("/register", async (req: Request, res: Response) => {
  *                   type: string
  *                   example: "EmpID not found"
  */
-Courses.post("/results", async (req: Request, res: Response) => {
+Courses.post("/results", verifyToken, async (req: Request, res: Response) => {
   const reqHeader: any = req.headers;
   const contentType: any = reqHeader["content-type"];
   const tokenkey: any = reqHeader["authorization"];
   const decoded: any = jwt.verify(tokenkey, SECRET_KEY);
-  const {empId} = req.body;
+  const { empId } = req.body;
 
   if (!tokenkey || !contentType) {
     const missingHeaders: responseError = {
@@ -371,7 +374,7 @@ Courses.post("/results", async (req: Request, res: Response) => {
       message: "EmpId not found",
     });
   } else {
-    const dbResults = await courseResults.find({empId: empId});
+    const dbResults = await courseResults.find({ empId: empId });
     const resultsData: responseData = {
       code: "200",
       status: "OK",
@@ -481,7 +484,7 @@ Courses.post("/results", async (req: Request, res: Response) => {
  *                   type: string
  *                   example: "EmpID/CourseID not found"
  */
-Courses.post("/requests", async (req: Request, res: Response) => {
+Courses.post("/requests", verifyToken, async (req: Request, res: Response) => {
   const reqHeader: any = req.headers;
   const contentType: any = reqHeader["content-type"];
   const tokenkey: any = reqHeader["authorization"];
@@ -524,7 +527,11 @@ Courses.post("/requests", async (req: Request, res: Response) => {
           message: "empId or courseId or sessionId not found",
         });
       } else {
-        const existingRequest = await courseRequests.findOne({ empId, courseId, sessionId });
+        const existingRequest = await courseRequests.findOne({
+          empId,
+          courseId,
+          sessionId,
+        });
 
         if (existingRequest) {
           res.status(409).json({
@@ -645,7 +652,7 @@ Courses.post("/requests", async (req: Request, res: Response) => {
  *                   type: string
  *                   example: "Cannot Show"
  */
-Courses.get("/browse", async (req: Request, res: Response) => {
+Courses.get("/browse", verifyToken, async (req: Request, res: Response) => {
   const reqHeader: any = req.headers;
   const contentType: any = reqHeader["content-type"];
   const tokenkey: any = reqHeader["authorization"];
@@ -712,13 +719,12 @@ Courses.get("/browse", async (req: Request, res: Response) => {
   }
 });
 
-
-Courses.post("/result/id", async (req: Request, res: Response) => {
+Courses.post("/result/id", verifyToken, async (req: Request, res: Response) => {
   const reqHeader: any = req.headers;
   const contentType: any = reqHeader["content-type"];
   const tokenkey: any = reqHeader["authorization"];
   const decoded: any = jwt.verify(tokenkey, SECRET_KEY);
-  const {reqId} = req.body;
+  const { reqId } = req.body;
 
   if (!tokenkey || !contentType) {
     const missingHeaders: responseError = {
@@ -742,7 +748,7 @@ Courses.post("/result/id", async (req: Request, res: Response) => {
       message: "reqId not found",
     });
   } else {
-    const dbResults:any = await courseResults.findOne({ reqId: reqId });
+    const dbResults: any = await courseResults.findOne({ reqId: reqId });
     const resultsData: responseData = {
       code: "200",
       status: "OK",

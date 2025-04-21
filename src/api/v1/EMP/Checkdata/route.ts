@@ -4,7 +4,7 @@ import { employees } from "../../Schema/emp";
 import { courseResults } from "../../Schema/courseResults";
 import { enrollments } from "../../Schema/enrollment";
 import { course } from "../../Schema/course";
-import { SECRET_KEY } from "../../middleware/route";
+import { SECRET_KEY, verifyToken } from "../../middleware/route";
 import jwt from "jsonwebtoken";
 import { getDiffAsText } from "../../utils/dateUtils";
 
@@ -101,48 +101,52 @@ export const checkdata = express();
  *                   example: "EmpID not found"
  */
 
-checkdata.post("/dashboard", async (req: Request, res: Response) => {
-  const reqHeader: any = req.headers;
-  const contentType: any = reqHeader["content-type"];
-  const tokenkey: any = reqHeader["authorization"];
-  const decoded: any = jwt.verify(tokenkey, SECRET_KEY);
-  // const empId = req.query.Empid as string;
-  const { empId } = req.body;
+checkdata.post(
+  "/dashboard",
+  verifyToken,
+  async (req: Request, res: Response) => {
+    const reqHeader: any = req.headers;
+    const contentType: any = reqHeader["content-type"];
+    const tokenkey: any = reqHeader["authorization"];
+    const decoded: any = jwt.verify(tokenkey, SECRET_KEY);
+    // const empId = req.query.Empid as string;
+    const { empId } = req.body;
 
-  // ตรวจสอบการมี empId ในคำขอและเช็ค contentType
-  if (!tokenkey || !contentType) {
-    const missingHeaders: responseError = {
-      code: "400",
-      status: "Failed",
-      message:
-        "Bad Request: Missing required headers - 'Content-Type' and 'token-key' are needed for endpoint /checkEmp",
-    };
-    res.status(400).json(missingHeaders);
-  } else if (decoded.roles != "Emp") {
-    const promis: responseError = {
-      code: "400",
-      status: "Failed",
-      message: "Don't have promision",
-    };
-    res.status(400).json(promis);
-  } else if (!empId) {
-    res.status(404).json({
-      code: "404",
-      status: "error",
-      message: "EmpID not found",
-    });
-  } else {
-    const courseResult = await courseResults
-      .findOne({ empId: empId })
-      .sort({ _id: -1 });
+    // ตรวจสอบการมี empId ในคำขอและเช็ค contentType
+    if (!tokenkey || !contentType) {
+      const missingHeaders: responseError = {
+        code: "400",
+        status: "Failed",
+        message:
+          "Bad Request: Missing required headers - 'Content-Type' and 'token-key' are needed for endpoint /checkEmp",
+      };
+      res.status(400).json(missingHeaders);
+    } else if (decoded.roles != "Emp") {
+      const promis: responseError = {
+        code: "400",
+        status: "Failed",
+        message: "Don't have promision",
+      };
+      res.status(400).json(promis);
+    } else if (!empId) {
+      res.status(404).json({
+        code: "404",
+        status: "error",
+        message: "EmpID not found",
+      });
+    } else {
+      const courseResult = await courseResults
+        .findOne({ empId: empId })
+        .sort({ _id: -1 });
 
-    res.status(200).json({
-      code: "200",
-      status: "success",
-      data: courseResult,
-    });
+      res.status(200).json({
+        code: "200",
+        status: "success",
+        data: courseResult,
+      });
+    }
   }
-});
+);
 
 /**
  * @swagger
@@ -234,49 +238,53 @@ checkdata.post("/dashboard", async (req: Request, res: Response) => {
  *                   type: string
  *                   example: "EmpID not found"
  */
-checkdata.post("/enrollments", async (req: Request, res: Response) => {
-  const reqHeader: any = req.headers;
-  const contentType: any = reqHeader["content-type"];
-  const tokenkey: any = reqHeader["authorization"];
-  const decoded: any = jwt.verify(tokenkey, SECRET_KEY);
-  // const empId = req.query.Empid as string;
-  const { empId } = req.body;
+checkdata.post(
+  "/enrollments",
+  verifyToken,
+  async (req: Request, res: Response) => {
+    const reqHeader: any = req.headers;
+    const contentType: any = reqHeader["content-type"];
+    const tokenkey: any = reqHeader["authorization"];
+    const decoded: any = jwt.verify(tokenkey, SECRET_KEY);
+    // const empId = req.query.Empid as string;
+    const { empId } = req.body;
 
-  // ตรวจสอบการมี empId ในคำขอและเช็ค contentType
-  if (!tokenkey || !contentType) {
-    const missingHeaders: responseError = {
-      code: "400",
-      status: "Failed",
-      message:
-        "Bad Request: Missing required headers - 'Content-Type' and 'token-key' are needed for endpoint /checkEmp",
-    };
-    res.status(400).json(missingHeaders);
-  } else if (decoded.roles != "Emp" && decoded.roles != "Hr") {
-    const promis: responseError = {
-      code: "400",
-      status: "Failed",
-      message: "Don't have promision",
-    };
-    res.status(400).json(promis);
-  } else if (!empId) {
-    res.status(404).json({
-      code: "404",
-      status: "error",
-      message: "EmpId not found",
-    });
-  } else {
-    const enrollment = await enrollments.find({
-      empId: empId,
-      status: { $in: ["registered", "withdraw"] },
-    });
+    // ตรวจสอบการมี empId ในคำขอและเช็ค contentType
+    if (!tokenkey || !contentType) {
+      const missingHeaders: responseError = {
+        code: "400",
+        status: "Failed",
+        message:
+          "Bad Request: Missing required headers - 'Content-Type' and 'token-key' are needed for endpoint /checkEmp",
+      };
+      res.status(400).json(missingHeaders);
+    } else if (decoded.roles != "Emp" && decoded.roles != "Hr") {
+      const promis: responseError = {
+        code: "400",
+        status: "Failed",
+        message: "Don't have promision",
+      };
+      res.status(400).json(promis);
+    } else if (!empId) {
+      res.status(404).json({
+        code: "404",
+        status: "error",
+        message: "EmpId not found",
+      });
+    } else {
+      const enrollment = await enrollments.find({
+        empId: empId,
+        status: { $in: ["registered", "withdraw"] },
+      });
 
-    res.status(200).json({
-      code: "200",
-      status: "success",
-      data: enrollment,
-    });
+      res.status(200).json({
+        code: "200",
+        status: "success",
+        data: enrollment,
+      });
+    }
   }
-});
+);
 /**
  * @swagger
  * /checkdata/profile:
@@ -362,7 +370,7 @@ checkdata.post("/enrollments", async (req: Request, res: Response) => {
  *                   type: string
  *                   example: "EmpID not found"
  */
-checkdata.post("/profile", async (req: Request, res: Response) => {
+checkdata.post("/profile", verifyToken, async (req: Request, res: Response) => {
   const reqHeader: any = req.headers;
   const contentType: any = reqHeader["content-type"];
   const tokenkey: any = reqHeader["authorization"];
@@ -413,7 +421,7 @@ checkdata.post("/profile", async (req: Request, res: Response) => {
   }
 });
 
-checkdata.post("/enrollment/id", async (req: Request, res: Response) => {
+checkdata.post("/enrollment/id",verifyToken, async (req: Request, res: Response) => {
   const reqHeader: any = req.headers;
   const contentType: any = reqHeader["content-type"];
   const tokenkey: any = reqHeader["authorization"];
@@ -458,7 +466,7 @@ checkdata.post("/enrollment/id", async (req: Request, res: Response) => {
   }
 });
 
-checkdata.post("/enrollment/pass", async (req: Request, res: Response) => {
+checkdata.post("/enrollment/pass",verifyToken, async (req: Request, res: Response) => {
   const reqHeader: any = req.headers;
   const contentType: any = reqHeader["content-type"];
   const tokenkey: any = reqHeader["authorization"];
