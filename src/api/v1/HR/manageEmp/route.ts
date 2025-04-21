@@ -125,7 +125,7 @@ manageEmp.post("/editEmp", verifyToken, async (req: Request, res: Response) => {
     cardId,
     email,
     tel,
-    role,
+    roles,
     status,
   }: // firstTrainingDate,
   // trainingDate,
@@ -178,6 +178,13 @@ manageEmp.post("/editEmp", verifyToken, async (req: Request, res: Response) => {
               { empId: empId },
               req.body
             );
+            if (roles) {
+              await users.updateOne(
+                { empId: empId },
+                { $set: { roles: roles } }
+              );
+            }
+
             const updateEmployeeResponse: responseData = {
               code: "200",
               status: "OK",
