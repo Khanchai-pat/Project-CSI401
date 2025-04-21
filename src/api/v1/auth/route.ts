@@ -93,8 +93,7 @@ auth.post(
         status: userData.status,
       };
 
-      // const expiresIn = 7 * 24 * 60 * 60;
-      const expiresIn = 20;
+      const expiresIn = 7 * 24 * 60 * 60;
 
       const token = jwt.sign(payload, SECRET_KEY, { expiresIn });
 
