@@ -114,38 +114,39 @@ import { courseResults } from "../../Schema/courseResults";
  */
 // Check Data EMP
 checkData.get("/checkEmp", async (req: Request, res: Response) => {
-  const reqHeader: any = req.headers;
-  const tokenkey: any = reqHeader["authorization"];
-  const decoded: any = jwt.verify(tokenkey, SECRET_KEY);
+  // const reqHeader: any = req.headers;
+  // const tokenkey: any = reqHeader["authorization"];
+  // const decoded: any = jwt.verify(tokenkey, SECRET_KEY);
 
-  if (decoded.roles !== "Hr") {
-    const promis: responseError = {
-      code: "401",
-      status: "Unauthorized",
-      message: "Don't have promision",
+  // if (decoded.roles !== "Hr") {
+  //   const promis: responseError = {
+  //     code: "401",
+  //     status: "Unauthorized",
+  //     message: "Don't have promision",
+  //   };
+  //   res.status(401).json(promis);
+  // } else {
+  try {
+    // Process
+    const dbResponse = await employees.find({});
+    const reqCheckData: responseData = {
+      code: "200",
+      status: "Employee data retrieved successfully",
+      data: dbResponse,
     };
-    res.status(401).json(promis);
-  } else {
-    try {
-      // Process
-      const dbResponse = await employees.find({});
-      const reqCheckData: responseData = {
-        code: "200",
-        status: "Employee data retrieved successfully",
-        data: dbResponse,
-      };
-      res.status(200).json(reqCheckData);
-    } catch (error) {
-      console.log(error);
-      const serverError: responseError = {
-        code: "500",
-        status: "Failed",
-        message:
-          "An error occurred while processing your request. Please try again later",
-      };
-      res.status(500).json(serverError);
-    }
+    res.status(200).json(reqCheckData);
+  } catch (error) {
+    console.log(error);
+    const serverError: responseError = {
+      code: "500",
+      status: "Failed",
+      message:
+        "An error occurred while processing your request. Please try again later",
+    };
+    res.status(500).json(serverError);
   }
+  //     }
+  //   }
 });
 
 /**

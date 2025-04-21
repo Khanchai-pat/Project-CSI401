@@ -13,7 +13,11 @@ const config: Config = {
   // bail: 0,
 
   // The directory where Jest should store its cached dependency information
+<<<<<<< HEAD
+  // cacheDirectory: "C:\\Users\\khanc\\AppData\\Local\\Temp\\jest",
+=======
   // cacheDirectory: "C:\\Users\\user\\AppData\\Local\\Temp\\jest",
+>>>>>>> 0a330867f972d65f36b0f258e642ccc6ec5b61e6
 
   // Automatically clear mock calls, instances, contexts and results before every test
   clearMocks: true,
@@ -33,7 +37,11 @@ const config: Config = {
   // ],
 
   // Indicates which provider should be used to instrument code for coverage
+<<<<<<< HEAD
+  // coverageProvider: "babel",
+=======
   coverageProvider: "babel",
+>>>>>>> 0a330867f972d65f36b0f258e642ccc6ec5b61e6
 
   // A list of reporter names that Jest uses when writing coverage reports
   // coverageReporters: [
